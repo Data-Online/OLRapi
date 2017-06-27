@@ -1,0 +1,425 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="OLR_dbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Contacts">
+          <Key>
+            <PropertyRef Name="ContactId" />
+          </Key>
+          <Property Name="ContactId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Address1" Type="nvarchar" MaxLength="50" />
+          <Property Name="Address2" Type="nvarchar" MaxLength="50" />
+          <Property Name="Address3" Type="nvarchar" MaxLength="50" />
+          <Property Name="HometownId" Type="int" />
+          <Property Name="MobileNumber" Type="nvarchar" MaxLength="30" />
+          <Property Name="PSNZMembershipCheck" Type="bit" />
+          <Property Name="PSNZMember" Type="bit" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PSNZAppliedFor" Type="bit" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Events">
+          <Key>
+            <PropertyRef Name="EventId" />
+          </Key>
+          <Property Name="EventId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EventName" Type="nvarchar" MaxLength="100" />
+          <Property Name="GID" Type="uniqueidentifier" />
+          <Property Name="Active" Type="bit" />
+          <Property Name="ContactEmail" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="FieldTripChoices">
+          <Key>
+            <PropertyRef Name="FieldTripChoiceId" />
+          </Key>
+          <Property Name="FieldTripChoiceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FieldTripOptionId" Type="int" />
+          <Property Name="RegistrationId" Type="int" Nullable="false" />
+          <Property Name="FieldTripOptionId2" Type="int" />
+          <Property Name="FieldTripOptionId3" Type="int" />
+          <Property Name="FieldTripId" Type="int" />
+        </EntityType>
+        <EntityType Name="FieldTrips">
+          <Key>
+            <PropertyRef Name="FieldTripId" />
+          </Key>
+          <Property Name="FieldTripId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="100" />
+          <Property Name="Date" Type="date" />
+          <Property Name="Time" Type="time" Precision="7" />
+          <Property Name="EventId" Type="int" />
+          <Property Name="DisplaySequence" Type="int" />
+        </EntityType>
+        <EntityType Name="Registrations">
+          <Key>
+            <PropertyRef Name="RegistrationId" />
+          </Key>
+          <Property Name="RegistrationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EventId" Type="int" />
+          <Property Name="ContactId" Type="int" />
+          <Property Name="ValidationUid" Type="uniqueidentifier" />
+          <Property Name="RegistrationTypeId" Type="int" />
+          <Property Name="PaymentDate" Type="date" />
+          <Property Name="AdditionalDinnerTicket" Type="bit" />
+          <Property Name="SpecialRequirements" Type="nvarchar" MaxLength="200" />
+          <Property Name="AdditionalDinnerName" Type="nvarchar" MaxLength="50" />
+          <Property Name="DatePaid" Type="date" />
+          <Property Name="InitialCreationDate" Type="date" />
+        </EntityType>
+        <Association Name="FK_FieldTripChoices_FieldTrips">
+          <End Role="FieldTrips" Type="Self.FieldTrips" Multiplicity="0..1" />
+          <End Role="FieldTripChoices" Type="Self.FieldTripChoices" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTrips">
+              <PropertyRef Name="FieldTripId" />
+            </Principal>
+            <Dependent Role="FieldTripChoices">
+              <PropertyRef Name="FieldTripId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_Registrations">
+          <End Role="Registrations" Type="Self.Registrations" Multiplicity="1" />
+          <End Role="FieldTripChoices" Type="Self.FieldTripChoices" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Registrations">
+              <PropertyRef Name="RegistrationId" />
+            </Principal>
+            <Dependent Role="FieldTripChoices">
+              <PropertyRef Name="RegistrationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTrips_Events">
+          <End Role="Events" Type="Self.Events" Multiplicity="0..1" />
+          <End Role="FieldTrips" Type="Self.FieldTrips" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Events">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="FieldTrips">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Registrations_Contacts">
+          <End Role="Contacts" Type="Self.Contacts" Multiplicity="0..1" />
+          <End Role="Registrations" Type="Self.Registrations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contacts">
+              <PropertyRef Name="ContactId" />
+            </Principal>
+            <Dependent Role="Registrations">
+              <PropertyRef Name="ContactId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Registrations_Events">
+          <End Role="Events" Type="Self.Events" Multiplicity="0..1" />
+          <End Role="Registrations" Type="Self.Registrations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Events">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="Registrations">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="OLR_dbModelStoreContainer">
+          <EntitySet Name="Contacts" EntityType="Self.Contacts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Events" EntityType="Self.Events" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FieldTripChoices" EntityType="Self.FieldTripChoices" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FieldTrips" EntityType="Self.FieldTrips" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Registrations" EntityType="Self.Registrations" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_FieldTripChoices_FieldTrips" Association="Self.FK_FieldTripChoices_FieldTrips">
+            <End Role="FieldTrips" EntitySet="FieldTrips" />
+            <End Role="FieldTripChoices" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_Registrations" Association="Self.FK_FieldTripChoices_Registrations">
+            <End Role="Registrations" EntitySet="Registrations" />
+            <End Role="FieldTripChoices" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTrips_Events" Association="Self.FK_FieldTrips_Events">
+            <End Role="Events" EntitySet="Events" />
+            <End Role="FieldTrips" EntitySet="FieldTrips" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Registrations_Contacts" Association="Self.FK_Registrations_Contacts">
+            <End Role="Contacts" EntitySet="Contacts" />
+            <End Role="Registrations" EntitySet="Registrations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Registrations_Events" Association="Self.FK_Registrations_Events">
+            <End Role="Events" EntitySet="Events" />
+            <End Role="Registrations" EntitySet="Registrations" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="OLR_dbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Contact">
+          <Key>
+            <PropertyRef Name="ContactId" />
+          </Key>
+          <Property Name="ContactId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Address1" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Address2" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Address3" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="HometownId" Type="Int32" />
+          <Property Name="MobileNumber" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="PSNZMembershipCheck" Type="Boolean" />
+          <Property Name="PSNZMember" Type="Boolean" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Registrations" Relationship="Self.FK_Registrations_Contacts" FromRole="Contacts" ToRole="Registrations" />
+          <Property Name="PSNZAppliedFor" Type="Boolean" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Event">
+          <Key>
+            <PropertyRef Name="EventId" />
+          </Key>
+          <Property Name="EventId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EventName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Registrations" Relationship="Self.FK_Registrations_Events" FromRole="Events" ToRole="Registrations" />
+          <Property Name="GID" Type="Guid" />
+          <Property Name="Active" Type="Boolean" />
+          <Property Name="ContactEmail" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="FieldTrips" Relationship="OLR_dbModel.FK_FieldTrips_Events" FromRole="Event" ToRole="FieldTrip" />
+        </EntityType>
+        <EntityType Name="Registration">
+          <Key>
+            <PropertyRef Name="RegistrationId" />
+          </Key>
+          <Property Name="RegistrationId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EventId" Type="Int32" />
+          <Property Name="ContactId" Type="Int32" />
+          <Property Name="ValidationUid" Type="Guid" />
+          <Property Name="RegistrationTypeId" Type="Int32" />
+          <Property Name="PaymentDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="Contact" Relationship="Self.FK_Registrations_Contacts" FromRole="Registrations" ToRole="Contacts" />
+          <NavigationProperty Name="Event" Relationship="Self.FK_Registrations_Events" FromRole="Registrations" ToRole="Events" />
+          <Property Name="AdditionalDinnerTicket" Type="Boolean" />
+          <Property Name="SpecialRequirements" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="AdditionalDinnerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DatePaid" Type="DateTime" Precision="0" />
+          <Property Name="InitialCreationDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="FieldTripChoices" Relationship="OLR_dbModel.FK_FieldTripChoices_Registrations" FromRole="Registration" ToRole="FieldTripChoice" />
+        </EntityType>
+        <Association Name="FK_Registrations_Contacts">
+          <End Role="Contacts" Type="Self.Contact" Multiplicity="0..1" />
+          <End Role="Registrations" Type="Self.Registration" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contacts">
+              <PropertyRef Name="ContactId" />
+            </Principal>
+            <Dependent Role="Registrations">
+              <PropertyRef Name="ContactId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Registrations_Events">
+          <End Role="Events" Type="Self.Event" Multiplicity="0..1" />
+          <End Role="Registrations" Type="Self.Registration" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Events">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="Registrations">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="OLR_dbEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Contacts" EntityType="Self.Contact" />
+          <EntitySet Name="Events" EntityType="Self.Event" />
+          <EntitySet Name="Registrations" EntityType="Self.Registration" />
+          <AssociationSet Name="FK_Registrations_Contacts" Association="Self.FK_Registrations_Contacts">
+            <End Role="Contacts" EntitySet="Contacts" />
+            <End Role="Registrations" EntitySet="Registrations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Registrations_Events" Association="Self.FK_Registrations_Events">
+            <End Role="Events" EntitySet="Events" />
+            <End Role="Registrations" EntitySet="Registrations" />
+          </AssociationSet>
+          <EntitySet Name="FieldTripChoices" EntityType="OLR_dbModel.FieldTripChoice" />
+          <EntitySet Name="FieldTrips" EntityType="OLR_dbModel.FieldTrip" />
+          <AssociationSet Name="FK_FieldTrips_Events" Association="OLR_dbModel.FK_FieldTrips_Events">
+            <End Role="Event" EntitySet="Events" />
+            <End Role="FieldTrip" EntitySet="FieldTrips" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_FieldTrips" Association="OLR_dbModel.FK_FieldTripChoices_FieldTrips">
+            <End Role="FieldTrip" EntitySet="FieldTrips" />
+            <End Role="FieldTripChoice" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_Registrations" Association="OLR_dbModel.FK_FieldTripChoices_Registrations">
+            <End Role="Registration" EntitySet="Registrations" />
+            <End Role="FieldTripChoice" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="FieldTripChoice">
+          <Key>
+            <PropertyRef Name="FieldTripChoiceId" />
+          </Key>
+          <Property Name="FieldTripChoiceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FieldTripOptionId" Type="Int32" />
+          <Property Name="RegistrationId" Type="Int32" Nullable="false" />
+          <Property Name="FieldTripOptionId2" Type="Int32" />
+          <Property Name="FieldTripOptionId3" Type="Int32" />
+          <Property Name="FieldTripId" Type="Int32" />
+          <NavigationProperty Name="FieldTrip" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTrips" FromRole="FieldTripChoice" ToRole="FieldTrip" />
+          <NavigationProperty Name="Registration" Relationship="OLR_dbModel.FK_FieldTripChoices_Registrations" FromRole="FieldTripChoice" ToRole="Registration" />
+        </EntityType>
+        <EntityType Name="FieldTrip">
+          <Key>
+            <PropertyRef Name="FieldTripId" />
+          </Key>
+          <Property Name="FieldTripId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Date" Type="DateTime" Precision="0" />
+          <Property Name="Time" Type="Time" Precision="7" />
+          <Property Name="EventId" Type="Int32" />
+          <Property Name="DisplaySequence" Type="Int32" />
+          <NavigationProperty Name="Event" Relationship="OLR_dbModel.FK_FieldTrips_Events" FromRole="FieldTrip" ToRole="Event" />
+          <NavigationProperty Name="FieldTripChoices" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTrips" FromRole="FieldTrip" ToRole="FieldTripChoice" />
+        </EntityType>
+        <Association Name="FK_FieldTrips_Events">
+          <End Type="OLR_dbModel.Event" Role="Event" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.FieldTrip" Role="FieldTrip" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="FieldTrip">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_FieldTrips">
+          <End Type="OLR_dbModel.FieldTrip" Role="FieldTrip" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.FieldTripChoice" Role="FieldTripChoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTrip">
+              <PropertyRef Name="FieldTripId" />
+            </Principal>
+            <Dependent Role="FieldTripChoice">
+              <PropertyRef Name="FieldTripId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_Registrations">
+          <End Type="OLR_dbModel.Registration" Role="Registration" Multiplicity="1" />
+          <End Type="OLR_dbModel.FieldTripChoice" Role="FieldTripChoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Registration">
+              <PropertyRef Name="RegistrationId" />
+            </Principal>
+            <Dependent Role="FieldTripChoice">
+              <PropertyRef Name="RegistrationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="OLR_dbModelStoreContainer" CdmEntityContainer="OLR_dbEntities">
+          <EntitySetMapping Name="Contacts">
+            <EntityTypeMapping TypeName="OLR_dbModel.Contact">
+              <MappingFragment StoreEntitySet="Contacts">
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="PSNZAppliedFor" ColumnName="PSNZAppliedFor" />
+                <ScalarProperty Name="ContactId" ColumnName="ContactId" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="Address2" ColumnName="Address2" />
+                <ScalarProperty Name="Address3" ColumnName="Address3" />
+                <ScalarProperty Name="HometownId" ColumnName="HometownId" />
+                <ScalarProperty Name="MobileNumber" ColumnName="MobileNumber" />
+                <ScalarProperty Name="PSNZMembershipCheck" ColumnName="PSNZMembershipCheck" />
+                <ScalarProperty Name="PSNZMember" ColumnName="PSNZMember" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Events">
+            <EntityTypeMapping TypeName="OLR_dbModel.Event">
+              <MappingFragment StoreEntitySet="Events">
+                <ScalarProperty Name="ContactEmail" ColumnName="ContactEmail" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="GID" ColumnName="GID" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="EventName" ColumnName="EventName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Registrations">
+            <EntityTypeMapping TypeName="OLR_dbModel.Registration">
+              <MappingFragment StoreEntitySet="Registrations">
+                <ScalarProperty Name="InitialCreationDate" ColumnName="InitialCreationDate" />
+                <ScalarProperty Name="DatePaid" ColumnName="DatePaid" />
+                <ScalarProperty Name="AdditionalDinnerName" ColumnName="AdditionalDinnerName" />
+                <ScalarProperty Name="SpecialRequirements" ColumnName="SpecialRequirements" />
+                <ScalarProperty Name="AdditionalDinnerTicket" ColumnName="AdditionalDinnerTicket" />
+                <ScalarProperty Name="RegistrationId" ColumnName="RegistrationId" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="ContactId" ColumnName="ContactId" />
+                <ScalarProperty Name="ValidationUid" ColumnName="ValidationUid" />
+                <ScalarProperty Name="RegistrationTypeId" ColumnName="RegistrationTypeId" />
+                <ScalarProperty Name="PaymentDate" ColumnName="PaymentDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FieldTripChoices">
+            <EntityTypeMapping TypeName="OLR_dbModel.FieldTripChoice">
+              <MappingFragment StoreEntitySet="FieldTripChoices">
+                <ScalarProperty Name="FieldTripId" ColumnName="FieldTripId" />
+                <ScalarProperty Name="FieldTripOptionId3" ColumnName="FieldTripOptionId3" />
+                <ScalarProperty Name="FieldTripOptionId2" ColumnName="FieldTripOptionId2" />
+                <ScalarProperty Name="RegistrationId" ColumnName="RegistrationId" />
+                <ScalarProperty Name="FieldTripOptionId" ColumnName="FieldTripOptionId" />
+                <ScalarProperty Name="FieldTripChoiceId" ColumnName="FieldTripChoiceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FieldTrips">
+            <EntityTypeMapping TypeName="OLR_dbModel.FieldTrip">
+              <MappingFragment StoreEntitySet="FieldTrips">
+                <ScalarProperty Name="DisplaySequence" ColumnName="DisplaySequence" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="FieldTripId" ColumnName="FieldTripId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

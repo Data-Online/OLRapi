@@ -1,0 +1,41 @@
+﻿<div class="jumbotron">
+
+    <h1>Register Here</h1>
+    <form id="form2">
+        <div>
+            <label for="Email">Email</label>
+        </div>
+        <div>
+            <input id="email1" type="text" size="200" />
+        </div>
+        <div>
+            <input type="submit" value="Submit" />
+        </div>
+    </form>
+    <p id="message"></p>
+</div>
+
+@section PageScripts {
+    <script type="text/javascript">
+        $('#form2').submit(function () {
+            var jqxhr = $.post('http://localhost:60892/RegisterEmail/992fdb3b-7715-4c41-a591-1558899fc91a', { "": $('#email1').val() })
+                .success(function (data) {
+                    //var loc = jqxhr.getResponseHeader('Location');
+                    //var a = $('<a/>', { href: loc, text: loc });
+                    var a = '<p>Thank you! An eMail has been sent to you at <b>' + data + '</b>. <br />Please refer to this for instructions on registering</p>';
+                    $('#message').html(a);
+                    $('#email1').val('');
+                })
+                .error(function () {
+                    $('#message').html("Sorry, something went wrong. <br />You may have not already registered using this email or this event is not currently open for registrations.");
+                });
+            return false;
+        });
+    </script>
+}
+
+@*            var jqxhr = $.post('http://localhost:60892/RegisterEmail/327c4359-0250-4bc1-9843-e02cd272cf52', { "": $('#email1').val() })*@
+
+
+
+@*var jqxhr = $.post('http://localhost:60892/api/Values', { "": $('#email1').val() })*@
