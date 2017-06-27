@@ -18,7 +18,8 @@
 @section PageScripts {
     <script type="text/javascript">
         $('#form2').submit(function () {
-            var jqxhr = $.post('http://localhost:60892/RegisterEmail/992fdb3b-7715-4c41-a591-1558899fc91a', { "": $('#email1').val() })
+            //var jqxhr = $.post('http://localhost:60892/RegisterEmail/992fdb3b-7715-4c41-a591-1558899fc91a', { "": $('#email1').val() })
+            var jqxhr = $.post('@Request.Url.GetLeftPart(UriPartial.Authority)/RegisterEmail/@ViewBag.EventUID', { "": $('#email1').val() })
                 .success(function (data) {
                     //var loc = jqxhr.getResponseHeader('Location');
                     //var a = $('<a/>', { href: loc, text: loc });
