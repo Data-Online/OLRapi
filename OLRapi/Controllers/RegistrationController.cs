@@ -127,7 +127,10 @@ namespace OLRapi.Controllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest);
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception ex) {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+            }
         }
         protected override void Dispose(bool disposing)
         {
