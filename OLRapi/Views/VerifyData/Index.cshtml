@@ -1,0 +1,88 @@
+﻿@model IEnumerable<OLRapi.Registration>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ValidationUid)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RegistrationTypeId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PaymentDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AdditionalDinnerTicket)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SpecialRequirements)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AdditionalDinnerName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DatePaid)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.InitialCreationDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Contact.Address1)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Event.EventName)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.ValidationUid)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RegistrationTypeId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PaymentDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AdditionalDinnerTicket)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SpecialRequirements)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AdditionalDinnerName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DatePaid)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.InitialCreationDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Contact.Address1)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Event.EventName)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.RegistrationId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.RegistrationId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.RegistrationId })
+        </td>
+    </tr>
+}
+
+</table>

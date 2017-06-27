@@ -1,0 +1,99 @@
+﻿@model OLRapi.Registration
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Registration</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ValidationUid)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ValidationUid)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RegistrationTypeId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RegistrationTypeId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PaymentDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PaymentDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AdditionalDinnerTicket)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AdditionalDinnerTicket)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SpecialRequirements)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SpecialRequirements)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AdditionalDinnerName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AdditionalDinnerName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DatePaid)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DatePaid)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.InitialCreationDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.InitialCreationDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Contact.Address1)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Contact.Address1)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Event.EventName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Event.EventName)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.RegistrationId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
