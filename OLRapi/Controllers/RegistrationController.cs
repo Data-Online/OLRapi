@@ -46,83 +46,88 @@ namespace OLRapi.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            if (value != null)
+            try
             {
-                Event @event = await db.Events.Where(s => s.GID == eventid && s.Active == true).FirstOrDefaultAsync();
-
-                if (@event == null)
+                if (value != null)
                 {
-                    // Event not found or not active
-                    return Request.CreateResponse(HttpStatusCode.BadRequest);
-                }
+                    Event @event = new Event();
 
-                // Okay the event is valid and active
-
-                BaseRegistration baseRegistration = new BaseRegistration()
-                {
-                    Email = HttpUtility.HtmlEncode(value),
-                    Date = DateTime.UtcNow
-                };
-
-                Contact @contact = await db.Contacts.Where(s => s.Email == baseRegistration.Email).FirstOrDefaultAsync();
-                if (@contact != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest);
-                }
-                var registrationUid = Guid.NewGuid();
-
-                IList<FieldTrip> fieldTrips = await db.FieldTrips.Where(s => s.EventId == @event.EventId).ToListAsync();
-                IList<FieldTripChoice> fieldTripChoices = new List<FieldTripChoice>();
-                foreach (var entry in fieldTrips)
-                {
-                    fieldTripChoices.Add(new FieldTripChoice { FieldTripId = entry.FieldTripId });
-                }
-
-                Registration registration = new Registration()
-                {
-                    ValidationUid = registrationUid,
-                    Contact = new Contact() { Email = baseRegistration.Email },
-                    // Field trip options need to be added here
-                    EventId = @event.EventId,
-                    FieldTripChoices = fieldTripChoices
-                };
-
-                db.Registrations.Add(registration);
+                    @event = await db.Events.Where(s => s.GID == eventid && s.Active == true).FirstOrDefaultAsync();
 
 
-                
-                await db.SaveChangesAsync();
-
-                var verify = db.Events.Select(s => s.Registrations.Where(w => w.EventId == @event.EventId && w.Contact.Email == baseRegistration.Email)).FirstOrDefaultAsync();
-                
-                if (verify != null)
-                {
-                    // var id = Guid.NewGuid();
-                    // Send email
-                    HttpStatusCode emailStatus = await SendEmail(baseRegistration.Email, @event.ContactEmail, registrationUid.ToString());
-
-                    var response = new HttpResponseMessage(HttpStatusCode.Created)
+                    if (@event == null)
                     {
-                        Content = new StringContent(baseRegistration.Email)
+                        // Event not found or not active
+                        return Request.CreateResponse(HttpStatusCode.BadRequest);
+                    }
+
+                    // Okay the event is valid and active
+
+                    BaseRegistration baseRegistration = new BaseRegistration()
+                    {
+                        Email = HttpUtility.HtmlEncode(value),
+                        Date = DateTime.UtcNow
                     };
 
-                    
-                    //response.Headers.Location =
-                    //    new Uri(Url.Link("DefaultApi", new { action = "status", id = id }));
-                    return response;
+                    Contact @contact = await db.Contacts.Where(s => s.Email == baseRegistration.Email).FirstOrDefaultAsync();
+                    if (@contact != null)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest);
+                    }
+                    var registrationUid = Guid.NewGuid();
+
+                    IList<FieldTrip> fieldTrips = await db.FieldTrips.Where(s => s.EventId == @event.EventId).ToListAsync();
+                    IList<FieldTripChoice> fieldTripChoices = new List<FieldTripChoice>();
+                    foreach (var entry in fieldTrips)
+                    {
+                        fieldTripChoices.Add(new FieldTripChoice { FieldTripId = entry.FieldTripId });
+                    }
+
+                    Registration registration = new Registration()
+                    {
+                        ValidationUid = registrationUid,
+                        Contact = new Contact() { Email = baseRegistration.Email },
+                        // Field trip options need to be added here
+                        EventId = @event.EventId,
+                        FieldTripChoices = fieldTripChoices
+                    };
+
+                    db.Registrations.Add(registration);
+
+                    await db.SaveChangesAsync();
+
+                    var verify = db.Events.Select(s => s.Registrations.Where(w => w.EventId == @event.EventId && w.Contact.Email == baseRegistration.Email)).FirstOrDefaultAsync();
+
+                    if (verify != null)
+                    {
+                        // var id = Guid.NewGuid();
+                        // Send email
+                        HttpStatusCode emailStatus = await SendEmail(baseRegistration.Email, @event.ContactEmail, registrationUid.ToString());
+
+                        var response = new HttpResponseMessage(HttpStatusCode.Created)
+                        {
+                            Content = new StringContent(baseRegistration.Email)
+                        };
+
+
+                        //response.Headers.Location =
+                        //    new Uri(Url.Link("DefaultApi", new { action = "status", id = id }));
+                        return response;
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest);
+                    }
+                    //return CreatedAtRoute("DefaultApi", new { action = "status", id = id }, value);
+
+
                 }
                 else
                 {
                     return Request.CreateResponse(HttpStatusCode.BadRequest);
                 }
-                //return CreatedAtRoute("DefaultApi", new { action = "status", id = id }, value);
-
-                
             }
-            else
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest);
-            }
+            catch (Exception ex) { }
         }
         protected override void Dispose(bool disposing)
         {
