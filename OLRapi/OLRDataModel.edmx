@@ -63,7 +63,6 @@
           <Property Name="ContactId" Type="int" />
           <Property Name="ValidationUid" Type="uniqueidentifier" />
           <Property Name="RegistrationTypeId" Type="int" />
-          <Property Name="PaymentDate" Type="date" />
           <Property Name="AdditionalDinnerTicket" Type="bit" />
           <Property Name="SpecialRequirements" Type="nvarchar" MaxLength="200" />
           <Property Name="AdditionalDinnerName" Type="nvarchar" MaxLength="50" />
@@ -200,7 +199,6 @@
           <Property Name="ContactId" Type="Int32" />
           <Property Name="ValidationUid" Type="Guid" />
           <Property Name="RegistrationTypeId" Type="Int32" />
-          <Property Name="PaymentDate" Type="DateTime" Precision="0" />
           <NavigationProperty Name="Contact" Relationship="Self.FK_Registrations_Contacts" FromRole="Registrations" ToRole="Contacts" />
           <NavigationProperty Name="Event" Relationship="Self.FK_Registrations_Events" FromRole="Registrations" ToRole="Events" />
           <Property Name="AdditionalDinnerTicket" Type="Boolean" />
@@ -371,7 +369,6 @@
                 <ScalarProperty Name="ContactId" ColumnName="ContactId" />
                 <ScalarProperty Name="ValidationUid" ColumnName="ValidationUid" />
                 <ScalarProperty Name="RegistrationTypeId" ColumnName="RegistrationTypeId" />
-                <ScalarProperty Name="PaymentDate" ColumnName="PaymentDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

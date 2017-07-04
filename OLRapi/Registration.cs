@@ -25,7 +25,6 @@ namespace OLRapi
         public Nullable<int> ContactId { get; set; }
         public Nullable<System.Guid> ValidationUid { get; set; }
         public Nullable<int> RegistrationTypeId { get; set; }
-        public Nullable<System.DateTime> PaymentDate { get; set; }
         public Nullable<bool> AdditionalDinnerTicket { get; set; }
         public string SpecialRequirements { get; set; }
         public string AdditionalDinnerName { get; set; }

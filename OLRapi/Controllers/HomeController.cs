@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OLRapi.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,7 +14,7 @@ namespace OLRapi.Controllers
             ViewBag.Title = "Home Page";
             //var zz = Request.Url.GetLeftPart(UriPartial.Authority) + Url.Content("~");
 
-            ViewBag.EventUID = "992fdb3b-7715-4c41-a591-1558899fc91a";
+            ViewBag.EventUID = Settings.EventUID; // "992fdb3b-7715-4c41-a591-1558899fc91a";
             return View();
         }
     }

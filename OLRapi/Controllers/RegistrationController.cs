@@ -89,7 +89,8 @@ namespace OLRapi.Controllers
                         Contact = new Contact() { Email = baseRegistration.Email },
                         // Field trip options need to be added here
                         EventId = @event.EventId,
-                        FieldTripChoices = fieldTripChoices
+                        FieldTripChoices = fieldTripChoices,
+                        InitialCreationDate = DateTime.Now
                     };
 
                     db.Registrations.Add(registration);

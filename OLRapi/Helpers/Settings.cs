@@ -11,5 +11,7 @@ namespace OLRapi.Helpers
         public static string GraphApiKey  => ConfigurationManager.AppSettings["SendGridApi"];
 
         public static string RegistrationUrl => ConfigurationManager.AppSettings["RegistrationUrl"];
+
+        public static string EventUID => ConfigurationManager.AppSettings["EventUID"];
     }
 }
