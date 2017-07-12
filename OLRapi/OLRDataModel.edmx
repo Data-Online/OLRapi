@@ -21,6 +21,7 @@
           <Property Name="PSNZAppliedFor" Type="bit" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
           <Property Name="LastName" Type="nvarchar" MaxLength="50" />
+          <Property Name="RecordDeleted" Type="bit" />
         </EntityType>
         <EntityType Name="Events">
           <Key>
@@ -42,6 +43,8 @@
           <Property Name="FieldTripOptionId2" Type="int" />
           <Property Name="FieldTripOptionId3" Type="int" />
           <Property Name="FieldTripId" Type="int" />
+          <Property Name="RecordDeleted" Type="bit" />
+          <Property Name="FieldTripAllocated" Type="int" />
         </EntityType>
         <EntityType Name="FieldTrips">
           <Key>
@@ -68,6 +71,7 @@
           <Property Name="AdditionalDinnerName" Type="nvarchar" MaxLength="50" />
           <Property Name="DatePaid" Type="date" />
           <Property Name="InitialCreationDate" Type="date" />
+          <Property Name="RecordDeleted" Type="bit" />
         </EntityType>
         <Association Name="FK_FieldTripChoices_FieldTrips">
           <End Role="FieldTrips" Type="Self.FieldTrips" Multiplicity="0..1" />
@@ -177,6 +181,7 @@
           <Property Name="PSNZAppliedFor" Type="Boolean" />
           <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RecordDeleted" Type="Boolean" />
         </EntityType>
         <EntityType Name="Event">
           <Key>
@@ -207,6 +212,7 @@
           <Property Name="DatePaid" Type="DateTime" Precision="0" />
           <Property Name="InitialCreationDate" Type="DateTime" Precision="0" />
           <NavigationProperty Name="FieldTripChoices" Relationship="OLR_dbModel.FK_FieldTripChoices_Registrations" FromRole="Registration" ToRole="FieldTripChoice" />
+          <Property Name="RecordDeleted" Type="Boolean" />
         </EntityType>
         <Association Name="FK_Registrations_Contacts">
           <End Role="Contacts" Type="Self.Contact" Multiplicity="0..1" />
@@ -271,6 +277,8 @@
           <Property Name="FieldTripId" Type="Int32" />
           <NavigationProperty Name="FieldTrip" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTrips" FromRole="FieldTripChoice" ToRole="FieldTrip" />
           <NavigationProperty Name="Registration" Relationship="OLR_dbModel.FK_FieldTripChoices_Registrations" FromRole="FieldTripChoice" ToRole="Registration" />
+          <Property Name="RecordDeleted" Type="Boolean" />
+          <Property Name="FieldTripAllocated" Type="Int32" />
         </EntityType>
         <EntityType Name="FieldTrip">
           <Key>
@@ -330,6 +338,7 @@
           <EntitySetMapping Name="Contacts">
             <EntityTypeMapping TypeName="OLR_dbModel.Contact">
               <MappingFragment StoreEntitySet="Contacts">
+                <ScalarProperty Name="RecordDeleted" ColumnName="RecordDeleted" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="PSNZAppliedFor" ColumnName="PSNZAppliedFor" />
@@ -359,6 +368,7 @@
           <EntitySetMapping Name="Registrations">
             <EntityTypeMapping TypeName="OLR_dbModel.Registration">
               <MappingFragment StoreEntitySet="Registrations">
+                <ScalarProperty Name="RecordDeleted" ColumnName="RecordDeleted" />
                 <ScalarProperty Name="InitialCreationDate" ColumnName="InitialCreationDate" />
                 <ScalarProperty Name="DatePaid" ColumnName="DatePaid" />
                 <ScalarProperty Name="AdditionalDinnerName" ColumnName="AdditionalDinnerName" />
@@ -375,6 +385,8 @@
           <EntitySetMapping Name="FieldTripChoices">
             <EntityTypeMapping TypeName="OLR_dbModel.FieldTripChoice">
               <MappingFragment StoreEntitySet="FieldTripChoices">
+                <ScalarProperty Name="FieldTripAllocated" ColumnName="FieldTripAllocated" />
+                <ScalarProperty Name="RecordDeleted" ColumnName="RecordDeleted" />
                 <ScalarProperty Name="FieldTripId" ColumnName="FieldTripId" />
                 <ScalarProperty Name="FieldTripOptionId3" ColumnName="FieldTripOptionId3" />
                 <ScalarProperty Name="FieldTripOptionId2" ColumnName="FieldTripOptionId2" />

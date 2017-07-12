@@ -20,6 +20,8 @@ namespace OLRapi
         public Nullable<int> FieldTripOptionId2 { get; set; }
         public Nullable<int> FieldTripOptionId3 { get; set; }
         public Nullable<int> FieldTripId { get; set; }
+        public Nullable<bool> RecordDeleted { get; set; }
+        public Nullable<int> FieldTripAllocated { get; set; }
     
         public virtual FieldTrip FieldTrip { get; set; }
         public virtual Registration Registration { get; set; }

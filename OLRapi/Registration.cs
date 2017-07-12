@@ -30,6 +30,7 @@ namespace OLRapi
         public string AdditionalDinnerName { get; set; }
         public Nullable<System.DateTime> DatePaid { get; set; }
         public Nullable<System.DateTime> InitialCreationDate { get; set; }
+        public Nullable<bool> RecordDeleted { get; set; }
     
         public virtual Contact Contact { get; set; }
         public virtual Event Event { get; set; }

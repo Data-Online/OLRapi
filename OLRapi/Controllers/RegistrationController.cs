@@ -80,17 +80,18 @@ namespace OLRapi.Controllers
                     IList<FieldTripChoice> fieldTripChoices = new List<FieldTripChoice>();
                     foreach (var entry in fieldTrips)
                     {
-                        fieldTripChoices.Add(new FieldTripChoice { FieldTripId = entry.FieldTripId });
+                        fieldTripChoices.Add(new FieldTripChoice { FieldTripId = entry.FieldTripId, RecordDeleted = false });
                     }
 
                     Registration registration = new Registration()
                     {
                         ValidationUid = registrationUid,
-                        Contact = new Contact() { Email = baseRegistration.Email },
+                        Contact = new Contact() { Email = baseRegistration.Email, RecordDeleted = false },
                         // Field trip options need to be added here
                         EventId = @event.EventId,
                         FieldTripChoices = fieldTripChoices,
-                        InitialCreationDate = DateTime.Now
+                        InitialCreationDate = DateTime.Now,
+                        RecordDeleted = false
                     };
 
                     db.Registrations.Add(registration);
