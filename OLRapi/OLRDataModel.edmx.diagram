@@ -15,6 +15,11 @@
         <AssociationConnector Association="OLR_dbModel.FK_FieldTrips_Events" />
         <AssociationConnector Association="OLR_dbModel.FK_FieldTripChoices_FieldTrips" />
         <AssociationConnector Association="OLR_dbModel.FK_FieldTripChoices_Registrations" />
+        <EntityTypeShape EntityType="OLR_dbModel.AvailableWorkshop" Width="1.5" PointX="3" PointY="9.875" />
+        <EntityTypeShape EntityType="OLR_dbModel.Workshop" Width="1.5" PointX="5.25" PointY="8.5" />
+        <AssociationConnector Association="OLR_dbModel.FK_AvailableWorkshops_Events" />
+        <AssociationConnector Association="OLR_dbModel.FK_Workshops_AvailableWorkshops" />
+        <AssociationConnector Association="OLR_dbModel.FK_Workshops_Registrations" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

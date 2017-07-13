@@ -19,6 +19,7 @@ namespace OLRapi
         {
             this.Registrations = new HashSet<Registration>();
             this.FieldTrips = new HashSet<FieldTrip>();
+            this.AvailableWorkshops = new HashSet<AvailableWorkshop>();
         }
     
         public int EventId { get; set; }
@@ -31,5 +32,7 @@ namespace OLRapi
         public virtual ICollection<Registration> Registrations { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FieldTrip> FieldTrips { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AvailableWorkshop> AvailableWorkshops { get; set; }
     }
 }

@@ -30,5 +30,7 @@ namespace OLRapi
         public virtual DbSet<Registration> Registrations { get; set; }
         public virtual DbSet<FieldTripChoice> FieldTripChoices { get; set; }
         public virtual DbSet<FieldTrip> FieldTrips { get; set; }
+        public virtual DbSet<AvailableWorkshop> AvailableWorkshops { get; set; }
+        public virtual DbSet<Workshop> Workshops { get; set; }
     }
 }

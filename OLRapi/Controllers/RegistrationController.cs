@@ -83,6 +83,15 @@ namespace OLRapi.Controllers
                         fieldTripChoices.Add(new FieldTripChoice { FieldTripId = entry.FieldTripId, RecordDeleted = false });
                     }
 
+                    
+                    IList<AvailableWorkshop> availableWorkshops = await db.AvailableWorkshops.Where(s => s.EventId == @event.EventId).ToListAsync();
+                    IList<Workshop> workshops = new List<Workshop>();
+
+                    foreach  (var entry in availableWorkshops)
+                    {
+                        workshops.Add(new Workshop { AvailableWorkshopId = entry.AvailableWorkshopId, RecordDeleted = false });
+                    }
+
                     Registration registration = new Registration()
                     {
                         ValidationUid = registrationUid,
@@ -90,6 +99,7 @@ namespace OLRapi.Controllers
                         // Field trip options need to be added here
                         EventId = @event.EventId,
                         FieldTripChoices = fieldTripChoices,
+                        Workshops = workshops,
                         InitialCreationDate = DateTime.Now,
                         RecordDeleted = false
                     };

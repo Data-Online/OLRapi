@@ -5,6 +5,15 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="OLR_dbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AvailableWorkshops">
+          <Key>
+            <PropertyRef Name="AvailableWorkshopId" />
+          </Key>
+          <Property Name="AvailableWorkshopId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EventId" Type="int" />
+          <Property Name="WorkshopDescription" Type="nvarchar" MaxLength="200" />
+          <Property Name="PlacesAvailable" Type="int" />
+        </EntityType>
         <EntityType Name="Contacts">
           <Key>
             <PropertyRef Name="ContactId" />
@@ -73,6 +82,28 @@
           <Property Name="InitialCreationDate" Type="date" />
           <Property Name="RecordDeleted" Type="bit" />
         </EntityType>
+        <EntityType Name="Workshops">
+          <Key>
+            <PropertyRef Name="WorkshopId" />
+          </Key>
+          <Property Name="WorkshopId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RegistrationId" Type="int" />
+          <Property Name="AvailableWorkshopId" Type="int" />
+          <Property Name="Attending" Type="bit" />
+          <Property Name="RecordDeleted" Type="bit" />
+        </EntityType>
+        <Association Name="FK_AvailableWorkshops_Events">
+          <End Role="Events" Type="Self.Events" Multiplicity="0..1" />
+          <End Role="AvailableWorkshops" Type="Self.AvailableWorkshops" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Events">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="AvailableWorkshops">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_FieldTripChoices_FieldTrips">
           <End Role="FieldTrips" Type="Self.FieldTrips" Multiplicity="0..1" />
           <End Role="FieldTripChoices" Type="Self.FieldTripChoices" Multiplicity="*" />
@@ -133,12 +164,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Workshops_AvailableWorkshops">
+          <End Role="AvailableWorkshops" Type="Self.AvailableWorkshops" Multiplicity="0..1" />
+          <End Role="Workshops" Type="Self.Workshops" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AvailableWorkshops">
+              <PropertyRef Name="AvailableWorkshopId" />
+            </Principal>
+            <Dependent Role="Workshops">
+              <PropertyRef Name="AvailableWorkshopId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Workshops_Registrations">
+          <End Role="Registrations" Type="Self.Registrations" Multiplicity="0..1" />
+          <End Role="Workshops" Type="Self.Workshops" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Registrations">
+              <PropertyRef Name="RegistrationId" />
+            </Principal>
+            <Dependent Role="Workshops">
+              <PropertyRef Name="RegistrationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="OLR_dbModelStoreContainer">
+          <EntitySet Name="AvailableWorkshops" EntityType="Self.AvailableWorkshops" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Contacts" EntityType="Self.Contacts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Events" EntityType="Self.Events" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FieldTripChoices" EntityType="Self.FieldTripChoices" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FieldTrips" EntityType="Self.FieldTrips" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Registrations" EntityType="Self.Registrations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Workshops" EntityType="Self.Workshops" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_AvailableWorkshops_Events" Association="Self.FK_AvailableWorkshops_Events">
+            <End Role="Events" EntitySet="Events" />
+            <End Role="AvailableWorkshops" EntitySet="AvailableWorkshops" />
+          </AssociationSet>
           <AssociationSet Name="FK_FieldTripChoices_FieldTrips" Association="Self.FK_FieldTripChoices_FieldTrips">
             <End Role="FieldTrips" EntitySet="FieldTrips" />
             <End Role="FieldTripChoices" EntitySet="FieldTripChoices" />
@@ -158,6 +219,14 @@
           <AssociationSet Name="FK_Registrations_Events" Association="Self.FK_Registrations_Events">
             <End Role="Events" EntitySet="Events" />
             <End Role="Registrations" EntitySet="Registrations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Workshops_AvailableWorkshops" Association="Self.FK_Workshops_AvailableWorkshops">
+            <End Role="AvailableWorkshops" EntitySet="AvailableWorkshops" />
+            <End Role="Workshops" EntitySet="Workshops" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Workshops_Registrations" Association="Self.FK_Workshops_Registrations">
+            <End Role="Registrations" EntitySet="Registrations" />
+            <End Role="Workshops" EntitySet="Workshops" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -194,6 +263,7 @@
           <Property Name="Active" Type="Boolean" />
           <Property Name="ContactEmail" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="FieldTrips" Relationship="OLR_dbModel.FK_FieldTrips_Events" FromRole="Event" ToRole="FieldTrip" />
+          <NavigationProperty Name="AvailableWorkshops" Relationship="OLR_dbModel.FK_AvailableWorkshops_Events" FromRole="Event" ToRole="AvailableWorkshop" />
         </EntityType>
         <EntityType Name="Registration">
           <Key>
@@ -213,6 +283,7 @@
           <Property Name="InitialCreationDate" Type="DateTime" Precision="0" />
           <NavigationProperty Name="FieldTripChoices" Relationship="OLR_dbModel.FK_FieldTripChoices_Registrations" FromRole="Registration" ToRole="FieldTripChoice" />
           <Property Name="RecordDeleted" Type="Boolean" />
+          <NavigationProperty Name="Workshops" Relationship="OLR_dbModel.FK_Workshops_Registrations" FromRole="Registration" ToRole="Workshop" />
         </EntityType>
         <Association Name="FK_Registrations_Contacts">
           <End Role="Contacts" Type="Self.Contact" Multiplicity="0..1" />
@@ -263,6 +334,20 @@
           <AssociationSet Name="FK_FieldTripChoices_Registrations" Association="OLR_dbModel.FK_FieldTripChoices_Registrations">
             <End Role="Registration" EntitySet="Registrations" />
             <End Role="FieldTripChoice" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <EntitySet Name="AvailableWorkshops" EntityType="OLR_dbModel.AvailableWorkshop" />
+          <EntitySet Name="Workshops" EntityType="OLR_dbModel.Workshop" />
+          <AssociationSet Name="FK_AvailableWorkshops_Events" Association="OLR_dbModel.FK_AvailableWorkshops_Events">
+            <End Role="Event" EntitySet="Events" />
+            <End Role="AvailableWorkshop" EntitySet="AvailableWorkshops" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Workshops_AvailableWorkshops" Association="OLR_dbModel.FK_Workshops_AvailableWorkshops">
+            <End Role="AvailableWorkshop" EntitySet="AvailableWorkshops" />
+            <End Role="Workshop" EntitySet="Workshops" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Workshops_Registrations" Association="OLR_dbModel.FK_Workshops_Registrations">
+            <End Role="Registration" EntitySet="Registrations" />
+            <End Role="Workshop" EntitySet="Workshops" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="FieldTripChoice">
@@ -325,6 +410,65 @@
               <PropertyRef Name="RegistrationId" />
             </Principal>
             <Dependent Role="FieldTripChoice">
+              <PropertyRef Name="RegistrationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="AvailableWorkshop">
+          <Key>
+            <PropertyRef Name="AvailableWorkshopId" />
+          </Key>
+          <Property Name="AvailableWorkshopId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EventId" Type="Int32" />
+          <Property Name="WorkshopDescription" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="PlacesAvailable" Type="Int32" />
+          <NavigationProperty Name="Event" Relationship="OLR_dbModel.FK_AvailableWorkshops_Events" FromRole="AvailableWorkshop" ToRole="Event" />
+          <NavigationProperty Name="Workshops" Relationship="OLR_dbModel.FK_Workshops_AvailableWorkshops" FromRole="AvailableWorkshop" ToRole="Workshop" />
+        </EntityType>
+        <EntityType Name="Workshop">
+          <Key>
+            <PropertyRef Name="WorkshopId" />
+          </Key>
+          <Property Name="WorkshopId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RegistrationId" Type="Int32" />
+          <Property Name="AvailableWorkshopId" Type="Int32" />
+          <Property Name="Attending" Type="Boolean" />
+          <NavigationProperty Name="AvailableWorkshop" Relationship="OLR_dbModel.FK_Workshops_AvailableWorkshops" FromRole="Workshop" ToRole="AvailableWorkshop" />
+          <NavigationProperty Name="Registration" Relationship="OLR_dbModel.FK_Workshops_Registrations" FromRole="Workshop" ToRole="Registration" />
+          <Property Name="RecordDeleted" Type="Boolean" />
+        </EntityType>
+        <Association Name="FK_AvailableWorkshops_Events">
+          <End Type="OLR_dbModel.Event" Role="Event" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.AvailableWorkshop" Role="AvailableWorkshop" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="AvailableWorkshop">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Workshops_AvailableWorkshops">
+          <End Type="OLR_dbModel.AvailableWorkshop" Role="AvailableWorkshop" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.Workshop" Role="Workshop" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AvailableWorkshop">
+              <PropertyRef Name="AvailableWorkshopId" />
+            </Principal>
+            <Dependent Role="Workshop">
+              <PropertyRef Name="AvailableWorkshopId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Workshops_Registrations">
+          <End Type="OLR_dbModel.Registration" Role="Registration" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.Workshop" Role="Workshop" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Registration">
+              <PropertyRef Name="RegistrationId" />
+            </Principal>
+            <Dependent Role="Workshop">
               <PropertyRef Name="RegistrationId" />
             </Dependent>
           </ReferentialConstraint>
@@ -405,6 +549,27 @@
                 <ScalarProperty Name="Date" ColumnName="Date" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="FieldTripId" ColumnName="FieldTripId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AvailableWorkshops">
+            <EntityTypeMapping TypeName="OLR_dbModel.AvailableWorkshop">
+              <MappingFragment StoreEntitySet="AvailableWorkshops">
+                <ScalarProperty Name="PlacesAvailable" ColumnName="PlacesAvailable" />
+                <ScalarProperty Name="WorkshopDescription" ColumnName="WorkshopDescription" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="AvailableWorkshopId" ColumnName="AvailableWorkshopId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Workshops">
+            <EntityTypeMapping TypeName="OLR_dbModel.Workshop">
+              <MappingFragment StoreEntitySet="Workshops">
+                <ScalarProperty Name="RecordDeleted" ColumnName="RecordDeleted" />
+                <ScalarProperty Name="Attending" ColumnName="Attending" />
+                <ScalarProperty Name="AvailableWorkshopId" ColumnName="AvailableWorkshopId" />
+                <ScalarProperty Name="RegistrationId" ColumnName="RegistrationId" />
+                <ScalarProperty Name="WorkshopId" ColumnName="WorkshopId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
