@@ -24,6 +24,7 @@ namespace OLRapi
         public Nullable<int> EventId { get; set; }
         public string WorkshopDescription { get; set; }
         public Nullable<int> PlacesAvailable { get; set; }
+        public Nullable<decimal> Cost { get; set; }
     
         public virtual Event Event { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -1,0 +1,60 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div data-ng-app="app" data-ng-controller="registrationCtrl">
+
+    <div ng-if="!validRegistration && !loading" ng-cloak>
+        <h3>Sorry, there was a problem with your registration</h3>
+        <li>Test</li>
+    </div>
+    <i ng-show="loading" class="fa fa-refresh fa-fw fa-5x" ng-class="{'fa-spin' : loading}"></i>
+    <span class="sr-only">Loading...</span>
+    <div ng-if="validRegistration && !loading" ng-cloak>
+        <h3>Registration details for eMail address {{::displayEmail}}</h3>
+
+        <div class="col-sm-6">
+            <form name="joinForm" ng-submit="join()">
+                @*<auto:fields fields="schema" data="user" options="options"></auto:fields>*@
+                <auto:fields fields="userSchema" data="registration" options="options"></auto:fields>
+
+                {{::fieldTrip0Description}}
+                <auto:fields fields="fieldTrip0Schema" data="registration" options="options"></auto:fields>
+                {{::fieldTrip1Description}}
+                <auto:fields fields="fieldTrip1Schema" data="registration" options="options"></auto:fields>
+
+                <button type="submit" class="btn btn-default btn-lg btn-block" ng-class="{'btn-primary':joinForm.$valid}" tabindex="100">Join</button>
+            </form>
+        </div>
+        <div class="col-sm-6">
+            <h4>Bound Data</h4>
+            @*<pre ng-bind="user | json"></pre>*@
+            <pre ng-bind="registration | json"></pre>
+
+
+            @*<select class="form-control" ng-model="Data.firstType" ng-options="item.value for item in items"></select>
+                <select class="form-control" ng-model="Data.SecondType" ng-options="item.value for item in items | filter : exclude"></select>*@
+
+            <h4>Demo Functions</h4>
+            <button class="btn btn-default" ng-click="addField()">Add Field</button>
+            <button class="btn btn-default" ng-click="toggleValidation()">Toggle Validation</button>
+            <button class="btn btn-default" ng-click="togglePopovers()">Toggle Popovers</button>
+            <button class="btn btn-default" ng-click="toggleHorizontal()">Toggle Horizontal</button>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/angular.js"></script>
+<script src="~/Scripts/angular-ui/ui-bootstrap.js"></script>
+<script type="text/javascript" src="~/Scripts/autofields.js"></script>
+<!-- With Bootstrap -->
+<script type="text/javascript" src="~/Scripts/autofields-bootstrap.js"></script>
+
+<script src="~/App/registration.form.js"></script>
+
+<script src="~/App/registration.data.js"></script>
+
+

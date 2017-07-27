@@ -39,5 +39,6 @@ namespace OLRapi
         public virtual ICollection<FieldTripChoice> FieldTripChoices { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Workshop> Workshops { get; set; }
+        public virtual RegistrationType RegistrationType { get; set; }
     }
 }

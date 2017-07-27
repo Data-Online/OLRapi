@@ -18,6 +18,7 @@ namespace OLRapi
         public FieldTrip()
         {
             this.FieldTripChoices = new HashSet<FieldTripChoice>();
+            this.FieldTripOptions = new HashSet<FieldTripOption>();
         }
     
         public int FieldTripId { get; set; }
@@ -30,5 +31,7 @@ namespace OLRapi
         public virtual Event Event { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FieldTripChoice> FieldTripChoices { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<FieldTripOption> FieldTripOptions { get; set; }
     }
 }

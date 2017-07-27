@@ -18,6 +18,8 @@ namespace OLRapi
         public OLR_dbEntities()
             : base("name=OLR_dbEntities")
         {
+            // Use C# line null comparison
+            (this as IObjectContextAdapter).ObjectContext.ContextOptions.UseCSharpNullComparisonBehavior = true;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -32,5 +34,10 @@ namespace OLRapi
         public virtual DbSet<FieldTrip> FieldTrips { get; set; }
         public virtual DbSet<AvailableWorkshop> AvailableWorkshops { get; set; }
         public virtual DbSet<Workshop> Workshops { get; set; }
+        public virtual DbSet<FieldTripOption> FieldTripOptions { get; set; }
+        public virtual DbSet<HomeTown> HomeTowns { get; set; }
+        public virtual DbSet<Honour> Honours { get; set; }
+        public virtual DbSet<PhotoClub> PhotoClubs { get; set; }
+        public virtual DbSet<RegistrationType> RegistrationTypes { get; set; }
     }
 }

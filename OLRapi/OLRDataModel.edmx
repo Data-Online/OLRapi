@@ -13,6 +13,7 @@
           <Property Name="EventId" Type="int" />
           <Property Name="WorkshopDescription" Type="nvarchar" MaxLength="200" />
           <Property Name="PlacesAvailable" Type="int" />
+          <Property Name="Cost" Type="decimal" Precision="5" Scale="2" />
         </EntityType>
         <EntityType Name="Contacts">
           <Key>
@@ -31,6 +32,7 @@
           <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
           <Property Name="LastName" Type="nvarchar" MaxLength="50" />
           <Property Name="RecordDeleted" Type="bit" />
+          <Property Name="NZIPPMember" Type="bit" />
         </EntityType>
         <EntityType Name="Events">
           <Key>
@@ -55,6 +57,16 @@
           <Property Name="RecordDeleted" Type="bit" />
           <Property Name="FieldTripAllocated" Type="int" />
         </EntityType>
+        <EntityType Name="FieldTripOptions">
+          <Key>
+            <PropertyRef Name="FieldTripOptionId" />
+          </Key>
+          <Property Name="FieldTripOptionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FieldTripId" Type="int" />
+          <Property Name="PlacesAvailable" Type="int" />
+          <Property Name="Description" Type="nvarchar" MaxLength="100" />
+          <Property Name="Cost" Type="decimal" Precision="5" Scale="2" />
+        </EntityType>
         <EntityType Name="FieldTrips">
           <Key>
             <PropertyRef Name="FieldTripId" />
@@ -65,6 +77,27 @@
           <Property Name="Time" Type="time" Precision="7" />
           <Property Name="EventId" Type="int" />
           <Property Name="DisplaySequence" Type="int" />
+        </EntityType>
+        <EntityType Name="HomeTowns">
+          <Key>
+            <PropertyRef Name="HomeTownId" />
+          </Key>
+          <Property Name="HomeTownId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TownName" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Honours">
+          <Key>
+            <PropertyRef Name="HonourId" />
+          </Key>
+          <Property Name="HonourId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Honour" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="PhotoClubs">
+          <Key>
+            <PropertyRef Name="PhotoClubId" />
+          </Key>
+          <Property Name="PhotoClubId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="Registrations">
           <Key>
@@ -81,6 +114,16 @@
           <Property Name="DatePaid" Type="date" />
           <Property Name="InitialCreationDate" Type="date" />
           <Property Name="RecordDeleted" Type="bit" />
+        </EntityType>
+        <EntityType Name="RegistrationTypes">
+          <Key>
+            <PropertyRef Name="RegistrationTypeId" />
+          </Key>
+          <Property Name="RegistrationTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EventId" Type="int" />
+          <Property Name="RegistrationType" Type="nvarchar" MaxLength="100" />
+          <Property Name="CostMember" Type="decimal" Precision="5" Scale="2" />
+          <Property Name="CostNonMember" Type="decimal" Precision="5" Scale="2" />
         </EntityType>
         <EntityType Name="Workshops">
           <Key>
@@ -101,6 +144,66 @@
             </Principal>
             <Dependent Role="AvailableWorkshops">
               <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Contacts_HomeTowns">
+          <End Role="HomeTowns" Type="Self.HomeTowns" Multiplicity="0..1" />
+          <End Role="Contacts" Type="Self.Contacts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HomeTowns">
+              <PropertyRef Name="HomeTownId" />
+            </Principal>
+            <Dependent Role="Contacts">
+              <PropertyRef Name="HometownId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_FieldTripOptions">
+          <End Role="FieldTripOptions" Type="Self.FieldTripOptions" Multiplicity="0..1" />
+          <End Role="FieldTripChoices" Type="Self.FieldTripChoices" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTripOptions">
+              <PropertyRef Name="FieldTripOptionId" />
+            </Principal>
+            <Dependent Role="FieldTripChoices">
+              <PropertyRef Name="FieldTripOptionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_FieldTripOptions1">
+          <End Role="FieldTripOptions" Type="Self.FieldTripOptions" Multiplicity="0..1" />
+          <End Role="FieldTripChoices" Type="Self.FieldTripChoices" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTripOptions">
+              <PropertyRef Name="FieldTripOptionId" />
+            </Principal>
+            <Dependent Role="FieldTripChoices">
+              <PropertyRef Name="FieldTripOptionId2" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_FieldTripOptions2">
+          <End Role="FieldTripOptions" Type="Self.FieldTripOptions" Multiplicity="0..1" />
+          <End Role="FieldTripChoices" Type="Self.FieldTripChoices" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTripOptions">
+              <PropertyRef Name="FieldTripOptionId" />
+            </Principal>
+            <Dependent Role="FieldTripChoices">
+              <PropertyRef Name="FieldTripOptionId3" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_FieldTripOptions3">
+          <End Role="FieldTripOptions" Type="Self.FieldTripOptions" Multiplicity="0..1" />
+          <End Role="FieldTripChoices" Type="Self.FieldTripChoices" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTripOptions">
+              <PropertyRef Name="FieldTripOptionId" />
+            </Principal>
+            <Dependent Role="FieldTripChoices">
+              <PropertyRef Name="FieldTripAllocated" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -125,6 +228,18 @@
             </Principal>
             <Dependent Role="FieldTripChoices">
               <PropertyRef Name="RegistrationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripOptions_FieldTrips">
+          <End Role="FieldTrips" Type="Self.FieldTrips" Multiplicity="0..1" />
+          <End Role="FieldTripOptions" Type="Self.FieldTripOptions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTrips">
+              <PropertyRef Name="FieldTripId" />
+            </Principal>
+            <Dependent Role="FieldTripOptions">
+              <PropertyRef Name="FieldTripId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -164,6 +279,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Registrations_RegistrationTypes">
+          <End Role="RegistrationTypes" Type="Self.RegistrationTypes" Multiplicity="0..1" />
+          <End Role="Registrations" Type="Self.Registrations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegistrationTypes">
+              <PropertyRef Name="RegistrationTypeId" />
+            </Principal>
+            <Dependent Role="Registrations">
+              <PropertyRef Name="RegistrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RegistrationTypes_Events">
+          <End Role="Events" Type="Self.Events" Multiplicity="0..1" />
+          <End Role="RegistrationTypes" Type="Self.RegistrationTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Events">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="RegistrationTypes">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Workshops_AvailableWorkshops">
           <End Role="AvailableWorkshops" Type="Self.AvailableWorkshops" Multiplicity="0..1" />
           <End Role="Workshops" Type="Self.Workshops" Multiplicity="*" />
@@ -193,12 +332,37 @@
           <EntitySet Name="Contacts" EntityType="Self.Contacts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Events" EntityType="Self.Events" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FieldTripChoices" EntityType="Self.FieldTripChoices" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FieldTripOptions" EntityType="Self.FieldTripOptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FieldTrips" EntityType="Self.FieldTrips" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HomeTowns" EntityType="Self.HomeTowns" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Honours" EntityType="Self.Honours" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PhotoClubs" EntityType="Self.PhotoClubs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Registrations" EntityType="Self.Registrations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RegistrationTypes" EntityType="Self.RegistrationTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Workshops" EntityType="Self.Workshops" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_AvailableWorkshops_Events" Association="Self.FK_AvailableWorkshops_Events">
             <End Role="Events" EntitySet="Events" />
             <End Role="AvailableWorkshops" EntitySet="AvailableWorkshops" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Contacts_HomeTowns" Association="Self.FK_Contacts_HomeTowns">
+            <End Role="HomeTowns" EntitySet="HomeTowns" />
+            <End Role="Contacts" EntitySet="Contacts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_FieldTripOptions" Association="Self.FK_FieldTripChoices_FieldTripOptions">
+            <End Role="FieldTripOptions" EntitySet="FieldTripOptions" />
+            <End Role="FieldTripChoices" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_FieldTripOptions1" Association="Self.FK_FieldTripChoices_FieldTripOptions1">
+            <End Role="FieldTripOptions" EntitySet="FieldTripOptions" />
+            <End Role="FieldTripChoices" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_FieldTripOptions2" Association="Self.FK_FieldTripChoices_FieldTripOptions2">
+            <End Role="FieldTripOptions" EntitySet="FieldTripOptions" />
+            <End Role="FieldTripChoices" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_FieldTripOptions3" Association="Self.FK_FieldTripChoices_FieldTripOptions3">
+            <End Role="FieldTripOptions" EntitySet="FieldTripOptions" />
+            <End Role="FieldTripChoices" EntitySet="FieldTripChoices" />
           </AssociationSet>
           <AssociationSet Name="FK_FieldTripChoices_FieldTrips" Association="Self.FK_FieldTripChoices_FieldTrips">
             <End Role="FieldTrips" EntitySet="FieldTrips" />
@@ -207,6 +371,10 @@
           <AssociationSet Name="FK_FieldTripChoices_Registrations" Association="Self.FK_FieldTripChoices_Registrations">
             <End Role="Registrations" EntitySet="Registrations" />
             <End Role="FieldTripChoices" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripOptions_FieldTrips" Association="Self.FK_FieldTripOptions_FieldTrips">
+            <End Role="FieldTrips" EntitySet="FieldTrips" />
+            <End Role="FieldTripOptions" EntitySet="FieldTripOptions" />
           </AssociationSet>
           <AssociationSet Name="FK_FieldTrips_Events" Association="Self.FK_FieldTrips_Events">
             <End Role="Events" EntitySet="Events" />
@@ -219,6 +387,14 @@
           <AssociationSet Name="FK_Registrations_Events" Association="Self.FK_Registrations_Events">
             <End Role="Events" EntitySet="Events" />
             <End Role="Registrations" EntitySet="Registrations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Registrations_RegistrationTypes" Association="Self.FK_Registrations_RegistrationTypes">
+            <End Role="RegistrationTypes" EntitySet="RegistrationTypes" />
+            <End Role="Registrations" EntitySet="Registrations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RegistrationTypes_Events" Association="Self.FK_RegistrationTypes_Events">
+            <End Role="Events" EntitySet="Events" />
+            <End Role="RegistrationTypes" EntitySet="RegistrationTypes" />
           </AssociationSet>
           <AssociationSet Name="FK_Workshops_AvailableWorkshops" Association="Self.FK_Workshops_AvailableWorkshops">
             <End Role="AvailableWorkshops" EntitySet="AvailableWorkshops" />
@@ -251,6 +427,8 @@
           <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="RecordDeleted" Type="Boolean" />
+          <Property Name="NZIPPMember" Type="Boolean" />
+          <NavigationProperty Name="HomeTown" Relationship="OLR_dbModel.FK_Contacts_HomeTowns" FromRole="Contact" ToRole="HomeTown" />
         </EntityType>
         <EntityType Name="Event">
           <Key>
@@ -264,6 +442,7 @@
           <Property Name="ContactEmail" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="FieldTrips" Relationship="OLR_dbModel.FK_FieldTrips_Events" FromRole="Event" ToRole="FieldTrip" />
           <NavigationProperty Name="AvailableWorkshops" Relationship="OLR_dbModel.FK_AvailableWorkshops_Events" FromRole="Event" ToRole="AvailableWorkshop" />
+          <NavigationProperty Name="RegistrationTypes" Relationship="OLR_dbModel.FK_RegistrationTypes_Events" FromRole="Event" ToRole="RegistrationType" />
         </EntityType>
         <EntityType Name="Registration">
           <Key>
@@ -284,6 +463,7 @@
           <NavigationProperty Name="FieldTripChoices" Relationship="OLR_dbModel.FK_FieldTripChoices_Registrations" FromRole="Registration" ToRole="FieldTripChoice" />
           <Property Name="RecordDeleted" Type="Boolean" />
           <NavigationProperty Name="Workshops" Relationship="OLR_dbModel.FK_Workshops_Registrations" FromRole="Registration" ToRole="Workshop" />
+          <NavigationProperty Name="RegistrationType" Relationship="OLR_dbModel.FK_Registrations_RegistrationTypes" FromRole="Registration" ToRole="RegistrationType" />
         </EntityType>
         <Association Name="FK_Registrations_Contacts">
           <End Role="Contacts" Type="Self.Contact" Multiplicity="0..1" />
@@ -349,6 +529,43 @@
             <End Role="Registration" EntitySet="Registrations" />
             <End Role="Workshop" EntitySet="Workshops" />
           </AssociationSet>
+          <EntitySet Name="FieldTripOptions" EntityType="OLR_dbModel.FieldTripOption" />
+          <EntitySet Name="HomeTowns" EntityType="OLR_dbModel.HomeTown" />
+          <EntitySet Name="Honours" EntityType="OLR_dbModel.Honour" />
+          <EntitySet Name="PhotoClubs" EntityType="OLR_dbModel.PhotoClub" />
+          <EntitySet Name="RegistrationTypes" EntityType="OLR_dbModel.RegistrationType" />
+          <AssociationSet Name="FK_Contacts_HomeTowns" Association="OLR_dbModel.FK_Contacts_HomeTowns">
+            <End Role="HomeTown" EntitySet="HomeTowns" />
+            <End Role="Contact" EntitySet="Contacts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RegistrationTypes_Events" Association="OLR_dbModel.FK_RegistrationTypes_Events">
+            <End Role="Event" EntitySet="Events" />
+            <End Role="RegistrationType" EntitySet="RegistrationTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_FieldTripOptions" Association="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions">
+            <End Role="FieldTripOption" EntitySet="FieldTripOptions" />
+            <End Role="FieldTripChoice" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_FieldTripOptions1" Association="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions1">
+            <End Role="FieldTripOption" EntitySet="FieldTripOptions" />
+            <End Role="FieldTripChoice" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_FieldTripOptions2" Association="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions2">
+            <End Role="FieldTripOption" EntitySet="FieldTripOptions" />
+            <End Role="FieldTripChoice" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripChoices_FieldTripOptions3" Association="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions3">
+            <End Role="FieldTripOption" EntitySet="FieldTripOptions" />
+            <End Role="FieldTripChoice" EntitySet="FieldTripChoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FieldTripOptions_FieldTrips" Association="OLR_dbModel.FK_FieldTripOptions_FieldTrips">
+            <End Role="FieldTrip" EntitySet="FieldTrips" />
+            <End Role="FieldTripOption" EntitySet="FieldTripOptions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Registrations_RegistrationTypes" Association="OLR_dbModel.FK_Registrations_RegistrationTypes">
+            <End Role="RegistrationType" EntitySet="RegistrationTypes" />
+            <End Role="Registration" EntitySet="Registrations" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="FieldTripChoice">
           <Key>
@@ -364,6 +581,10 @@
           <NavigationProperty Name="Registration" Relationship="OLR_dbModel.FK_FieldTripChoices_Registrations" FromRole="FieldTripChoice" ToRole="Registration" />
           <Property Name="RecordDeleted" Type="Boolean" />
           <Property Name="FieldTripAllocated" Type="Int32" />
+          <NavigationProperty Name="FieldTripOption" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions" FromRole="FieldTripChoice" ToRole="FieldTripOption" />
+          <NavigationProperty Name="FieldTripOption1" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions1" FromRole="FieldTripChoice" ToRole="FieldTripOption" />
+          <NavigationProperty Name="FieldTripOption2" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions2" FromRole="FieldTripChoice" ToRole="FieldTripOption" />
+          <NavigationProperty Name="FieldTripOption3" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions3" FromRole="FieldTripChoice" ToRole="FieldTripOption" />
         </EntityType>
         <EntityType Name="FieldTrip">
           <Key>
@@ -377,6 +598,7 @@
           <Property Name="DisplaySequence" Type="Int32" />
           <NavigationProperty Name="Event" Relationship="OLR_dbModel.FK_FieldTrips_Events" FromRole="FieldTrip" ToRole="Event" />
           <NavigationProperty Name="FieldTripChoices" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTrips" FromRole="FieldTrip" ToRole="FieldTripChoice" />
+          <NavigationProperty Name="FieldTripOptions" Relationship="OLR_dbModel.FK_FieldTripOptions_FieldTrips" FromRole="FieldTrip" ToRole="FieldTripOption" />
         </EntityType>
         <Association Name="FK_FieldTrips_Events">
           <End Type="OLR_dbModel.Event" Role="Event" Multiplicity="0..1" />
@@ -424,6 +646,7 @@
           <Property Name="PlacesAvailable" Type="Int32" />
           <NavigationProperty Name="Event" Relationship="OLR_dbModel.FK_AvailableWorkshops_Events" FromRole="AvailableWorkshop" ToRole="Event" />
           <NavigationProperty Name="Workshops" Relationship="OLR_dbModel.FK_Workshops_AvailableWorkshops" FromRole="AvailableWorkshop" ToRole="Workshop" />
+          <Property Name="Cost" Type="Decimal" Precision="5" Scale="2" />
         </EntityType>
         <EntityType Name="Workshop">
           <Key>
@@ -473,6 +696,151 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="FieldTripOption">
+          <Key>
+            <PropertyRef Name="FieldTripOptionId" />
+          </Key>
+          <Property Name="FieldTripOptionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FieldTripId" Type="Int32" />
+          <Property Name="PlacesAvailable" Type="Int32" />
+          <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Cost" Type="Decimal" Precision="5" Scale="2" />
+          <NavigationProperty Name="FieldTripChoices" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions" FromRole="FieldTripOption" ToRole="FieldTripChoice" />
+          <NavigationProperty Name="FieldTripChoices1" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions1" FromRole="FieldTripOption" ToRole="FieldTripChoice" />
+          <NavigationProperty Name="FieldTripChoices2" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions2" FromRole="FieldTripOption" ToRole="FieldTripChoice" />
+          <NavigationProperty Name="FieldTripChoices3" Relationship="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions3" FromRole="FieldTripOption" ToRole="FieldTripChoice" />
+          <NavigationProperty Name="FieldTrip" Relationship="OLR_dbModel.FK_FieldTripOptions_FieldTrips" FromRole="FieldTripOption" ToRole="FieldTrip" />
+        </EntityType>
+        <EntityType Name="HomeTown">
+          <Key>
+            <PropertyRef Name="HomeTownId" />
+          </Key>
+          <Property Name="HomeTownId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TownName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Contacts" Relationship="OLR_dbModel.FK_Contacts_HomeTowns" FromRole="HomeTown" ToRole="Contact" />
+        </EntityType>
+        <EntityType Name="Honour">
+          <Key>
+            <PropertyRef Name="HonourId" />
+          </Key>
+          <Property Name="HonourId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Honour1" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PhotoClub">
+          <Key>
+            <PropertyRef Name="PhotoClubId" />
+          </Key>
+          <Property Name="PhotoClubId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="RegistrationType">
+          <Key>
+            <PropertyRef Name="RegistrationTypeId" />
+          </Key>
+          <Property Name="RegistrationTypeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EventId" Type="Int32" />
+          <Property Name="RegistrationType1" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CostMember" Type="Decimal" Precision="5" Scale="2" />
+          <Property Name="CostNonMember" Type="Decimal" Precision="5" Scale="2" />
+          <NavigationProperty Name="Event" Relationship="OLR_dbModel.FK_RegistrationTypes_Events" FromRole="RegistrationType" ToRole="Event" />
+          <NavigationProperty Name="Registrations" Relationship="OLR_dbModel.FK_Registrations_RegistrationTypes" FromRole="RegistrationType" ToRole="Registration" />
+        </EntityType>
+        <Association Name="FK_Contacts_HomeTowns">
+          <End Type="OLR_dbModel.HomeTown" Role="HomeTown" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.Contact" Role="Contact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HomeTown">
+              <PropertyRef Name="HomeTownId" />
+            </Principal>
+            <Dependent Role="Contact">
+              <PropertyRef Name="HometownId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RegistrationTypes_Events">
+          <End Type="OLR_dbModel.Event" Role="Event" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.RegistrationType" Role="RegistrationType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="RegistrationType">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_FieldTripOptions">
+          <End Type="OLR_dbModel.FieldTripOption" Role="FieldTripOption" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.FieldTripChoice" Role="FieldTripChoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTripOption">
+              <PropertyRef Name="FieldTripOptionId" />
+            </Principal>
+            <Dependent Role="FieldTripChoice">
+              <PropertyRef Name="FieldTripOptionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_FieldTripOptions1">
+          <End Type="OLR_dbModel.FieldTripOption" Role="FieldTripOption" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.FieldTripChoice" Role="FieldTripChoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTripOption">
+              <PropertyRef Name="FieldTripOptionId" />
+            </Principal>
+            <Dependent Role="FieldTripChoice">
+              <PropertyRef Name="FieldTripOptionId2" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_FieldTripOptions2">
+          <End Type="OLR_dbModel.FieldTripOption" Role="FieldTripOption" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.FieldTripChoice" Role="FieldTripChoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTripOption">
+              <PropertyRef Name="FieldTripOptionId" />
+            </Principal>
+            <Dependent Role="FieldTripChoice">
+              <PropertyRef Name="FieldTripOptionId3" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripChoices_FieldTripOptions3">
+          <End Type="OLR_dbModel.FieldTripOption" Role="FieldTripOption" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.FieldTripChoice" Role="FieldTripChoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTripOption">
+              <PropertyRef Name="FieldTripOptionId" />
+            </Principal>
+            <Dependent Role="FieldTripChoice">
+              <PropertyRef Name="FieldTripAllocated" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FieldTripOptions_FieldTrips">
+          <End Type="OLR_dbModel.FieldTrip" Role="FieldTrip" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.FieldTripOption" Role="FieldTripOption" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FieldTrip">
+              <PropertyRef Name="FieldTripId" />
+            </Principal>
+            <Dependent Role="FieldTripOption">
+              <PropertyRef Name="FieldTripId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Registrations_RegistrationTypes">
+          <End Type="OLR_dbModel.RegistrationType" Role="RegistrationType" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.Registration" Role="Registration" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegistrationType">
+              <PropertyRef Name="RegistrationTypeId" />
+            </Principal>
+            <Dependent Role="Registration">
+              <PropertyRef Name="RegistrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -482,6 +850,7 @@
           <EntitySetMapping Name="Contacts">
             <EntityTypeMapping TypeName="OLR_dbModel.Contact">
               <MappingFragment StoreEntitySet="Contacts">
+                <ScalarProperty Name="NZIPPMember" ColumnName="NZIPPMember" />
                 <ScalarProperty Name="RecordDeleted" ColumnName="RecordDeleted" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
@@ -555,6 +924,7 @@
           <EntitySetMapping Name="AvailableWorkshops">
             <EntityTypeMapping TypeName="OLR_dbModel.AvailableWorkshop">
               <MappingFragment StoreEntitySet="AvailableWorkshops">
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
                 <ScalarProperty Name="PlacesAvailable" ColumnName="PlacesAvailable" />
                 <ScalarProperty Name="WorkshopDescription" ColumnName="WorkshopDescription" />
                 <ScalarProperty Name="EventId" ColumnName="EventId" />
@@ -570,6 +940,52 @@
                 <ScalarProperty Name="AvailableWorkshopId" ColumnName="AvailableWorkshopId" />
                 <ScalarProperty Name="RegistrationId" ColumnName="RegistrationId" />
                 <ScalarProperty Name="WorkshopId" ColumnName="WorkshopId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FieldTripOptions">
+            <EntityTypeMapping TypeName="OLR_dbModel.FieldTripOption">
+              <MappingFragment StoreEntitySet="FieldTripOptions">
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="PlacesAvailable" ColumnName="PlacesAvailable" />
+                <ScalarProperty Name="FieldTripId" ColumnName="FieldTripId" />
+                <ScalarProperty Name="FieldTripOptionId" ColumnName="FieldTripOptionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HomeTowns">
+            <EntityTypeMapping TypeName="OLR_dbModel.HomeTown">
+              <MappingFragment StoreEntitySet="HomeTowns">
+                <ScalarProperty Name="TownName" ColumnName="TownName" />
+                <ScalarProperty Name="HomeTownId" ColumnName="HomeTownId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Honours">
+            <EntityTypeMapping TypeName="OLR_dbModel.Honour">
+              <MappingFragment StoreEntitySet="Honours">
+                <ScalarProperty Name="Honour1" ColumnName="Honour" />
+                <ScalarProperty Name="HonourId" ColumnName="HonourId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PhotoClubs">
+            <EntityTypeMapping TypeName="OLR_dbModel.PhotoClub">
+              <MappingFragment StoreEntitySet="PhotoClubs">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="PhotoClubId" ColumnName="PhotoClubId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RegistrationTypes">
+            <EntityTypeMapping TypeName="OLR_dbModel.RegistrationType">
+              <MappingFragment StoreEntitySet="RegistrationTypes">
+                <ScalarProperty Name="CostNonMember" ColumnName="CostNonMember" />
+                <ScalarProperty Name="CostMember" ColumnName="CostMember" />
+                <ScalarProperty Name="RegistrationType1" ColumnName="RegistrationType" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="RegistrationTypeId" ColumnName="RegistrationTypeId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -14,18 +14,102 @@ using System.Web;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using OLRapi.Helpers;
+using OLRapi.Models;
+//using System.Web.Mvc;
 
 namespace OLRapi.Controllers
 {
     public class RegistrationController : ApiController
     {
         private OLR_dbEntities db = new OLR_dbEntities();
+        
 
-        public class BaseRegistration
+        [HttpGet]
+        [Route("api/registration/{userGuid}")]
+        public async Task<HttpResponseMessage> Registration(Guid userGuid, HttpRequestMessage request)
         {
-            public string id { get; set; }
-            public DateTime Date { get; set; }
-            public string Email { get; set; }
+            //Guid userGuid = new Guid("96BE1CE0-27F4-4A46-BDCD-EBAB16A1EA27zz");
+
+            var result = await GetRegistrationData(userGuid);
+            if (result == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+            else
+            {
+                return request.CreateResponse<RegistrationViewModel>(HttpStatusCode.OK,result);
+            }
+        }
+
+        public async Task<RegistrationViewModel> GetRegistrationData(Guid userGuid)
+        {
+            RegistrationViewModel result;
+
+            var currentUser = await db.Registrations.Where(s => s.ValidationUid == userGuid).Select(s => s.Contact).FirstOrDefaultAsync();
+            if (currentUser == null)
+            {
+                // No valid registration on file
+                return null;
+            }
+
+            IEnumerable<FieldTripChoice> fieldTripChoices = await db.FieldTripChoices.Where(s => s.Registration.ValidationUid == userGuid).ToArrayAsync();
+
+            List<FieldTripOptions> FieldTrips = new List<FieldTripOptions>();
+
+            foreach (var itemId in db.FieldTripOptions.Select(s => s.FieldTripId).Distinct())
+            {
+                FieldTripOptions fieldTripOptions = new FieldTripOptions();
+                List<string> currentFieldTripDetails = await db.FieldTripOptions.Where(s => s.FieldTripId == itemId).Select(o => o.Description).ToListAsync();
+                
+                List<string> _choices = new List<string>();
+                try
+                {
+                    var zz = fieldTripChoices.Where(s => s.FieldTripId == itemId)
+                        .Select(x =>
+                    //new List<string> {  (x.FieldTripOption.Description == null ? "" : x.FieldTripOption.Description),
+                    //                (x.FieldTripOption2.Description == null ? "" : x.FieldTripOption2.Description) }).ToList();
+                    new List<string> { (x.FieldTripOption == null ? null : x.FieldTripOption.Description),
+                                        (x.FieldTripOption1 == null ? null : x.FieldTripOption1.Description),
+                                        (x.FieldTripOption3 == null ? null : x.FieldTripOption3.Description) })
+                                        .ToList();
+                    //foreach (var item in zz)
+                    //{
+                    //    string zz = db.
+                    //    _options.Add(item.FieldTripOption ?? "").ToString());
+                    //}
+                    _choices = zz[0];
+                }
+                catch (Exception ex) { }
+
+
+                // Assign to string array
+                fieldTripOptions.options = currentFieldTripDetails;
+                fieldTripOptions.choices = _choices;//(List<string>)fieldTripChoices.Where(s => s.FieldTripId == itemId).Select(x => x.FieldTripOption);
+                                //new List<string>() { "Monarch", "Street Art", "Tunnel Beach" };
+                fieldTripOptions.fieldTripDescription = "Saturday";
+
+                FieldTrips.Add(fieldTripOptions);
+            }
+
+            result = new RegistrationViewModel()
+            {
+                userDetails = new UserDetails() { email = "test@test.com", firstName = "", lastName = "" },
+                fieldTrips = FieldTrips
+            };
+
+            return result;
+        }
+
+        //[System.Web.Mvc.ValidateAntiForgeryToken]
+        [HttpPost]
+        [Route("api/saveRegistrationDetails")]
+        public HttpResponseMessage SaveUserSettings(HttpRequestMessage request, [FromBody] RegistrationViewModel registrationDetails)
+        {
+            //UserSettingsViewModel _data = _portalService.SaveUserData(userSettings, User.Identity.Name);
+            //if (_portalService.SaveUserSettings(userSettings, User.Identity.Name))
+            return request.CreateResponse(HttpStatusCode.OK);
+            //else
+            //    return request.CreateResponse(HttpStatusCode.BadRequest);
         }
 
         [HttpPost]
@@ -83,11 +167,11 @@ namespace OLRapi.Controllers
                         fieldTripChoices.Add(new FieldTripChoice { FieldTripId = entry.FieldTripId, RecordDeleted = false });
                     }
 
-                    
+
                     IList<AvailableWorkshop> availableWorkshops = await db.AvailableWorkshops.Where(s => s.EventId == @event.EventId).ToListAsync();
                     IList<Workshop> workshops = new List<Workshop>();
 
-                    foreach  (var entry in availableWorkshops)
+                    foreach (var entry in availableWorkshops)
                     {
                         workshops.Add(new Workshop { AvailableWorkshopId = entry.AvailableWorkshopId, RecordDeleted = false });
                     }
@@ -139,7 +223,8 @@ namespace OLRapi.Controllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest);
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
 
             }
@@ -167,11 +252,11 @@ namespace OLRapi.Controllers
             var from = new EmailAddress(registrationEmail, "Registrations");
             var subject = "Registration eMail";
             var to = new EmailAddress(eMail);
-           
+
 
             var plainTextContent = "Thank you for your interest in this event";
-            var htmlContent = "<strong>Thank you for your interest in this event</strong><br />"+
-                                String.Format("Please click here : <a id='register' href={0}>{1}</a>",registrationUri, "register!");
+            var htmlContent = "<strong>Thank you for your interest in this event</strong><br />" +
+                                String.Format("Please click here : <a id='register' href={0}>{1}</a>", registrationUri, "register!");
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
             return response.StatusCode;

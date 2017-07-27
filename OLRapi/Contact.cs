@@ -33,8 +33,10 @@ namespace OLRapi
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public Nullable<bool> RecordDeleted { get; set; }
+        public Nullable<bool> NZIPPMember { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Registration> Registrations { get; set; }
+        public virtual HomeTown HomeTown { get; set; }
     }
 }

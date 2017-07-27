@@ -25,5 +25,9 @@ namespace OLRapi
     
         public virtual FieldTrip FieldTrip { get; set; }
         public virtual Registration Registration { get; set; }
+        public virtual FieldTripOption FieldTripOption { get; set; }
+        public virtual FieldTripOption FieldTripOption1 { get; set; }
+        public virtual FieldTripOption FieldTripOption2 { get; set; }
+        public virtual FieldTripOption FieldTripOption3 { get; set; }
     }
 }
