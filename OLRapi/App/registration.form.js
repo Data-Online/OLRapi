@@ -1,58 +1,60 @@
-﻿angular.module('app', ['autofields'])
+﻿angular.module('app', ['autofields', 'multipleSelect'])
     .controller('registrationCtrl', ['$scope', '$log', 'registrationDataSource', function ($scope, $log, registrationDataSource) {
         $scope.loading = false;
         $scope.validRegistration = false;
 
-        $scope.user = {
-            firstName: '',
-            lastName: '',
-            PSNZMember: false,
-            NZIPPMember: false,
-            PSNZMemberAppliedFor: false,
-            fieldTrip1Choice1: null,
-            fieldTrip1Choice2: null,
-            fieldTrip1Choice3: null
-            //,
-            //fieldTrip1: { choices: {} }
-//            fieldTrips: null
-        };
 
-
-        $scope.schema = [
-            {
-                type: 'multiple', fields: [
-                    { property: 'firstName', type: 'text', attr: { required: true } },
-                    { property: 'lastName', type: 'text', attr: { required: true } }
-                ], columns: 6
-            },
-            {
-                type: 'multiple', fields: [
-                    { property: 'PSNZMember', label: 'PSNZ Member', type: 'checkbox' },
-                    { property: 'NZIPPMember', label: 'NZIPP Member', type: 'checkbox' },
-                    { property: 'PSNZMemberAppliedFor', label: 'PSNZ Membership applied for', type: 'checkbox' }
-                ], columns: 6
-            }
-            //,
-            //{
-            //    type: 'multiple', fields: [
-            //        { property: 'fieldTrip1.choices[0]', type: 'select', list: 'value as value for (key,value) in fieldTrip1Options', attr: { required: true } },
-            //        { property: 'fieldTrip1.choices[1]', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip1Options,1)', attr: { required: true } },
-            //        { property: 'fieldTrip1.choices[2]', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip1Options,2)', attr: { required: true } }
-            //    ], columns: 6
-            //}
-
+        $scope.optionsList = [
+            { id: 1, name: "Java" },
+            { id: 2, name: "C" },
+            { id: 3, name: "C++" },
+            { id: 4, name: "AngularJs" },
+            { id: 5, name: "JavaScript" }
         ];
 
-        $scope.registration = {
-            firstName: '',
-            lastName: '',
-            PSNZMember: false,
-            NZIPPMember: false,
-            PSNZMemberAppliedFor: false,
-            fieldTrip1Choice1: null,
-            fieldTrip1Choice2: null,
-            fieldTrip1Choice3: null,
+        //        $scope.user = {
+        //            firstName: '',
+        //            lastName: '',
+        //            homeTown: '',
+        //            PSNZMember: false,
+        //            NZIPPMember: false,
+        //            PSNZMemberAppliedFor: false,
+        //            fieldTrip1Choice1: null,
+        //            fieldTrip1Choice2: null,
+        //            fieldTrip1Choice3: null
+        //            //,
+        //            //fieldTrip1: { choices: {} }
+        ////            fieldTrips: null
+        //        };
 
+
+        //        $scope.schema = [
+        //            {
+        //                type: 'multiple', fields: [
+        //                    { property: 'firstName', label: 'First Name', type: 'text', attr: { required: true } },
+        //                    { property: 'lastName', label: 'Last Name',type: 'text', attr: { required: true } }
+        //                ], columns: 6
+        //            },
+        //            {
+        //                type: 'multiple', fields: [
+        //                    { property: 'PSNZMember', label: 'PSNZ Member', type: 'checkbox' },
+        //                    { property: 'NZIPPMember', label: 'NZIPP Member', type: 'checkbox' },
+        //                    { property: 'PSNZMemberAppliedFor', label: 'PSNZ Membership applied for', type: 'checkbox' }
+        //                ], columns: 12
+        //            }
+        //        ];
+
+        $scope.registration = {
+            userDetails: {
+                firstName: '',
+                lastName: '',
+                homeTown: '',
+                email: '',
+                PSNZMember: false,
+                NZIPPMember: false,
+                PSNZMemberAppliedFor: false,
+                photoHonours: []
+            },
             fieldTrips: {
                 choices: {}
             }
@@ -61,61 +63,83 @@
         $scope.userSchema = [
             {
                 type: 'multiple', fields: [
-                    { property: 'firstName', type: 'text', attr: { required: true } },
-                    { property: 'lastName', type: 'text', attr: { required: true } }
+                    { property: 'userDetails.firstName', label: 'First Name', type: 'text', attr: { required: true } },
+                    { property: 'userDetails.lastName', label: 'Last Name', type: 'text', attr: { required: true } }
                 ], columns: 6
             },
             {
                 type: 'multiple', fields: [
-                    { property: 'PSNZMember', label: 'PSNZ Member', type: 'checkbox' },
-                    { property: 'NZIPPMember', label: 'NZIPP Member', type: 'checkbox' },
-                    { property: 'PSNZMemberAppliedFor', label: 'PSNZ Membership applied for', type: 'checkbox' }
+                    { property: 'userDetails.homeTown', label: 'Home Town', type: 'select', list: 'value as value for (key,value) in towns', attr: { required: true } },
+                    { property: 'userDetails.mobileNumber', label: 'Mobile Number', type: 'text', attr: { required: false } }
+                ], columns: 6
+
+            },
+            {
+                type: 'multiple', fields: [
+                    { property: 'userDetails.PSNZMember', label: 'PSNZ Member', type: 'checkbox' },
+                    { property: 'userDetails.PSNZMemberAppliedFor', label: 'PSNZ Membership applied for', type: 'checkbox' },
+                    { property: 'userDetails.NZIPPMember', label: 'NZIPP Member', type: 'checkbox' }
                 ], columns: 6
             }
         ];
 
+        $scope.registrationSchema = [
+            {
+                type: 'multiple', fields: [
+                    { property: 'registrationDetails.additionalDinnerTicket', label: 'Additional Dinner Ticked Neeeded?', type: 'checkbox', attr: { required: false } },
+                    {
+                        property: 'registrationDetails.additionalDinnerName', label: 'Additional Name', type: 'text',
+                        attr: { required: false, ngShow: '$data.registrationDetails.additionalDinnerTicket' }
+                    }], columns: 4
+            },
+            { property: 'registrationDetails.specialRequirements', label: 'Special Requirements', type: 'textarea', rows: 5, placeholder: 'Enter and special requirements...', attr: { required: false } }
+        ];
 
         $scope.fieldTrip0Schema = [
             {
                 type: 'multiple', fields: [
-                    { property: 'fieldTrips[0].choices[0]', type: 'select', list: 'value as value for (key,value) in fieldTrip0Options', attr: { required: true } },
-                    { property: 'fieldTrips[0].choices[1]', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip0Options,1,0)', attr: { required: true } },
-                    { property: 'fieldTrips[0].choices[2]', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip0Options,2,0)', attr: { required: true } }
-                ], columns: 6
+                    { property: 'fieldTrips[0].choices[0]', label: 'First Choice', type: 'select', list: 'value as value for (key,value) in fieldTrip0Options', attr: { required: true } },
+                    { property: 'fieldTrips[0].choices[1]', label: 'Second Choice', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip0Options,1,0)', attr: { required: false } },
+                    { property: 'fieldTrips[0].choices[2]', label: 'Third Choice', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip0Options,2,0)', attr: { required: false } }
+                ], columns: 4
             }
         ];
 
         $scope.fieldTrip1Schema = [
             {
                 type: 'multiple', fields: [
-                    { property: 'fieldTrips[1].choices[0]', type: 'select', list: 'value as value for (key,value) in fieldTrip1Options', attr: { required: true } },
-                    { property: 'fieldTrips[1].choices[1]', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip1Options,1,1)', attr: { required: true } },
-                    { property: 'fieldTrips[1].choices[2]', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip1Options,2,1)', attr: { required: true } }
-                ], columns: 6
+                    { property: 'fieldTrips[1].choices[0]', label: 'First Choice', type: 'select', list: 'value as value for (key,value) in fieldTrip1Options', attr: { required: true } },
+                    { property: 'fieldTrips[1].choices[1]', label: 'Second Choice', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip1Options,1,1)', attr: { required: false } },
+                    { property: 'fieldTrips[1].choices[2]', label: 'Third Choice', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip1Options,2,1)', attr: { required: false } }
+                ], columns: 4
             }
         ];
 
-        $scope.excludeItems1z = function (itemList, index) {
-            $log.info('Called');
-            var result = {};
-            var addToList = false;
-            angular.forEach(itemList, function (value, key) {
-                if (!angular.isUndefinedOrNull($scope.user.fieldTrip1.choices)) {
-                    if (index == 2)
-                    {
-                        addToList = !angular.equals(value, $scope.user.fieldTrip1.choices[0]) & !angular.equals(value, $scope.user.fieldTrip1.choices[1])
-                    }
-                    else {
-                        addToList = !angular.equals(value, $scope.user.fieldTrip1.choices[0]);
-                    }
-                    if (addToList) {
-                        result[key] = value;
-                    }
-                }
-            });
+        $scope.workshopsSchema = [
+                    { property: 'registrationDetails.canonWorkshop', label: 'Register for the Canon Workshop', type: 'checkbox' }
+        ]
 
-            return result;
-        };
+        //$scope.excludeItems1z = function (itemList, index) {
+        //    $log.info('Called');
+        //    var result = {};
+        //    var addToList = false;
+        //    angular.forEach(itemList, function (value, key) {
+        //        if (!angular.isUndefinedOrNull($scope.user.fieldTrip1.choices)) {
+        //            if (index == 2)
+        //            {
+        //                addToList = !angular.equals(value, $scope.user.fieldTrip1.choices[0]) & !angular.equals(value, $scope.user.fieldTrip1.choices[1])
+        //            }
+        //            else {
+        //                addToList = !angular.equals(value, $scope.user.fieldTrip1.choices[0]);
+        //            }
+        //            if (addToList) {
+        //                result[key] = value;
+        //            }
+        //        }
+        //    });
+
+        //    return result;
+        //};
 
         $scope.excludeItems1 = function (itemList, index, fieldTripIndex) {
             $log.info('Called');
@@ -146,7 +170,7 @@
         $scope.options = {
             validation: {
                 enabled: true,
-                showMessages: false
+                showMessages: true
             },
             layout: {
                 type: 'basic',
@@ -165,6 +189,7 @@
             1: 'Yes'
         };
 
+
         $scope.toggleValidation = function () {
             $scope.options.validation.enabled = !$scope.options.validation.enabled;
         };
@@ -181,8 +206,9 @@
         ////    $scope.schema.push({ property: 'new' + (new Date().getTime()), label: 'New Field' });
         ////};
 
-        $scope.join = function () {
-            if (!$scope.joinForm.$valid) return;
+        $scope.register = function () {
+            $log.info("ZZ: " + $scope.registerForm.$valid);
+            if (!$scope.registerForm.$valid) return;
             //join stuff....
             $log.info($scope.registration);
             testWrite($scope.registration);
@@ -203,7 +229,15 @@
         };
 
         var testWrite = function (data) {
+            data.userDetails.photoHonours = $scope.selectedHonours;
+            data.userDetails.photoClubs = $scope.selectedClubs;
+            data.registrationDetails.registrationType = $scope.selectedRegistration
             registrationDataSource.saveRegistrationDetails(data);
+        }
+
+        var getFKData = function () {
+            registrationDataSource.getForeignKeyData()
+                .then(bindFKData, onError);
         }
 
         var bindData = function (data) {
@@ -214,7 +248,10 @@
             $log.info(data.email);
             $scope.registration = data;
             $scope.displayEmail = data.userDetails.email;
+            // $scope.towns = data.towns;
 
+            // Registration details
+            $scope.selectedRegistration = data.registrationDetails.registrationType;
 
             // Field trip 0
             $scope.fieldTrip0Description = data.fieldTrips[0].fieldTripDescription;
@@ -228,6 +265,16 @@
             $log.info($scope.fieldTrip1Options);
             $scope.loading = false;
 
+            getFKData();
+
+        }
+
+        var bindFKData = function (data) {
+            $scope.towns = data.towns;
+            // $scope.photoHonours = data.photoHonours;
+            $scope.honoursList = data.photoHonours;
+            $scope.clubsList = data.photoClubs;
+            $scope.registrationTypes = data.registrationTypes;
         }
 
         var onError = function () {
@@ -240,7 +287,7 @@
             testRead();
         };
 
-        readRegistrationDetails("96BE1CE0-27F4-4A46-BDCD-EBAB16A1EA27");
+        readRegistrationDetails("7853C644-A356-4B87-A26F-DC15FBD2F415");
 
     }])
     .directive('confirmPassword', [function () {

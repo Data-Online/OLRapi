@@ -90,7 +90,7 @@
             <PropertyRef Name="HonourId" />
           </Key>
           <Property Name="HonourId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Honour" Type="nvarchar" MaxLength="50" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="PhotoClubs">
           <Key>
@@ -724,7 +724,7 @@
             <PropertyRef Name="HonourId" />
           </Key>
           <Property Name="HonourId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Honour1" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="PhotoClub">
           <Key>
@@ -965,7 +965,7 @@
           <EntitySetMapping Name="Honours">
             <EntityTypeMapping TypeName="OLR_dbModel.Honour">
               <MappingFragment StoreEntitySet="Honours">
-                <ScalarProperty Name="Honour1" ColumnName="Honour" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="HonourId" ColumnName="HonourId" />
               </MappingFragment>
             </EntityTypeMapping>

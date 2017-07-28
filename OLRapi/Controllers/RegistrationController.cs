@@ -22,7 +22,7 @@ namespace OLRapi.Controllers
     public class RegistrationController : ApiController
     {
         private OLR_dbEntities db = new OLR_dbEntities();
-        
+
 
         [HttpGet]
         [Route("api/registration/{userGuid}")]
@@ -37,8 +37,21 @@ namespace OLRapi.Controllers
             }
             else
             {
-                return request.CreateResponse<RegistrationViewModel>(HttpStatusCode.OK,result);
+                return request.CreateResponse<RegistrationViewModel>(HttpStatusCode.OK, result);
             }
+        }
+
+        [HttpGet]
+        [Route("api/getForeignKeyData")]
+        public async Task<HttpResponseMessage> GetForeignKeyData(HttpRequestMessage request)
+        {
+            ForeignKeyViewModel result = new ForeignKeyViewModel();
+            result.towns = await db.HomeTowns.Select(o => o.TownName).ToListAsync();
+            result.photoClubs = await db.PhotoClubs.Select(o => o.Description).ToListAsync();
+            result.photoHonours = await db.Honours.Select(o => o.Description).ToListAsync();
+            result.registrationTypes = await db.RegistrationTypes.Select(o => o.RegistrationType1).ToListAsync();
+
+            return request.CreateResponse<ForeignKeyViewModel>(HttpStatusCode.OK, result);
         }
 
         public async Task<RegistrationViewModel> GetRegistrationData(Guid userGuid)
@@ -56,48 +69,48 @@ namespace OLRapi.Controllers
 
             List<FieldTripOptions> FieldTrips = new List<FieldTripOptions>();
 
-            foreach (var itemId in db.FieldTripOptions.Select(s => s.FieldTripId).Distinct())
+            foreach (var availableFieldTripId in db.FieldTripOptions.Select(s => s.FieldTripId).Distinct())
             {
                 FieldTripOptions fieldTripOptions = new FieldTripOptions();
-                List<string> currentFieldTripDetails = await db.FieldTripOptions.Where(s => s.FieldTripId == itemId).Select(o => o.Description).ToListAsync();
-                
-                List<string> _choices = new List<string>();
-                try
-                {
-                    var zz = fieldTripChoices.Where(s => s.FieldTripId == itemId)
-                        .Select(x =>
-                    //new List<string> {  (x.FieldTripOption.Description == null ? "" : x.FieldTripOption.Description),
-                    //                (x.FieldTripOption2.Description == null ? "" : x.FieldTripOption2.Description) }).ToList();
-                    new List<string> { (x.FieldTripOption == null ? null : x.FieldTripOption.Description),
-                                        (x.FieldTripOption1 == null ? null : x.FieldTripOption1.Description),
-                                        (x.FieldTripOption3 == null ? null : x.FieldTripOption3.Description) })
-                                        .ToList();
-                    //foreach (var item in zz)
-                    //{
-                    //    string zz = db.
-                    //    _options.Add(item.FieldTripOption ?? "").ToString());
-                    //}
-                    _choices = zz[0];
-                }
-                catch (Exception ex) { }
-
+                List<string> currentFieldTripDetails = await db.FieldTripOptions.Where(s => s.FieldTripId == availableFieldTripId).Select(o => o.Description).ToListAsync();
 
                 // Assign to string array
                 fieldTripOptions.options = currentFieldTripDetails;
-                fieldTripOptions.choices = _choices;//(List<string>)fieldTripChoices.Where(s => s.FieldTripId == itemId).Select(x => x.FieldTripOption);
-                                //new List<string>() { "Monarch", "Street Art", "Tunnel Beach" };
-                fieldTripOptions.fieldTripDescription = "Saturday";
+                fieldTripOptions.choices = GetCurrentFieldtripChoices(fieldTripChoices, availableFieldTripId ?? 0);
+                //new List<string>() { "Monarch", "Street Art", "Tunnel Beach" };
+                fieldTripOptions.fieldTripDescription = db.FieldTrips.Where(s => s.FieldTripId == availableFieldTripId).Select(o => o.Description).FirstOrDefault().ToString();
 
                 FieldTrips.Add(fieldTripOptions);
             }
 
             result = new RegistrationViewModel()
             {
-                userDetails = new UserDetails() { email = "test@test.com", firstName = "", lastName = "" },
-                fieldTrips = FieldTrips
+                // userDetails = new UserDetails() { email = "test@test.com", firstName = "", lastName = "" },
+                fieldTrips = FieldTrips,
+                userDetails = new UserDetails() { firstName = "Graeme", lastName = "Atkinson", homeTown = "Dunedin", email = "atkinsongraeme@hotmail.com" },
+                registrationDetails = new RegistrationDetails() {  registrationType = "Full convention including awards dinner" }
             };
 
             return result;
+        }
+
+
+        private List<string> GetCurrentFieldtripChoices(IEnumerable<FieldTripChoice> fieldTripChoices, int fieldTripId)
+        {
+            List<string> _choices = new List<string>() { null };
+            try
+            {
+                var currentChoiceList = fieldTripChoices.Where(s => s.FieldTripId == fieldTripId)
+                    .Select(x =>
+                new List<string> { (x.FieldTripOption == null ? null : x.FieldTripOption.Description),
+                                        (x.FieldTripOption1 == null ? null : x.FieldTripOption1.Description),
+                                        (x.FieldTripOption3 == null ? null : x.FieldTripOption3.Description) })
+                                    .ToList();
+                _choices = currentChoiceList[0];
+            }
+            catch (Exception ex) { }
+
+            return _choices;
         }
 
         //[System.Web.Mvc.ValidateAntiForgeryToken]
@@ -263,4 +276,6 @@ namespace OLRapi.Controllers
         }
 
     }
+
+
 }

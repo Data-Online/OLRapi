@@ -23,9 +23,18 @@
                 });
         };
 
+        var getForeignKeyData = function () {
+            var dataApi = "/api/getForeignKeyData";
+            return $http.get(dataApi)
+                .then(function (response) {
+                    return response.data;
+                }); 
+        };
+
         return {
             getRegistrationData: getRegistrationData,
-            saveRegistrationDetails: saveRegistrationDetails
+            saveRegistrationDetails: saveRegistrationDetails,
+            getForeignKeyData: getForeignKeyData
         }
 
     };

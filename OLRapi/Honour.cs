@@ -15,6 +15,6 @@ namespace OLRapi
     public partial class Honour
     {
         public int HonourId { get; set; }
-        public string Honour1 { get; set; }
+        public string Description { get; set; }
     }
 }

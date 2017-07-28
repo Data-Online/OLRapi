@@ -18,8 +18,6 @@ namespace OLRapi
         public OLR_dbEntities()
             : base("name=OLR_dbEntities")
         {
-            // Use C# line null comparison
-            (this as IObjectContextAdapter).ObjectContext.ContextOptions.UseCSharpNullComparisonBehavior = true;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

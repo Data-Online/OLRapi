@@ -15,9 +15,8 @@ namespace OLRapi.Models
     public class RegistrationViewModel
     {
         public UserDetails userDetails { get; set; }
-        public FieldTripOptions fieldTrip1 { get; set; }
-
         public List<FieldTripOptions> fieldTrips { get; set; }
+        public RegistrationDetails registrationDetails { get; set; }
     }
 
     public class UserDetails
@@ -25,11 +24,24 @@ namespace OLRapi.Models
         public string firstName { get; set; }
         public string lastName { get; set; }
         public string email { get; set; }
+        public string homeTown { get; set; }
         public string mobileNumber { get; set; }
         public bool PSNZMember { get; set; }
         public bool NZIPPMember { get; set; }
         public bool PSNZMemberAppliedFor { get; set; }
+        public List<string> photoHonours { get; set; }
+        public List<string> photoClubs { get; set; }
 
+    }
+
+    public class RegistrationDetails
+    {
+        public string registrationType { get; set; }
+        public bool additionalDinnerTicket { get; set; }
+        public string additionalDinnerName { get; set; }
+
+        public string specialRequirements { get; set; }
+        public bool canonWorkshop { get; set; }
     }
 
     public class FieldTripOptions
@@ -46,4 +58,12 @@ namespace OLRapi.Models
         public string value { get; set; }
     }
 
+    internal class ForeignKeyViewModel
+    {
+        public List<string> towns { get; set; }
+        public List<string> photoClubs { get; set; }
+        public List<string> photoHonours { get; set; }
+        public List<string> registrationTypes { get; set; }
+
+    }
 }

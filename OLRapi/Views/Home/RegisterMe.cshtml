@@ -2,6 +2,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link href="~/Scripts/multi-select/multiple-select.min.css" rel="stylesheet" />
 
 <h2>@ViewBag.Title</h2>
 
@@ -9,27 +10,65 @@
 
     <div ng-if="!validRegistration && !loading" ng-cloak>
         <h3>Sorry, there was a problem with your registration</h3>
-        <li>Test</li>
+        <h4>Possible reasons:</h4>
+        <ul style="list-style-type:square">
+            <li>Registrations are now closed</li>
+            <li>Your registration details are incorrect</li>
+        </ul>
     </div>
     <i ng-show="loading" class="fa fa-refresh fa-fw fa-5x" ng-class="{'fa-spin' : loading}"></i>
     <span class="sr-only">Loading...</span>
-    <div ng-if="validRegistration && !loading" ng-cloak>
+    <div ng-show="validRegistration && !loading" ng-cloak>
         <h3>Registration details for eMail address {{::displayEmail}}</h3>
-
-        <div class="col-sm-6">
-            <form name="joinForm" ng-submit="join()">
+        <br />
+        <div class="col-sm-12">
+            <form name="registerForm" ng-submit="register()">
                 @*<auto:fields fields="schema" data="user" options="options"></auto:fields>*@
-                <auto:fields fields="userSchema" data="registration" options="options"></auto:fields>
+                <div class="col-sm-12">
+                    <h3>About you</h3>
+                    <auto:fields fields="userSchema" data="registration" options="options"></auto:fields>
 
-                {{::fieldTrip0Description}}
-                <auto:fields fields="fieldTrip0Schema" data="registration" options="options"></auto:fields>
-                {{::fieldTrip1Description}}
-                <auto:fields fields="fieldTrip1Schema" data="registration" options="options"></auto:fields>
+                    <div class="col-sm-6">
+                        <label class="control-label ng-valid">Photographic Honours</label>
+                        <multiple-autocomplete ng-model="selectedHonours"
+                                               suggestions-arr="honoursList">
+                        </multiple-autocomplete>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="control-label">Club/Societies you belong to</label>
+                        <multiple-autocomplete ng-model="selectedClubs"
+                                               suggestions-arr="clubsList">
+                        </multiple-autocomplete>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <h3>Registration Type</h3>
+                    <h4>
+                        <label ng-repeat="type in registrationTypes">
+                            <span class="col-sm-12">
+                                <input type="radio" ng-model="$parent.selectedRegistration" value={{type}} />  {{type}}
+                            </span>
+                        </label>
+                    </h4>
+                    <auto:fields fields="registrationSchema" data="registration" options="options"></auto:fields>
+                </div>
+                <div class="col-sm-12">
+                    <h3>Field Trip Selections</h3>
 
-                <button type="submit" class="btn btn-default btn-lg btn-block" ng-class="{'btn-primary':joinForm.$valid}" tabindex="100">Join</button>
+                    <h4>{{::fieldTrip0Description}}</h4>
+                    <auto:fields fields="fieldTrip0Schema" data="registration" options="options"></auto:fields>
+                    <h4>{{::fieldTrip1Description}}</h4>
+                    <auto:fields fields="fieldTrip1Schema" data="registration" options="options"></auto:fields>
+
+                </div>
+                <div class="col-sm-12">
+                    <h3>Canon Workshop</h3>
+                    <auto:fields fields="workshopsSchema" data="registration" options="options"></auto:fields>
+                </div>
+                <button type="submit" class="btn btn-default btn-lg btn-block" ng-class="{'btn-primary':registerForm.$valid}" tabindex="100">Register</button>
             </form>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-6" ng-hide="true">
             <h4>Bound Data</h4>
             @*<pre ng-bind="user | json"></pre>*@
             <pre ng-bind="registration | json"></pre>
@@ -57,4 +96,4 @@
 
 <script src="~/App/registration.data.js"></script>
 
-
+<script src="~/Scripts/multi-select/multiple-select.min.js"></script>
