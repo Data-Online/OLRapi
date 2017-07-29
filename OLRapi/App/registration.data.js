@@ -10,8 +10,8 @@
                 });
         };
 
-        var saveRegistrationDetails = function (registration) {
-            var dataApi = "/api/saveRegistrationDetails";
+        var saveRegistrationDetails = function (registration, userGuid) {
+            var dataApi = "/api/saveRegistrationDetails/" + userGuid;
             var config = {
                 headers: {
                     'Content-Type': 'application/json'

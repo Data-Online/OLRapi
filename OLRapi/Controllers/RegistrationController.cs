@@ -88,7 +88,7 @@ namespace OLRapi.Controllers
                 // userDetails = new UserDetails() { email = "test@test.com", firstName = "", lastName = "" },
                 fieldTrips = FieldTrips,
                 userDetails = new UserDetails() { firstName = "Graeme", lastName = "Atkinson", homeTown = "Dunedin", email = "atkinsongraeme@hotmail.com" },
-                registrationDetails = new RegistrationDetails() {  registrationType = "Full convention including awards dinner" }
+                registrationDetails = new RegistrationDetails() { registrationType = "Full convention including awards dinner" }
             };
 
             return result;
@@ -115,11 +115,62 @@ namespace OLRapi.Controllers
 
         //[System.Web.Mvc.ValidateAntiForgeryToken]
         [HttpPost]
-        [Route("api/saveRegistrationDetails")]
-        public HttpResponseMessage SaveUserSettings(HttpRequestMessage request, [FromBody] RegistrationViewModel registrationDetails)
+        [Route("api/saveRegistrationDetails/{userGuid}")]
+        public async Task<HttpResponseMessage> SaveUserSettings(Guid userGuid, HttpRequestMessage request, [FromBody] RegistrationViewModel registrationDetails)
         {
+            // Read existing record from database
+            // Map view model to database
+            // Save updates
+
+            Registration registration = await db.Registrations.Where(s => s.ValidationUid == userGuid).FirstOrDefaultAsync();
+
+            registration.Contact.FirstName = registrationDetails.userDetails.firstName;
+            registration.Contact.LastName = registrationDetails.userDetails.lastName;
+
+            var _fieldTripsOnFile = registration.FieldTripChoices.ToArray();
+
+            foreach (var _currentFieldTrips in _fieldTripsOnFile)
+            {
+                var _description = _currentFieldTrips.FieldTrip.Description;
+
+                var _fieldTripsSelected = registrationDetails.fieldTrips.Where(s => s.fieldTripDescription == _description).Select(o => o.choices).ToList();
+
+                int _count = 0;
+                foreach (var _choice in _fieldTripsSelected[0])
+                {
+                    var _id = db.FieldTripOptions.Where(s => s.Description == _choice).Select(o => o.FieldTripOptionId).FirstOrDefault();
+                    if (_id > 0)
+                    {
+                        switch (_count)
+                        {
+                            case 0:
+                                _currentFieldTrips.FieldTripOptionId = _id;
+                                break;
+                            case 1:
+                                _currentFieldTrips.FieldTripOptionId2 = _id;
+                                break;
+                            case 2:
+                                _currentFieldTrips.FieldTripOptionId3 = _id;
+                                break;
+                        }
+                    }
+                    _count++;
+                }
+            }
+            //foreach (var _fieldTrip in registrationDetails.fie)
+            //{
+            //    //  _fieldTripsOnFile[0].FieldTripOptionId = db.FieldTripOptions.Where(s => s.Description == _fieldTrip.choices.).Select(o => o.FieldTripId).FirstOrDefault();
+            //}
+
             //UserSettingsViewModel _data = _portalService.SaveUserData(userSettings, User.Identity.Name);
             //if (_portalService.SaveUserSettings(userSettings, User.Identity.Name))
+
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (Exception ex) { }
+
             return request.CreateResponse(HttpStatusCode.OK);
             //else
             //    return request.CreateResponse(HttpStatusCode.BadRequest);
@@ -129,6 +180,8 @@ namespace OLRapi.Controllers
         [Route("RegisterEmail/{eventid}")]
         public async Task<HttpResponseMessage> RegisterEmail(Guid eventid, [FromBody] string value)
         {
+            string sourceUriTxt = "";
+
             if (Request.Properties.ContainsKey("MS_HttpContext"))
             {
                 var ctx = Request.Properties["MS_HttpContext"] as HttpContextBase;
@@ -136,6 +189,7 @@ namespace OLRapi.Controllers
                 {
                     // var zz = ctx.Request.UserHostAddress;
                     var sourceUrl = ctx.Request.UrlReferrer;
+                    sourceUriTxt = sourceUrl.AbsoluteUri.ToString();
                 }
             }
             else
@@ -167,7 +221,7 @@ namespace OLRapi.Controllers
                     };
 
                     Contact @contact = await db.Contacts.Where(s => s.Email == baseRegistration.Email).FirstOrDefaultAsync();
-                    if (@contact != null)
+                    if (@contact != null && !Settings.AllowDuplicateeMail)
                     {
                         return Request.CreateResponse(HttpStatusCode.BadRequest);
                     }
@@ -205,13 +259,12 @@ namespace OLRapi.Controllers
 
                     await db.SaveChangesAsync();
 
-                    var verify = db.Events.Select(s => s.Registrations.Where(w => w.EventId == @event.EventId && w.Contact.Email == baseRegistration.Email)).FirstOrDefaultAsync();
-
-                    if (verify != null)
+                    if (registration.RegistrationId > 0)
                     {
+                        // PK value, so record has been saved okay
                         // var id = Guid.NewGuid();
                         // Send email
-                        HttpStatusCode emailStatus = await SendEmail(baseRegistration.Email, @event.ContactEmail, registrationUid.ToString());
+                        HttpStatusCode emailStatus = await SendEmail(baseRegistration.Email, @event.ContactEmail, registrationUid.ToString(), sourceUriTxt);
 
                         var response = new HttpResponseMessage(HttpStatusCode.Created)
                         {
@@ -227,7 +280,30 @@ namespace OLRapi.Controllers
                     {
                         return Request.CreateResponse(HttpStatusCode.BadRequest);
                     }
-                    //return CreatedAtRoute("DefaultApi", new { action = "status", id = id }, value);
+
+                    //var verify = db.Events.Select(s => s.Registrations.Where(w => w.EventId == @event.EventId && w.Contact.Email == baseRegistration.Email)).FirstOrDefaultAsync();
+
+                    //if (verify != null)
+                    //{
+                    //    // var id = Guid.NewGuid();
+                    //    // Send email
+                    //    HttpStatusCode emailStatus = await SendEmail(baseRegistration.Email, @event.ContactEmail, registrationUid.ToString());
+
+                    //    var response = new HttpResponseMessage(HttpStatusCode.Created)
+                    //    {
+                    //        Content = new StringContent(baseRegistration.Email)
+                    //    };
+
+
+                    //    //response.Headers.Location =
+                    //    //    new Uri(Url.Link("DefaultApi", new { action = "status", id = id }));
+                    //    return response;
+                    //}
+                    //else
+                    //{
+                    //    return Request.CreateResponse(HttpStatusCode.BadRequest);
+                    //}
+                    ////return CreatedAtRoute("DefaultApi", new { action = "status", id = id }, value);
 
 
                 }
@@ -242,6 +318,8 @@ namespace OLRapi.Controllers
 
             }
         }
+
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -255,12 +333,22 @@ namespace OLRapi.Controllers
         {
             return db.Events.Count(e => e.EventId == id) > 0;
         }
-        static async Task<HttpStatusCode> SendEmail(string eMail, string registrationEmail, string registrationUid)
+        static async Task<HttpStatusCode> SendEmail(string eMail, string registrationEmail, string registrationUid, string sourceUrlTxt)
         {
             // Base class from ISD core application
 
             var apiKey = Settings.GraphApiKey;
-            var registrationUri = String.Format(Settings.RegistrationUrl, registrationUid);
+            string registrationUri = "";
+            if (Settings.UseApi)
+            {
+                registrationUri = String.Format(Settings.RegistrationUrlApi, sourceUrlTxt, registrationUid);
+            }
+            else
+            {
+                registrationUri = String.Format(Settings.RegistrationUrl, registrationUid);
+            }
+
+            //    <add key = "RegistrationUrlApi" value="{0}/Home/RegisterMe?Registration={1}" />
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(registrationEmail, "Registrations");
             var subject = "Registration eMail";

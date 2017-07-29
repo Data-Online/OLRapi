@@ -1,48 +1,9 @@
 ﻿angular.module('app', ['autofields', 'multipleSelect'])
-    .controller('registrationCtrl', ['$scope', '$log', 'registrationDataSource', function ($scope, $log, registrationDataSource) {
+    .controller('registrationCtrl', ['$scope', '$log', '$location', 'registrationDataSource', function ($scope, $log, $location, registrationDataSource) {
         $scope.loading = false;
         $scope.validRegistration = false;
 
-
-        $scope.optionsList = [
-            { id: 1, name: "Java" },
-            { id: 2, name: "C" },
-            { id: 3, name: "C++" },
-            { id: 4, name: "AngularJs" },
-            { id: 5, name: "JavaScript" }
-        ];
-
-        //        $scope.user = {
-        //            firstName: '',
-        //            lastName: '',
-        //            homeTown: '',
-        //            PSNZMember: false,
-        //            NZIPPMember: false,
-        //            PSNZMemberAppliedFor: false,
-        //            fieldTrip1Choice1: null,
-        //            fieldTrip1Choice2: null,
-        //            fieldTrip1Choice3: null
-        //            //,
-        //            //fieldTrip1: { choices: {} }
-        ////            fieldTrips: null
-        //        };
-
-
-        //        $scope.schema = [
-        //            {
-        //                type: 'multiple', fields: [
-        //                    { property: 'firstName', label: 'First Name', type: 'text', attr: { required: true } },
-        //                    { property: 'lastName', label: 'Last Name',type: 'text', attr: { required: true } }
-        //                ], columns: 6
-        //            },
-        //            {
-        //                type: 'multiple', fields: [
-        //                    { property: 'PSNZMember', label: 'PSNZ Member', type: 'checkbox' },
-        //                    { property: 'NZIPPMember', label: 'NZIPP Member', type: 'checkbox' },
-        //                    { property: 'PSNZMemberAppliedFor', label: 'PSNZ Membership applied for', type: 'checkbox' }
-        //                ], columns: 12
-        //            }
-        //        ];
+        var registrationUid = $location.search().Registration;
 
         $scope.registration = {
             userDetails: {
@@ -99,8 +60,8 @@
             {
                 type: 'multiple', fields: [
                     { property: 'fieldTrips[0].choices[0]', label: 'First Choice', type: 'select', list: 'value as value for (key,value) in fieldTrip0Options', attr: { required: true } },
-                    { property: 'fieldTrips[0].choices[1]', label: 'Second Choice', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip0Options,1,0)', attr: { required: false } },
-                    { property: 'fieldTrips[0].choices[2]', label: 'Third Choice', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip0Options,2,0)', attr: { required: false } }
+                    { property: 'fieldTrips[0].choices[1]', label: 'Second Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip0Options,1,0)', attr: { required: false } },
+                    { property: 'fieldTrips[0].choices[2]', label: 'Third Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip0Options,2,0)', attr: { required: false } }
                 ], columns: 4
             }
         ];
@@ -109,39 +70,17 @@
             {
                 type: 'multiple', fields: [
                     { property: 'fieldTrips[1].choices[0]', label: 'First Choice', type: 'select', list: 'value as value for (key,value) in fieldTrip1Options', attr: { required: true } },
-                    { property: 'fieldTrips[1].choices[1]', label: 'Second Choice', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip1Options,1,1)', attr: { required: false } },
-                    { property: 'fieldTrips[1].choices[2]', label: 'Third Choice', type: 'select', list: 'value as value for (key,value) in excludeItems1(fieldTrip1Options,2,1)', attr: { required: false } }
+                    { property: 'fieldTrips[1].choices[1]', label: 'Second Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip1Options,1,1)', attr: { required: false } },
+                    { property: 'fieldTrips[1].choices[2]', label: 'Third Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip1Options,2,1)', attr: { required: false } }
                 ], columns: 4
             }
         ];
 
         $scope.workshopsSchema = [
-                    { property: 'registrationDetails.canonWorkshop', label: 'Register for the Canon Workshop', type: 'checkbox' }
+            { property: 'registrationDetails.canonWorkshop', label: 'Register for the Canon Workshop', type: 'checkbox' }
         ]
 
-        //$scope.excludeItems1z = function (itemList, index) {
-        //    $log.info('Called');
-        //    var result = {};
-        //    var addToList = false;
-        //    angular.forEach(itemList, function (value, key) {
-        //        if (!angular.isUndefinedOrNull($scope.user.fieldTrip1.choices)) {
-        //            if (index == 2)
-        //            {
-        //                addToList = !angular.equals(value, $scope.user.fieldTrip1.choices[0]) & !angular.equals(value, $scope.user.fieldTrip1.choices[1])
-        //            }
-        //            else {
-        //                addToList = !angular.equals(value, $scope.user.fieldTrip1.choices[0]);
-        //            }
-        //            if (addToList) {
-        //                result[key] = value;
-        //            }
-        //        }
-        //    });
-
-        //    return result;
-        //};
-
-        $scope.excludeItems1 = function (itemList, index, fieldTripIndex) {
+        $scope.excludeItems = function (itemList, index, fieldTripIndex) {
             $log.info('Called');
             var result = {};
             var addToList = false;
@@ -179,15 +118,15 @@
             }
         };
 
-        $scope.genders = {
-            0: 'Male',
-            1: 'Female'
-        };
+        //$scope.genders = {
+        //    0: 'Male',
+        //    1: 'Female'
+        //};
 
-        $scope.genderCheck = {
-            0: 'No',
-            1: 'Yes'
-        };
+        //$scope.genderCheck = {
+        //    0: 'No',
+        //    1: 'Yes'
+        //};
 
 
         $scope.toggleValidation = function () {
@@ -207,13 +146,12 @@
         ////};
 
         $scope.register = function () {
-            $log.info("ZZ: " + $scope.registerForm.$valid);
             if (!$scope.registerForm.$valid) return;
             //join stuff....
-            $log.info($scope.registration);
-            testWrite($scope.registration);
-
-            alert('You\'ve joined!\n\nSee console for additional info.');
+            // $log.info($scope.registration);
+            //$log.info("UID : " + registrationUid);
+            saveRegistrationData($scope.registration);
+            //alert('You\'ve joined!\n\nSee console for additional info.');
         }
 
         var readRegistrationDetails = function (userGuid) {
@@ -222,17 +160,23 @@
                 .then(bindData, onError);
         };
 
-        var testRead = function () {
-            //registrationDataSource.getRegistrationTemplate()
-            registrationDataSource.getRegistrationData()
-                .then(bindData, onError);
-        };
+        //var testRead = function () {
+        //    //registrationDataSource.getRegistrationTemplate()
+        //    registrationDataSource.getRegistrationData()
+        //        .then(bindData, onError);
+        //};
 
-        var testWrite = function (data) {
+        var saveRegistrationData = function (data) {
             data.userDetails.photoHonours = $scope.selectedHonours;
             data.userDetails.photoClubs = $scope.selectedClubs;
             data.registrationDetails.registrationType = $scope.selectedRegistration
-            registrationDataSource.saveRegistrationDetails(data);
+            registrationDataSource.saveRegistrationDetails(data, registrationUid)
+                .then(savedOkay, onError);
+        }
+
+        var savedOkay = function()
+        {
+            alert('You\'ve joined!\n\nSee console for additional info.');
         }
 
         var getFKData = function () {
@@ -283,13 +227,19 @@
             $log.error("Error");
         }
 
-        $scope.addField = function () {
-            testRead();
-        };
+        readRegistrationDetails(registrationUid);
 
-        readRegistrationDetails("7853C644-A356-4B87-A26F-DC15FBD2F415");  //7853C644-A356-4B87-A26F-DC15FBD2F415
+        //7853C644-A356-4B87-A26F-DC15FBD2F415
+        //readRegistrationDetails("7853C644-A356-4B87-A26F-DC15FBD2F415");  //7853C644-A356-4B87-A26F-DC15FBD2F415
 
     }])
+    .config(function ($locationProvider) {
+        $locationProvider.html5Mode(
+            {
+                enabled: true,
+                requireBase: false
+            });
+    })
     .directive('confirmPassword', [function () {
         return {
             restrict: 'A',
