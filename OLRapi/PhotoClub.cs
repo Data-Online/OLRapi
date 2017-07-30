@@ -14,7 +14,16 @@ namespace OLRapi
     
     public partial class PhotoClub
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public PhotoClub()
+        {
+            this.PhotoClubContactLinks = new HashSet<PhotoClubContactLink>();
+        }
+    
         public int PhotoClubId { get; set; }
         public string Description { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PhotoClubContactLink> PhotoClubContactLinks { get; set; }
     }
 }

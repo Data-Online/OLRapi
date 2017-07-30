@@ -56,40 +56,81 @@ namespace OLRapi.Controllers
 
         public async Task<RegistrationViewModel> GetRegistrationData(Guid userGuid)
         {
-            RegistrationViewModel result;
+            RegistrationViewModel result = new RegistrationViewModel();
 
-            var currentUser = await db.Registrations.Where(s => s.ValidationUid == userGuid).Select(s => s.Contact).FirstOrDefaultAsync();
+            IQueryable<Registration> query = db.Registrations.Where(s => s.ValidationUid == userGuid);
+
+            Contact currentUser = await query.Select(s => s.Contact).FirstOrDefaultAsync();
             if (currentUser == null)
             {
                 // No valid registration on file
                 return null;
             }
 
-            IEnumerable<FieldTripChoice> fieldTripChoices = await db.FieldTripChoices.Where(s => s.Registration.ValidationUid == userGuid).ToArrayAsync();
+            IEnumerable<FieldTripChoice> fieldTripChoicesForContact = await db.FieldTripChoices.Where(s => s.Registration.ValidationUid == userGuid).ToArrayAsync();
 
-            List<FieldTripOptions> FieldTrips = new List<FieldTripOptions>();
+            List<FieldTripOptionsAndChoices> FieldTrips = new List<FieldTripOptionsAndChoices>();  // options and choices with description
 
-            foreach (var availableFieldTripId in db.FieldTripOptions.Select(s => s.FieldTripId).Distinct())
+            var fieldTripQuery = db.FieldTrips.Select(s => s.FieldTripId);
+
+            foreach (var availableFieldTripId in fieldTripQuery)
             {
-                FieldTripOptions fieldTripOptions = new FieldTripOptions();
-                List<string> currentFieldTripDetails = await db.FieldTripOptions.Where(s => s.FieldTripId == availableFieldTripId).Select(o => o.Description).ToListAsync();
+                FieldTripOptionsAndChoices fieldTripOptionsAndChoices = new FieldTripOptionsAndChoices();
+                List<string> currentFieldOptions = await db.FieldTripOptions.Where(s => s.FieldTripId == availableFieldTripId).Select(o => o.Description).ToListAsync();
 
-                // Assign to string array
-                fieldTripOptions.options = currentFieldTripDetails;
-                fieldTripOptions.choices = GetCurrentFieldtripChoices(fieldTripChoices, availableFieldTripId ?? 0);
-                //new List<string>() { "Monarch", "Street Art", "Tunnel Beach" };
-                fieldTripOptions.fieldTripDescription = db.FieldTrips.Where(s => s.FieldTripId == availableFieldTripId).Select(o => o.Description).FirstOrDefault().ToString();
-
-                FieldTrips.Add(fieldTripOptions);
+                fieldTripOptionsAndChoices.options = currentFieldOptions;
+                fieldTripOptionsAndChoices.choices = GetCurrentFieldtripChoices(fieldTripChoicesForContact, availableFieldTripId);
+                fieldTripOptionsAndChoices.fieldTripDescription = db.FieldTrips.Where(s => s.FieldTripId == availableFieldTripId).Select(o => o.Description).FirstOrDefault();
+                FieldTrips.Add(fieldTripOptionsAndChoices);
             }
 
-            result = new RegistrationViewModel()
+            //foreach (var availableFieldTripId in db.FieldTripOptions.Select(s => s.FieldTripId).Distinct())
+            //{
+            //    FieldTripOptionsAndChoices fieldTripOptions = new FieldTripOptionsAndChoices();
+            //    List<string> currentFieldTripDetails = await db.FieldTripOptions.Where(s => s.FieldTripId == availableFieldTripId).Select(o => o.Description).ToListAsync();
+
+            //    // Assign to string array
+            //    fieldTripOptions.options = currentFieldTripDetails;
+            //    fieldTripOptions.choices = GetCurrentFieldtripChoices(fieldTripChoicesForContact, availableFieldTripId ?? 0);
+            //    //new List<string>() { "Monarch", "Street Art", "Tunnel Beach" };
+            //    fieldTripOptions.fieldTripDescription = db.FieldTrips.Where(s => s.FieldTripId == availableFieldTripId).Select(o => o.Description).FirstOrDefault().ToString();
+
+            //    FieldTrips.Add(fieldTripOptions);
+            //}
+
+            //  var userDetailsOnFile = db.Registrations.Where()
+            try
             {
-                // userDetails = new UserDetails() { email = "test@test.com", firstName = "", lastName = "" },
-                fieldTrips = FieldTrips,
-                userDetails = new UserDetails() { firstName = "Graeme", lastName = "Atkinson", homeTown = "Dunedin", email = "atkinsongraeme@hotmail.com" },
-                registrationDetails = new RegistrationDetails() { registrationType = "Full convention including awards dinner" }
-            };
+                result = new RegistrationViewModel()
+                {
+                    // userDetails = new UserDetails() { email = "test@test.com", firstName = "", lastName = "" },
+                    fieldTrips = FieldTrips,
+                    userDetails = new UserDetails()
+                    {
+                        firstName = currentUser.FirstName,
+                        lastName = currentUser.LastName,
+                        homeTown = (currentUser.HomeTown == null ? null : currentUser.HomeTown.TownName),
+                        email = currentUser.Email,
+                        NZIPPMember = currentUser.NZIPPMember ?? false,
+                        PSNZMember = currentUser.PSNZMember ?? false,
+                        PSNZMemberAppliedFor = currentUser.PSNZAppliedFor ?? false,
+                        photoHonours = currentUser.HonourContactLinks.Select(s => s.Honour.Description).ToList(),
+                        photoClubs = currentUser.PhotoClubContactLinks.Select(s => s.PhotoClub.Description).ToList()
+                    },
+                    //userDetails = new UserDetails() { firstName = "Graeme", lastName = "Atkinson", homeTown = "Dunedin", email = "atkinsongraeme@hotmail.com" },
+                    registrationDetails = new RegistrationDetails()
+                    {
+                        registrationType = query.Select(o => o.RegistrationType.RegistrationType1).FirstOrDefault(),
+                        canonWorkshop = query.Select(s => s.Workshops).FirstOrDefault().Select(o => o.Attending ?? false).FirstOrDefault(),
+                        additionalDinnerTicket = query.Select(s => s.AdditionalDinnerTicket ?? false).FirstOrDefault(),
+                        additionalDinnerName = query.Select(s => s.AdditionalDinnerName ?? "").FirstOrDefault(),
+                        specialRequirements = query.Select(o => o.SpecialRequirements).FirstOrDefault()
+                    }
+                    // "Full convention including awards dinner" }
+                };
+            }
+            catch (Exception ex)
+            { return null; }
 
             return result;
         }
@@ -104,7 +145,7 @@ namespace OLRapi.Controllers
                     .Select(x =>
                 new List<string> { (x.FieldTripOption == null ? null : x.FieldTripOption.Description),
                                         (x.FieldTripOption1 == null ? null : x.FieldTripOption1.Description),
-                                        (x.FieldTripOption3 == null ? null : x.FieldTripOption3.Description) })
+                                        (x.FieldTripOption2 == null ? null : x.FieldTripOption2.Description) })
                                     .ToList();
                 _choices = currentChoiceList[0];
             }
@@ -126,6 +167,20 @@ namespace OLRapi.Controllers
 
             registration.Contact.FirstName = registrationDetails.userDetails.firstName;
             registration.Contact.LastName = registrationDetails.userDetails.lastName;
+            registration.Contact.HomeTown = (db.HomeTowns.Where(s => s.TownName == registrationDetails.userDetails.homeTown).FirstOrDefault());
+
+            registration.Contact.NZIPPMember = registrationDetails.userDetails.NZIPPMember;
+            registration.Contact.PSNZMember = registrationDetails.userDetails.PSNZMember;
+            registration.Contact.PSNZAppliedFor = registrationDetails.userDetails.PSNZMemberAppliedFor;
+
+            // Honors
+
+            registration.RegistrationType = db.RegistrationTypes.Where(s => s.RegistrationType1 == registrationDetails.registrationDetails.registrationType).FirstOrDefault();
+
+            registration.AdditionalDinnerTicket = registrationDetails.registrationDetails.additionalDinnerTicket;
+            registration.AdditionalDinnerName = registrationDetails.registrationDetails.additionalDinnerName;
+            registration.SpecialRequirements = registrationDetails.registrationDetails.specialRequirements;
+
 
             var _fieldTripsOnFile = registration.FieldTripChoices.ToArray();
 
@@ -157,6 +212,84 @@ namespace OLRapi.Controllers
                     _count++;
                 }
             }
+
+            try
+            {
+                string SQL = string.Format("delete from HonourContactLinks where ContactId = {0}", registration.Contact.ContactId.ToString());
+                db.Database.ExecuteSqlCommand(SQL);
+
+                foreach (var description in registrationDetails.userDetails.photoHonours)
+                {
+                    var _id = db.Honours.Where(s => s.Description == description).Select(o => o.HonourId).FirstOrDefault();
+                    var _honour = new Honour() { HonourId = _id };
+                    db.Honours.Attach(_honour);
+                    HonourContactLink link = new HonourContactLink() { Honour = _honour, RecordDeleted = false };
+                    registration.Contact.HonourContactLinks.Add(link);
+                }
+            }
+            catch (Exception ex) { }
+
+            try
+            {
+                string SQL = string.Format("delete from PhotoClubContactLinks where ContactId = {0}", registration.Contact.ContactId.ToString());
+                db.Database.ExecuteSqlCommand(SQL);
+
+                foreach (var description in registrationDetails.userDetails.photoClubs)
+                {
+                    var _id = db.PhotoClubs.Where(s => s.Description == description).Select(o => o.PhotoClubId).FirstOrDefault();
+                    var _photoClub = new PhotoClub() { PhotoClubId = _id };
+                    db.PhotoClubs.Attach(_photoClub);
+                    PhotoClubContactLink link = new PhotoClubContactLink() { PhotoClub = _photoClub, RecordDeleted = false };
+                    registration.Contact.PhotoClubContactLinks.Add(link);
+                }
+            }
+            catch (Exception ex) { }
+
+
+            //            try
+            //            {
+            //                using (var context = new OLR_dbEntities())
+            //                {
+            //                    var _contact = new Contact() { ContactId = 74 };
+            //                    context.Contacts.Attach(_contact);
+
+            ////                    var _honourList = context.HonourContactLinks.Where(o => o.Contact == _contact);
+            //                    foreach (var item in _contact.HonourContactLinks)//.Where(at => at.ContactId == _contact.ContactId))
+            //                    {
+            //                        _contact.HonourContactLinks.Remove(item);
+            //                    }
+
+            //                    var _honour = new Honour() { HonourId = 86 };
+            //                    context.Honours.Attach(_honour);
+
+            //                    HonourContactLink link = new HonourContactLink() { Honour = _honour };
+            //                    //context.HonourContactLinks.Attach(link);
+
+            //                    _contact.HonourContactLinks.Add(link);
+
+            //                    context.SaveChanges();
+
+            //                }
+            //            }
+            //            catch (Exception ex) { }
+
+
+
+            //foreach (var _honour in _honourSelected)
+            //{
+            //    //_honoursOnFile.Add(db.Honours.Where(o => o.Description == _honour).Select(s => s.HonourId));
+            //    var _description = _honour;
+            //    //var _honourSelected = registrationDetails.userDetails.photoHonours.ToList();
+            //}
+            //    //registrationDetails.userDetails.photoHonours.ToList();
+
+            // Special case, we are only supporting a single "Canon Workshop" 
+            // *****
+            var zz = registration.Workshops.FirstOrDefault();
+            zz.Attending = registrationDetails.registrationDetails.canonWorkshop;
+
+            //var _workshop = registration.Workshops.Where(s => s.AvailableWorkshop.WorkshopDescription == )
+            //registration.Workshops = db.Workshops.Where(s => s.AvailableWorkshop.WorkshopDescription == registrationDetails.registrationDetails.)
             //foreach (var _fieldTrip in registrationDetails.fie)
             //{
             //    //  _fieldTripsOnFile[0].FieldTripOptionId = db.FieldTripOptions.Where(s => s.Description == _fieldTrip.choices.).Select(o => o.FieldTripId).FirstOrDefault();

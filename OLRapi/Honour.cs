@@ -14,7 +14,16 @@ namespace OLRapi
     
     public partial class Honour
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Honour()
+        {
+            this.HonourContactLinks = new HashSet<HonourContactLink>();
+        }
+    
         public int HonourId { get; set; }
         public string Description { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<HonourContactLink> HonourContactLinks { get; set; }
     }
 }

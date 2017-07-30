@@ -37,5 +37,7 @@ namespace OLRapi
         public virtual DbSet<Honour> Honours { get; set; }
         public virtual DbSet<PhotoClub> PhotoClubs { get; set; }
         public virtual DbSet<RegistrationType> RegistrationTypes { get; set; }
+        public virtual DbSet<HonourContactLink> HonourContactLinks { get; set; }
+        public virtual DbSet<PhotoClubContactLink> PhotoClubContactLinks { get; set; }
     }
 }

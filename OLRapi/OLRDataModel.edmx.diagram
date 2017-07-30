@@ -10,7 +10,7 @@
         <EntityTypeShape EntityType="OLR_dbModel.Registration" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
         <AssociationConnector Association="OLR_dbModel.FK_Registrations_Contacts" ManuallyRouted="false" />
         <AssociationConnector Association="OLR_dbModel.FK_Registrations_Events" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="OLR_dbModel.FieldTripChoice" Width="1.5" PointX="5.25" PointY="3.875" />
+        <EntityTypeShape EntityType="OLR_dbModel.FieldTripChoice" Width="2.25" PointX="5.25" PointY="3.875" />
         <EntityTypeShape EntityType="OLR_dbModel.FieldTrip" Width="1.5" PointX="3" PointY="6.5" />
         <AssociationConnector Association="OLR_dbModel.FK_FieldTrips_Events" />
         <AssociationConnector Association="OLR_dbModel.FK_FieldTripChoices_FieldTrips" />
@@ -33,6 +33,12 @@
         <AssociationConnector Association="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions3" />
         <AssociationConnector Association="OLR_dbModel.FK_FieldTripOptions_FieldTrips" />
         <AssociationConnector Association="OLR_dbModel.FK_Registrations_RegistrationTypes" />
+        <EntityTypeShape EntityType="OLR_dbModel.HonourContactLink" Width="1.5" PointX="8.625" PointY="5" />
+        <EntityTypeShape EntityType="OLR_dbModel.PhotoClubContactLink" Width="1.5" PointX="9.625" PointY="2" />
+        <AssociationConnector Association="OLR_dbModel.FK_HonorContactLinks_Contacts" />
+        <AssociationConnector Association="OLR_dbModel.FK_PhotoClubContactLinks_Contacts" />
+        <AssociationConnector Association="OLR_dbModel.FK_HonorContactLinks_Honors" />
+        <AssociationConnector Association="OLR_dbModel.FK_PhotoClubContactLinks_PhotoClubs" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

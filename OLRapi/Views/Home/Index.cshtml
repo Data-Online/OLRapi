@@ -20,6 +20,7 @@
     <script type="text/javascript">
         $('#form2').submit(function () {
             $("#loading").show();
+            $('#message').html("One moment please ...");
             //var jqxhr = $.post('http://localhost:60892/RegisterEmail/992fdb3b-7715-4c41-a591-1558899fc91a', { "": $('#email1').val() })
             var jqxhr = $.post('@Request.Url.GetLeftPart(UriPartial.Authority)/RegisterEmail/@ViewBag.EventUID', { "": $('#email1').val() })
                 .then(function (data) {
@@ -33,7 +34,7 @@
                 })
                 .catch(function () {
                     $("#loading").hide();
-                    $('#message').html("Sorry, something went wrong. <br />You may have not already registered using this email or this event is not currently open for registrations.");
+                    $('#message').html("Sorry, something went wrong. <br />You may have already registered using this email / this event is not currently open for registrations.");
                 });
             return false;
         });

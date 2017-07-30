@@ -235,6 +235,9 @@
     <Compile Include="Honour.cs">
       <DependentUpon>OLRDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="HonourContactLink.cs">
+      <DependentUpon>OLRDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\RegistrationModels.cs" />
     <Compile Include="OLRDataModel.Context.cs">
       <AutoGen>True</AutoGen>
@@ -252,6 +255,9 @@
       <DependentUpon>OLRDataModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="PhotoClub.cs">
+      <DependentUpon>OLRDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PhotoClubContactLink.cs">
       <DependentUpon>OLRDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

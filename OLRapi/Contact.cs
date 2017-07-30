@@ -18,6 +18,8 @@ namespace OLRapi
         public Contact()
         {
             this.Registrations = new HashSet<Registration>();
+            this.HonourContactLinks = new HashSet<HonourContactLink>();
+            this.PhotoClubContactLinks = new HashSet<PhotoClubContactLink>();
         }
     
         public int ContactId { get; set; }
@@ -38,5 +40,9 @@ namespace OLRapi
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Registration> Registrations { get; set; }
         public virtual HomeTown HomeTown { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<HonourContactLink> HonourContactLinks { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PhotoClubContactLink> PhotoClubContactLinks { get; set; }
     }
 }

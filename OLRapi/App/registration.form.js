@@ -204,6 +204,8 @@
             $scope.fieldTrip1Description = data.fieldTrips[1].fieldTripDescription;
             $scope.fieldTrip1Options = data.fieldTrips[1].options;
 
+            $scope.selectedHonours = data.userDetails.photoHonours;
+            $scope.selectedClubs = data.userDetails.photoClubs;
 
             //$scope.items = data.fieldTrip1Options.options;
             $log.info($scope.fieldTrip1Options);

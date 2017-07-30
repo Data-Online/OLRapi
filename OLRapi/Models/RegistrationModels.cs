@@ -15,7 +15,7 @@ namespace OLRapi.Models
     public class RegistrationViewModel
     {
         public UserDetails userDetails { get; set; }
-        public List<FieldTripOptions> fieldTrips { get; set; }
+        public List<FieldTripOptionsAndChoices> fieldTrips { get; set; }
         public RegistrationDetails registrationDetails { get; set; }
     }
 
@@ -44,7 +44,7 @@ namespace OLRapi.Models
         public bool canonWorkshop { get; set; }
     }
 
-    public class FieldTripOptions
+    public class FieldTripOptionsAndChoices
     {
         public string fieldTripDescription { get; set; }
         public List<string> options { get; set; }

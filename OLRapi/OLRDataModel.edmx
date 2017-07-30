@@ -85,12 +85,30 @@
           <Property Name="HomeTownId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TownName" Type="nvarchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="HonourContactLinks">
+          <Key>
+            <PropertyRef Name="HonourContactLinkId" />
+          </Key>
+          <Property Name="HonourId" Type="int" />
+          <Property Name="ContactId" Type="int" />
+          <Property Name="HonourContactLinkId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RecordDeleted" Type="bit" />
+        </EntityType>
         <EntityType Name="Honours">
           <Key>
             <PropertyRef Name="HonourId" />
           </Key>
           <Property Name="HonourId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="PhotoClubContactLinks">
+          <Key>
+            <PropertyRef Name="PhotoClubContactId" />
+          </Key>
+          <Property Name="ContactId" Type="int" />
+          <Property Name="PhotoClubId" Type="int" />
+          <Property Name="PhotoClubContactId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RecordDeleted" Type="bit" />
         </EntityType>
         <EntityType Name="PhotoClubs">
           <Key>
@@ -255,6 +273,54 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_HonorContactLinks_Contacts">
+          <End Role="Contacts" Type="Self.Contacts" Multiplicity="0..1" />
+          <End Role="HonourContactLinks" Type="Self.HonourContactLinks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contacts">
+              <PropertyRef Name="ContactId" />
+            </Principal>
+            <Dependent Role="HonourContactLinks">
+              <PropertyRef Name="ContactId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HonorContactLinks_Honors">
+          <End Role="Honours" Type="Self.Honours" Multiplicity="0..1" />
+          <End Role="HonourContactLinks" Type="Self.HonourContactLinks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Honours">
+              <PropertyRef Name="HonourId" />
+            </Principal>
+            <Dependent Role="HonourContactLinks">
+              <PropertyRef Name="HonourId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PhotoClubContactLinks_Contacts">
+          <End Role="Contacts" Type="Self.Contacts" Multiplicity="0..1" />
+          <End Role="PhotoClubContactLinks" Type="Self.PhotoClubContactLinks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contacts">
+              <PropertyRef Name="ContactId" />
+            </Principal>
+            <Dependent Role="PhotoClubContactLinks">
+              <PropertyRef Name="ContactId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PhotoClubContactLinks_PhotoClubs">
+          <End Role="PhotoClubs" Type="Self.PhotoClubs" Multiplicity="0..1" />
+          <End Role="PhotoClubContactLinks" Type="Self.PhotoClubContactLinks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PhotoClubs">
+              <PropertyRef Name="PhotoClubId" />
+            </Principal>
+            <Dependent Role="PhotoClubContactLinks">
+              <PropertyRef Name="PhotoClubId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Registrations_Contacts">
           <End Role="Contacts" Type="Self.Contacts" Multiplicity="0..1" />
           <End Role="Registrations" Type="Self.Registrations" Multiplicity="*" />
@@ -335,7 +401,9 @@
           <EntitySet Name="FieldTripOptions" EntityType="Self.FieldTripOptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FieldTrips" EntityType="Self.FieldTrips" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HomeTowns" EntityType="Self.HomeTowns" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HonourContactLinks" EntityType="Self.HonourContactLinks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Honours" EntityType="Self.Honours" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PhotoClubContactLinks" EntityType="Self.PhotoClubContactLinks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PhotoClubs" EntityType="Self.PhotoClubs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Registrations" EntityType="Self.Registrations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RegistrationTypes" EntityType="Self.RegistrationTypes" Schema="dbo" store:Type="Tables" />
@@ -379,6 +447,22 @@
           <AssociationSet Name="FK_FieldTrips_Events" Association="Self.FK_FieldTrips_Events">
             <End Role="Events" EntitySet="Events" />
             <End Role="FieldTrips" EntitySet="FieldTrips" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HonorContactLinks_Contacts" Association="Self.FK_HonorContactLinks_Contacts">
+            <End Role="Contacts" EntitySet="Contacts" />
+            <End Role="HonourContactLinks" EntitySet="HonourContactLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HonorContactLinks_Honors" Association="Self.FK_HonorContactLinks_Honors">
+            <End Role="Honours" EntitySet="Honours" />
+            <End Role="HonourContactLinks" EntitySet="HonourContactLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PhotoClubContactLinks_Contacts" Association="Self.FK_PhotoClubContactLinks_Contacts">
+            <End Role="Contacts" EntitySet="Contacts" />
+            <End Role="PhotoClubContactLinks" EntitySet="PhotoClubContactLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PhotoClubContactLinks_PhotoClubs" Association="Self.FK_PhotoClubContactLinks_PhotoClubs">
+            <End Role="PhotoClubs" EntitySet="PhotoClubs" />
+            <End Role="PhotoClubContactLinks" EntitySet="PhotoClubContactLinks" />
           </AssociationSet>
           <AssociationSet Name="FK_Registrations_Contacts" Association="Self.FK_Registrations_Contacts">
             <End Role="Contacts" EntitySet="Contacts" />
@@ -429,6 +513,8 @@
           <Property Name="RecordDeleted" Type="Boolean" />
           <Property Name="NZIPPMember" Type="Boolean" />
           <NavigationProperty Name="HomeTown" Relationship="OLR_dbModel.FK_Contacts_HomeTowns" FromRole="Contact" ToRole="HomeTown" />
+          <NavigationProperty Name="HonourContactLinks" Relationship="OLR_dbModel.FK_HonorContactLinks_Contacts" FromRole="Contact" ToRole="HonourContactLink" />
+          <NavigationProperty Name="PhotoClubContactLinks" Relationship="OLR_dbModel.FK_PhotoClubContactLinks_Contacts" FromRole="Contact" ToRole="PhotoClubContactLink" />
         </EntityType>
         <EntityType Name="Event">
           <Key>
@@ -565,6 +651,24 @@
           <AssociationSet Name="FK_Registrations_RegistrationTypes" Association="OLR_dbModel.FK_Registrations_RegistrationTypes">
             <End Role="RegistrationType" EntitySet="RegistrationTypes" />
             <End Role="Registration" EntitySet="Registrations" />
+          </AssociationSet>
+          <EntitySet Name="HonourContactLinks" EntityType="OLR_dbModel.HonourContactLink" />
+          <EntitySet Name="PhotoClubContactLinks" EntityType="OLR_dbModel.PhotoClubContactLink" />
+          <AssociationSet Name="FK_HonorContactLinks_Contacts" Association="OLR_dbModel.FK_HonorContactLinks_Contacts">
+            <End Role="Contact" EntitySet="Contacts" />
+            <End Role="HonourContactLink" EntitySet="HonourContactLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PhotoClubContactLinks_Contacts" Association="OLR_dbModel.FK_PhotoClubContactLinks_Contacts">
+            <End Role="Contact" EntitySet="Contacts" />
+            <End Role="PhotoClubContactLink" EntitySet="PhotoClubContactLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HonorContactLinks_Honors" Association="OLR_dbModel.FK_HonorContactLinks_Honors">
+            <End Role="Honour" EntitySet="Honours" />
+            <End Role="HonourContactLink" EntitySet="HonourContactLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PhotoClubContactLinks_PhotoClubs" Association="OLR_dbModel.FK_PhotoClubContactLinks_PhotoClubs">
+            <End Role="PhotoClub" EntitySet="PhotoClubs" />
+            <End Role="PhotoClubContactLink" EntitySet="PhotoClubContactLinks" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="FieldTripChoice">
@@ -725,6 +829,7 @@
           </Key>
           <Property Name="HonourId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="HonourContactLinks" Relationship="OLR_dbModel.FK_HonorContactLinks_Honors" FromRole="Honour" ToRole="HonourContactLink" />
         </EntityType>
         <EntityType Name="PhotoClub">
           <Key>
@@ -732,6 +837,7 @@
           </Key>
           <Property Name="PhotoClubId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PhotoClubContactLinks" Relationship="OLR_dbModel.FK_PhotoClubContactLinks_PhotoClubs" FromRole="PhotoClub" ToRole="PhotoClubContactLink" />
         </EntityType>
         <EntityType Name="RegistrationType">
           <Key>
@@ -838,6 +944,76 @@
             </Principal>
             <Dependent Role="Registration">
               <PropertyRef Name="RegistrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="HonourContactLink">
+          <Key>
+            <PropertyRef Name="HonourContactLinkId" />
+          </Key>
+          <Property Name="HonourId" Type="Int32" />
+          <Property Name="ContactId" Type="Int32" />
+          <Property Name="HonourContactLinkId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordDeleted" Type="Boolean" />
+          <NavigationProperty Name="Contact" Relationship="OLR_dbModel.FK_HonorContactLinks_Contacts" FromRole="HonourContactLink" ToRole="Contact" />
+          <NavigationProperty Name="Honour" Relationship="OLR_dbModel.FK_HonorContactLinks_Honors" FromRole="HonourContactLink" ToRole="Honour" />
+        </EntityType>
+        <EntityType Name="PhotoClubContactLink">
+          <Key>
+            <PropertyRef Name="PhotoClubContactId" />
+          </Key>
+          <Property Name="ContactId" Type="Int32" />
+          <Property Name="PhotoClubId" Type="Int32" />
+          <Property Name="PhotoClubContactId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordDeleted" Type="Boolean" />
+          <NavigationProperty Name="Contact" Relationship="OLR_dbModel.FK_PhotoClubContactLinks_Contacts" FromRole="PhotoClubContactLink" ToRole="Contact" />
+          <NavigationProperty Name="PhotoClub" Relationship="OLR_dbModel.FK_PhotoClubContactLinks_PhotoClubs" FromRole="PhotoClubContactLink" ToRole="PhotoClub" />
+        </EntityType>
+        <Association Name="FK_HonorContactLinks_Contacts">
+          <End Type="OLR_dbModel.Contact" Role="Contact" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.HonourContactLink" Role="HonourContactLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contact">
+              <PropertyRef Name="ContactId" />
+            </Principal>
+            <Dependent Role="HonourContactLink">
+              <PropertyRef Name="ContactId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PhotoClubContactLinks_Contacts">
+          <End Type="OLR_dbModel.Contact" Role="Contact" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.PhotoClubContactLink" Role="PhotoClubContactLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contact">
+              <PropertyRef Name="ContactId" />
+            </Principal>
+            <Dependent Role="PhotoClubContactLink">
+              <PropertyRef Name="ContactId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HonorContactLinks_Honors">
+          <End Type="OLR_dbModel.Honour" Role="Honour" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.HonourContactLink" Role="HonourContactLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Honour">
+              <PropertyRef Name="HonourId" />
+            </Principal>
+            <Dependent Role="HonourContactLink">
+              <PropertyRef Name="HonourId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PhotoClubContactLinks_PhotoClubs">
+          <End Type="OLR_dbModel.PhotoClub" Role="PhotoClub" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.PhotoClubContactLink" Role="PhotoClubContactLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PhotoClub">
+              <PropertyRef Name="PhotoClubId" />
+            </Principal>
+            <Dependent Role="PhotoClubContactLink">
+              <PropertyRef Name="PhotoClubId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -986,6 +1162,26 @@
                 <ScalarProperty Name="RegistrationType1" ColumnName="RegistrationType" />
                 <ScalarProperty Name="EventId" ColumnName="EventId" />
                 <ScalarProperty Name="RegistrationTypeId" ColumnName="RegistrationTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HonourContactLinks">
+            <EntityTypeMapping TypeName="OLR_dbModel.HonourContactLink">
+              <MappingFragment StoreEntitySet="HonourContactLinks">
+                <ScalarProperty Name="RecordDeleted" ColumnName="RecordDeleted" />
+                <ScalarProperty Name="HonourContactLinkId" ColumnName="HonourContactLinkId" />
+                <ScalarProperty Name="ContactId" ColumnName="ContactId" />
+                <ScalarProperty Name="HonourId" ColumnName="HonourId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PhotoClubContactLinks">
+            <EntityTypeMapping TypeName="OLR_dbModel.PhotoClubContactLink">
+              <MappingFragment StoreEntitySet="PhotoClubContactLinks">
+                <ScalarProperty Name="RecordDeleted" ColumnName="RecordDeleted" />
+                <ScalarProperty Name="PhotoClubContactId" ColumnName="PhotoClubContactId" />
+                <ScalarProperty Name="PhotoClubId" ColumnName="PhotoClubId" />
+                <ScalarProperty Name="ContactId" ColumnName="ContactId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
