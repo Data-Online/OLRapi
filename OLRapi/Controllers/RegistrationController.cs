@@ -162,56 +162,63 @@ namespace OLRapi.Controllers
             // Read existing record from database
             // Map view model to database
             // Save updates
-
-            Registration registration = await db.Registrations.Where(s => s.ValidationUid == userGuid).FirstOrDefaultAsync();
-
-            registration.Contact.FirstName = registrationDetails.userDetails.firstName;
-            registration.Contact.LastName = registrationDetails.userDetails.lastName;
-            registration.Contact.HomeTown = (db.HomeTowns.Where(s => s.TownName == registrationDetails.userDetails.homeTown).FirstOrDefault());
-
-            registration.Contact.NZIPPMember = registrationDetails.userDetails.NZIPPMember;
-            registration.Contact.PSNZMember = registrationDetails.userDetails.PSNZMember;
-            registration.Contact.PSNZAppliedFor = registrationDetails.userDetails.PSNZMemberAppliedFor;
-
-            // Honors
-
-            registration.RegistrationType = db.RegistrationTypes.Where(s => s.RegistrationType1 == registrationDetails.registrationDetails.registrationType).FirstOrDefault();
-
-            registration.AdditionalDinnerTicket = registrationDetails.registrationDetails.additionalDinnerTicket;
-            registration.AdditionalDinnerName = registrationDetails.registrationDetails.additionalDinnerName;
-            registration.SpecialRequirements = registrationDetails.registrationDetails.specialRequirements;
-
-
-            var _fieldTripsOnFile = registration.FieldTripChoices.ToArray();
-
-            foreach (var _currentFieldTrips in _fieldTripsOnFile)
+            Registration registration = new Registration();
+            try
             {
-                var _description = _currentFieldTrips.FieldTrip.Description;
+                registration = await db.Registrations.Where(s => s.ValidationUid == userGuid).FirstOrDefaultAsync();
 
-                var _fieldTripsSelected = registrationDetails.fieldTrips.Where(s => s.fieldTripDescription == _description).Select(o => o.choices).ToList();
+                registration.Contact.FirstName = registrationDetails.userDetails.firstName;
+                registration.Contact.LastName = registrationDetails.userDetails.lastName;
+                registration.Contact.HomeTown = (db.HomeTowns.Where(s => s.TownName == registrationDetails.userDetails.homeTown).FirstOrDefault());
 
-                int _count = 0;
-                foreach (var _choice in _fieldTripsSelected[0])
+                registration.Contact.NZIPPMember = registrationDetails.userDetails.NZIPPMember;
+                registration.Contact.PSNZMember = registrationDetails.userDetails.PSNZMember;
+                registration.Contact.PSNZAppliedFor = registrationDetails.userDetails.PSNZMemberAppliedFor;
+
+                // Honors
+
+                registration.RegistrationType = db.RegistrationTypes.Where(s => s.RegistrationType1 == registrationDetails.registrationDetails.registrationType).FirstOrDefault();
+
+                registration.AdditionalDinnerTicket = registrationDetails.registrationDetails.additionalDinnerTicket;
+                registration.AdditionalDinnerName = registrationDetails.registrationDetails.additionalDinnerName;
+                registration.SpecialRequirements = registrationDetails.registrationDetails.specialRequirements;
+            }
+            catch (Exception ex) { }
+
+            try
+            {
+                var _fieldTripsOnFile = registration.FieldTripChoices.ToArray();
+
+                foreach (var _currentFieldTrips in _fieldTripsOnFile)
                 {
-                    var _id = db.FieldTripOptions.Where(s => s.Description == _choice).Select(o => o.FieldTripOptionId).FirstOrDefault();
-                    if (_id > 0)
+                    var _description = _currentFieldTrips.FieldTrip.Description;
+
+                    var _fieldTripsSelected = registrationDetails.fieldTrips.Where(s => s.fieldTripDescription == _description).Select(o => o.choices).ToList();
+
+                    int _count = 0;
+                    foreach (var _choice in _fieldTripsSelected[0])
                     {
-                        switch (_count)
+                        var _id = db.FieldTripOptions.Where(s => s.Description == _choice).Select(o => o.FieldTripOptionId).FirstOrDefault();
+                        if (_id > 0)
                         {
-                            case 0:
-                                _currentFieldTrips.FieldTripOptionId = _id;
-                                break;
-                            case 1:
-                                _currentFieldTrips.FieldTripOptionId2 = _id;
-                                break;
-                            case 2:
-                                _currentFieldTrips.FieldTripOptionId3 = _id;
-                                break;
+                            switch (_count)
+                            {
+                                case 0:
+                                    _currentFieldTrips.FieldTripOptionId = _id;
+                                    break;
+                                case 1:
+                                    _currentFieldTrips.FieldTripOptionId2 = _id;
+                                    break;
+                                case 2:
+                                    _currentFieldTrips.FieldTripOptionId3 = _id;
+                                    break;
+                            }
                         }
+                        _count++;
                     }
-                    _count++;
                 }
             }
+            catch (Exception ex) { }
 
             try
             {
