@@ -45,8 +45,9 @@ namespace OLRapi.Controllers
         [Route("api/getCurrentCost/{userGuid}")]
         public HttpResponseMessage CurrentCosts(Guid userGuid, HttpRequestMessage request)
         {
-            var result = db.sp_rpt_CalculateCosts(Guid.Parse(Settings.EventUID)).FirstOrDefault();
-            return request.CreateResponse<Decimal>(HttpStatusCode.OK, result ?? 0.00m);
+            // Requires re-coding, results from SP now a table of items
+            var result = db.sp_rpt_CalculateCosts1(userGuid).ToArray();
+            return request.CreateResponse(HttpStatusCode.OK, result); //, result);
         }
 
         [HttpGet]

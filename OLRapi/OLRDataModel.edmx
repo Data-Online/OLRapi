@@ -677,6 +677,9 @@
           <FunctionImport Name="sp_rpt_CalculateCosts" ReturnType="Collection(Decimal)">
           <Parameter Name="guid" Mode="In" Type="Guid" />
           </FunctionImport>
+          <FunctionImport Name="sp_rpt_CalculateCosts1" ReturnType="Collection(OLR_dbModel.sp_rpt_CalculateCosts1_Result)">
+            <Parameter Name="guid" Mode="In" Type="Guid" />
+          </FunctionImport>
         </EntityContainer>
         <EntityType Name="FieldTripChoice">
           <Key>
@@ -1025,6 +1028,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <ComplexType Name="sp_rpt_CalculateCosts1_Result">
+          <Property Type="Int32" Name="Cost" Nullable="true" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Detail" Nullable="true" MaxLength="50" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1194,7 +1202,15 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="sp_rpt_CalculateCosts" FunctionName="OLR_dbModel.Store.sp_rpt_CalculateCosts" />
+          <FunctionImportMapping FunctionImportName="sp_rpt_CalculateCosts1" FunctionName="OLR_dbModel.Store.sp_rpt_CalculateCosts">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OLR_dbModel.sp_rpt_CalculateCosts1_Result">
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Detail" ColumnName="Detail" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

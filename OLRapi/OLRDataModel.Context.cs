@@ -50,5 +50,14 @@ namespace OLRapi
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<decimal>>("sp_rpt_CalculateCosts", guidParameter);
         }
+    
+        public virtual ObjectResult<sp_rpt_CalculateCosts1_Result> sp_rpt_CalculateCosts1(Nullable<System.Guid> guid)
+        {
+            var guidParameter = guid.HasValue ?
+                new ObjectParameter("guid", guid) :
+                new ObjectParameter("guid", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_rpt_CalculateCosts1_Result>("sp_rpt_CalculateCosts1", guidParameter);
+        }
     }
 }

@@ -267,6 +267,9 @@
     <Compile Include="RegistrationType.cs">
       <DependentUpon>OLRDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="sp_rpt_CalculateCosts1_Result.cs">
+      <DependentUpon>OLRDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Workshop.cs">
       <DependentUpon>OLRDataModel.tt</DependentUpon>
     </Compile>
@@ -288,6 +291,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Images\loading_animation.gif" />
+    <Content Include="Images\natcon2018_logo.jpg" />
     <Content Include="OLRDataModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>OLRDataModel.Context.cs</LastGenOutput>

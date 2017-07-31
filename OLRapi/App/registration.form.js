@@ -2,6 +2,7 @@
     .controller('registrationCtrl', ['$scope', '$log', '$location', 'registrationDataSource', function ($scope, $log, $location, registrationDataSource) {
         $scope.loading = false;
         $scope.validRegistration = false;
+        $scope.currentCosts = [];
 
         var registrationUid = $location.search().Registration;
 
@@ -213,6 +214,8 @@
 
             getFKData();
 
+            getCosts();
+
         }
 
         var bindFKData = function (data) {
@@ -231,10 +234,26 @@
 
         readRegistrationDetails(registrationUid);
 
-        var zz = registrationDataSource.getCurrentCost(registrationUid);
-        $log.info("Cost: " + zz);
-        //7853C644-A356-4B87-A26F-DC15FBD2F415
-        //readRegistrationDetails("7853C644-A356-4B87-A26F-DC15FBD2F415");  //7853C644-A356-4B87-A26F-DC15FBD2F415
+        var getCosts = function () {
+            registrationDataSource.getCurrentCost(registrationUid)
+                .then(bindCostsData, onError);
+            //$log.info("Cost: " + zz);
+            //7853C644-A356-4B87-A26F-DC15FBD2F415
+            //readRegistrationDetails("7853C644-A356-4B87-A26F-DC15FBD2F415");  //7853C644-A356-4B87-A26F-DC15FBD2F415
+        }
+
+        var bindCostsData = function (data) {
+            $scope.currentCosts = data;
+            $scope.currentCostsTitle = "Current Costs";
+            $scope.getTotal = function () {
+                var total = 0;
+                for (var i = 0; i < $scope.currentCosts.length; i++) {
+                    total += $scope.currentCosts[i].Cost;
+                    $log.info(total);
+                }
+                return total;
+            }
+        }
 
     }])
     .config(function ($locationProvider) {

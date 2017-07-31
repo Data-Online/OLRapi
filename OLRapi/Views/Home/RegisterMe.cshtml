@@ -4,7 +4,10 @@
 }
 <link href="~/Scripts/multi-select/multiple-select.min.css" rel="stylesheet" />
 
-<h2>@ViewBag.Title</h2>
+@*<h2>@ViewBag.Title</h2>*@
+<div id="wrapper" style="width:100%; text-align:center">
+    <img src="~/Images/natcon2018_logo.jpg" width="300" align="middle" alt="@ViewBag.Title" />
+</div>
 
 <div data-ng-app="app" data-ng-controller="registrationCtrl">
 
@@ -21,6 +24,27 @@
     <div ng-show="validRegistration && !loading" ng-cloak>
         <h3>Registration details for eMail address <b>{{::displayEmail}}</b></h3>
         <br />
+        <div ng-if="getTotal() > 0">
+            <h3>{{::currentCostsTitle}}  Total: {{ getTotal() | currency}}</h3>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Detail</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="costItem in currentCosts">
+                        <td>{{costItem.Description}}</td>
+                        <td>{{costItem.Detail}}</td>
+                        <td>{{costItem.Cost | currency}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br />
+
         <div class="col-sm-12">
             <form name="registerForm" ng-submit="register()">
                 @*<auto:fields fields="schema" data="user" options="options"></auto:fields>*@
