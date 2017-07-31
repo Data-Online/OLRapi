@@ -231,6 +231,8 @@
 
         readRegistrationDetails(registrationUid);
 
+        var zz = registrationDataSource.getCurrentCost(registrationUid);
+        $log.info("Cost: " + zz);
         //7853C644-A356-4B87-A26F-DC15FBD2F415
         //readRegistrationDetails("7853C644-A356-4B87-A26F-DC15FBD2F415");  //7853C644-A356-4B87-A26F-DC15FBD2F415
 

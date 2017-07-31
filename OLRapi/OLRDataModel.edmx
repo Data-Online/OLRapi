@@ -142,6 +142,7 @@
           <Property Name="RegistrationType" Type="nvarchar" MaxLength="100" />
           <Property Name="CostMember" Type="decimal" Precision="5" Scale="2" />
           <Property Name="CostNonMember" Type="decimal" Precision="5" Scale="2" />
+          <Property Name="Default" Type="bit" />
         </EntityType>
         <EntityType Name="Workshops">
           <Key>
@@ -393,6 +394,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="sp_rpt_CalculateCosts" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="guid" Type="uniqueidentifier" Mode="In" />
+        </Function>
         <EntityContainer Name="OLR_dbModelStoreContainer">
           <EntitySet Name="AvailableWorkshops" EntityType="Self.AvailableWorkshops" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Contacts" EntityType="Self.Contacts" Schema="dbo" store:Type="Tables" />
@@ -670,6 +674,9 @@
             <End Role="PhotoClub" EntitySet="PhotoClubs" />
             <End Role="PhotoClubContactLink" EntitySet="PhotoClubContactLinks" />
           </AssociationSet>
+          <FunctionImport Name="sp_rpt_CalculateCosts" ReturnType="Collection(Decimal)">
+          <Parameter Name="guid" Mode="In" Type="Guid" />
+          </FunctionImport>
         </EntityContainer>
         <EntityType Name="FieldTripChoice">
           <Key>
@@ -850,6 +857,7 @@
           <Property Name="CostNonMember" Type="Decimal" Precision="5" Scale="2" />
           <NavigationProperty Name="Event" Relationship="OLR_dbModel.FK_RegistrationTypes_Events" FromRole="RegistrationType" ToRole="Event" />
           <NavigationProperty Name="Registrations" Relationship="OLR_dbModel.FK_Registrations_RegistrationTypes" FromRole="RegistrationType" ToRole="Registration" />
+          <Property Name="Default" Type="Boolean" />
         </EntityType>
         <Association Name="FK_Contacts_HomeTowns">
           <End Type="OLR_dbModel.HomeTown" Role="HomeTown" Multiplicity="0..1" />
@@ -1157,6 +1165,7 @@
           <EntitySetMapping Name="RegistrationTypes">
             <EntityTypeMapping TypeName="OLR_dbModel.RegistrationType">
               <MappingFragment StoreEntitySet="RegistrationTypes">
+                <ScalarProperty Name="Default" ColumnName="Default" />
                 <ScalarProperty Name="CostNonMember" ColumnName="CostNonMember" />
                 <ScalarProperty Name="CostMember" ColumnName="CostMember" />
                 <ScalarProperty Name="RegistrationType1" ColumnName="RegistrationType" />
@@ -1185,6 +1194,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_rpt_CalculateCosts" FunctionName="OLR_dbModel.Store.sp_rpt_CalculateCosts" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

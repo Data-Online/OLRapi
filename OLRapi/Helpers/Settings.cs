@@ -13,9 +13,6 @@ namespace OLRapi.Helpers
         public static string RegistrationUrl => ConfigurationManager.AppSettings["RegistrationUrl"];
         public static string RegistrationUrlApi => ConfigurationManager.AppSettings["RegistrationUrlApi"];
 
-
-
-
         public static string EventUID => ConfigurationManager.AppSettings["EventUID"];
 
         public static bool AllowDuplicateeMail = ConfigurationManager.AppSettings["AllowDuplicateeMail"] == "true" ? true : false;

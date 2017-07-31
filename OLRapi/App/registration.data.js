@@ -31,10 +31,19 @@
                 }); 
         };
 
+        var getCurrentCost = function (userGuid) {
+            var dataApi = "/api/getCurrentCost/" + userGuid;
+            return $http.get(dataApi)
+                .then(function (response) {
+                    return response.data;
+                });
+        };
+
         return {
             getRegistrationData: getRegistrationData,
             saveRegistrationDetails: saveRegistrationDetails,
-            getForeignKeyData: getForeignKeyData
+            getForeignKeyData: getForeignKeyData,
+            getCurrentCost: getCurrentCost
         }
 
     };

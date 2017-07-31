@@ -42,6 +42,14 @@ namespace OLRapi.Controllers
         }
 
         [HttpGet]
+        [Route("api/getCurrentCost/{userGuid}")]
+        public HttpResponseMessage CurrentCosts(Guid userGuid, HttpRequestMessage request)
+        {
+            var result = db.sp_rpt_CalculateCosts(Guid.Parse(Settings.EventUID)).FirstOrDefault();
+            return request.CreateResponse<Decimal>(HttpStatusCode.OK, result ?? 0.00m);
+        }
+
+        [HttpGet]
         [Route("api/getForeignKeyData")]
         public async Task<HttpResponseMessage> GetForeignKeyData(HttpRequestMessage request)
         {
@@ -101,6 +109,8 @@ namespace OLRapi.Controllers
             //  var userDetailsOnFile = db.Registrations.Where()
             try
             {
+                string DefaultRegType = db.RegistrationTypes.Where(s => s.Default == true).Select(o => o.RegistrationType1).DefaultIfEmpty("").First();
+
                 result = new RegistrationViewModel()
                 {
                     // userDetails = new UserDetails() { email = "test@test.com", firstName = "", lastName = "" },
@@ -120,7 +130,7 @@ namespace OLRapi.Controllers
                     //userDetails = new UserDetails() { firstName = "Graeme", lastName = "Atkinson", homeTown = "Dunedin", email = "atkinsongraeme@hotmail.com" },
                     registrationDetails = new RegistrationDetails()
                     {
-                        registrationType = query.Select(o => o.RegistrationType.RegistrationType1).FirstOrDefault(),
+                        registrationType = query.Select(o => o.RegistrationType.RegistrationType1).FirstOrDefault() ?? DefaultRegType,
                         canonWorkshop = query.Select(s => s.Workshops).FirstOrDefault().Select(o => o.Attending ?? false).FirstOrDefault(),
                         additionalDinnerTicket = query.Select(s => s.AdditionalDinnerTicket ?? false).FirstOrDefault(),
                         additionalDinnerName = query.Select(s => s.AdditionalDinnerName ?? "").FirstOrDefault(),
@@ -183,7 +193,7 @@ namespace OLRapi.Controllers
                 registration.AdditionalDinnerName = registrationDetails.registrationDetails.additionalDinnerName;
                 registration.SpecialRequirements = registrationDetails.registrationDetails.specialRequirements;
             }
-            catch (Exception ex) { }
+            catch (Exception ex) { return request.CreateResponse(HttpStatusCode.BadRequest); }
 
             try
             {
@@ -218,7 +228,7 @@ namespace OLRapi.Controllers
                     }
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception ex) { return request.CreateResponse(HttpStatusCode.BadRequest); }
 
             try
             {
@@ -234,7 +244,7 @@ namespace OLRapi.Controllers
                     registration.Contact.HonourContactLinks.Add(link);
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception ex) { return request.CreateResponse(HttpStatusCode.BadRequest); }
 
             try
             {
@@ -250,7 +260,7 @@ namespace OLRapi.Controllers
                     registration.Contact.PhotoClubContactLinks.Add(link);
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception ex) { return request.CreateResponse(HttpStatusCode.BadRequest); }
 
 
             //            try
@@ -309,7 +319,7 @@ namespace OLRapi.Controllers
             {
                 await db.SaveChangesAsync();
             }
-            catch (Exception ex) { }
+            catch (Exception ex) { return request.CreateResponse(HttpStatusCode.BadRequest); }
 
             return request.CreateResponse(HttpStatusCode.OK);
             //else

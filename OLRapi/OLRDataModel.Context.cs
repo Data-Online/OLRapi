@@ -12,6 +12,8 @@ namespace OLRapi
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class OLR_dbEntities : DbContext
     {
@@ -39,5 +41,14 @@ namespace OLRapi
         public virtual DbSet<RegistrationType> RegistrationTypes { get; set; }
         public virtual DbSet<HonourContactLink> HonourContactLinks { get; set; }
         public virtual DbSet<PhotoClubContactLink> PhotoClubContactLinks { get; set; }
+    
+        public virtual ObjectResult<Nullable<decimal>> sp_rpt_CalculateCosts(Nullable<System.Guid> guid)
+        {
+            var guidParameter = guid.HasValue ?
+                new ObjectParameter("guid", guid) :
+                new ObjectParameter("guid", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<decimal>>("sp_rpt_CalculateCosts", guidParameter);
+        }
     }
 }

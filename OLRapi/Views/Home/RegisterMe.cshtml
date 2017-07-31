@@ -19,7 +19,7 @@
     <i ng-show="loading" class="fa fa-refresh fa-fw fa-5x" ng-class="{'fa-spin' : loading}"></i>
     <span class="sr-only">Loading...</span>
     <div ng-show="validRegistration && !loading" ng-cloak>
-        <h3>Registration details for eMail address {{::displayEmail}}</h3>
+        <h3>Registration details for eMail address <b>{{::displayEmail}}</b></h3>
         <br />
         <div class="col-sm-12">
             <form name="registerForm" ng-submit="register()">
@@ -46,7 +46,7 @@
                     <h4>
                         <label ng-repeat="type in registrationTypes">
                             <span class="col-sm-12">
-                                <input type="radio" ng-model="$parent.selectedRegistration" value={{type}} />  {{type}}
+                                <input type="radio" name="regType" ng-model="$parent.selectedRegistration" value={{type}} required />  {{type}}
                             </span>
                         </label>
                     </h4>

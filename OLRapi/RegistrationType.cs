@@ -25,6 +25,7 @@ namespace OLRapi
         public string RegistrationType1 { get; set; }
         public Nullable<decimal> CostMember { get; set; }
         public Nullable<decimal> CostNonMember { get; set; }
+        public Nullable<bool> Default { get; set; }
     
         public virtual Event Event { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
