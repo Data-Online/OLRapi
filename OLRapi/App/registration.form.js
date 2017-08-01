@@ -177,7 +177,9 @@
 
         var savedOkay = function()
         {
-            alert('You\'ve joined!\n\nSee console for additional info.');
+            alert('Thank you!\n\nYour registration has been saved. An email confirmation will follow.\n\nScroll to the top of this page to review the total cost due.');
+            getCosts();
+
         }
 
         var getFKData = function () {
