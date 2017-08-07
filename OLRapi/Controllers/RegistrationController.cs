@@ -55,7 +55,8 @@ namespace OLRapi.Controllers
         public async Task<HttpResponseMessage> GetForeignKeyData(HttpRequestMessage request)
         {
             ForeignKeyViewModel result = new ForeignKeyViewModel();
-            result.towns = await db.HomeTowns.Select(o => o.TownName).ToListAsync();
+            result.towns = await db.HomeTowns.Where(s => s.TownName != "NOT LISTED").OrderBy(e => e.TownName).Select(o => o.TownName).ToListAsync();
+            result.towns.Insert(0, "NOT LISTED");
             result.photoClubs = await db.PhotoClubs.Select(o => o.Description).ToListAsync();
             result.photoHonours = await db.Honours.Select(o => o.Description).ToListAsync();
             result.registrationTypes = await db.RegistrationTypes.Select(o => o.RegistrationType1).ToListAsync();
