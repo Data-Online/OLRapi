@@ -15,6 +15,7 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 using OLRapi.Helpers;
 using OLRapi.Models;
+using Humanizer;
 //using System.Web.Mvc;
 
 namespace OLRapi.Controllers
@@ -51,6 +52,35 @@ namespace OLRapi.Controllers
         }
 
         [HttpGet]
+        [Route("api/sendRegistration/{userGuid}")]
+        public async Task<HttpResponseMessage> SendRegistration(Guid userGuid, HttpRequestMessage request)
+        {
+            // Requires re-coding, results from SP now a table of items
+            if ( await SendRegistrationDetails(userGuid) )
+                return request.CreateResponse(HttpStatusCode.OK); //, result);
+            else
+                return request.CreateResponse(HttpStatusCode.BadRequest); //, result);
+
+        }
+
+        private async Task<bool> SendRegistrationDetails(Guid userGuid)
+        {
+            RegistrationViewModel result = await GetRegistrationData(userGuid);
+            if (result != null)
+            {
+                Guid eventID = new Guid(Settings.EventUID);
+                Event  eventDetails = db.Events.Where(w => w.GID == eventID).FirstOrDefault();
+                DateTime expiryDate = new DateTime();
+                var zz = await SendConfirmationEmail(result, eventDetails, expiryDate);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        [HttpGet]
         [Route("api/getForeignKeyData")]
         public async Task<HttpResponseMessage> GetForeignKeyData(HttpRequestMessage request)
         {
@@ -66,6 +96,8 @@ namespace OLRapi.Controllers
 
         public async Task<RegistrationViewModel> GetRegistrationData(Guid userGuid)
         {
+            int linkValidDays = Int32.Parse(Settings.LinkValidDays);
+
             RegistrationViewModel result = new RegistrationViewModel();
 
             IQueryable<Registration> query = db.Registrations.Where(s => s.ValidationUid == userGuid);
@@ -136,7 +168,8 @@ namespace OLRapi.Controllers
                         canonWorkshop = query.Select(s => s.Workshops).FirstOrDefault().Select(o => o.Attending ?? false).FirstOrDefault(),
                         additionalDinnerTicket = query.Select(s => s.AdditionalDinnerTicket ?? false).FirstOrDefault(),
                         additionalDinnerName = query.Select(s => s.AdditionalDinnerName ?? "").FirstOrDefault(),
-                        specialRequirements = query.Select(o => o.SpecialRequirements).FirstOrDefault()
+                        specialRequirements = query.Select(o => o.SpecialRequirements).FirstOrDefault(),
+                        linkExpiryDate = query.Select(o => o.InitialCreationDate ?? DateTime.Today).FirstOrDefault().AddDays(linkValidDays)
                     }
                     // "Full convention including awards dinner" }
                 };
@@ -330,7 +363,7 @@ namespace OLRapi.Controllers
 
         [HttpPost]
         [Route("RegisterEmail/{eventid}")]
-        public async Task<HttpResponseMessage> RegisterEmail(Guid eventid, [FromBody] string value)
+        public async Task<HttpResponseMessage> RegisterEmail(Guid eventid, [FromBody] string returnedEmail)
         {
             string sourceUriTxt = "";
 
@@ -351,7 +384,7 @@ namespace OLRapi.Controllers
 
             try
             {
-                if (value != null)
+                if (returnedEmail != null)
                 {
                     Event @event = new Event();
 
@@ -368,7 +401,7 @@ namespace OLRapi.Controllers
 
                     BaseRegistration baseRegistration = new BaseRegistration()
                     {
-                        Email = HttpUtility.HtmlEncode(value),
+                        Email = HttpUtility.HtmlEncode(returnedEmail),
                         Date = DateTime.UtcNow
                     };
 
@@ -510,6 +543,54 @@ namespace OLRapi.Controllers
             var plainTextContent = "Thank you for your interest in this event";
             var htmlContent = "<strong>Thank you for your interest in this event</strong><br />" +
                                 String.Format("Please click here : <a id='register' href={0}>{1}</a>", registrationUri, "register!");
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
+            return response.StatusCode;
+        }
+
+        static async Task<HttpStatusCode> SendConfirmationEmail(RegistrationViewModel registrationDetails, Event eventDetails, DateTime expiryDate)
+        {
+            // Base class from ISD core application
+
+
+            var apiKey = Settings.GraphApiKey;
+            //    <add key = "RegistrationUrlApi" value="{0}/Home/RegisterMe?Registration={1}" />
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress(eventDetails.ContactEmail, "Registrations");
+            var subject = String.Format("{0} : Confirmation", eventDetails.EventName);
+            var to = new EmailAddress(HttpUtility.HtmlEncode(registrationDetails.userDetails.email));
+
+
+            var plainTextContent = eventDetails.EventName + "\n\nThank you for your registration!\n\n";
+
+            var htmlContent = String.Format("<strong>{0}</strong><br/><br />Thank you for your registration!<br /><br />", eventDetails.EventName);
+            htmlContent += String.Format("A summary of your registration is given below.<br />");
+            htmlContent += String.Format("If you need to make changes, please use your original email link. This link will remain active until {0}.<br /><br />", 
+                registrationDetails.registrationDetails.linkExpiryDate.ToString("dd/MM/yyy"));
+
+            htmlContent += String.Format("<strong>Registration</strong> : {0}<br /><br />", registrationDetails.registrationDetails.registrationType);
+            if (registrationDetails.registrationDetails.additionalDinnerTicket)
+            {
+                htmlContent += String.Format("<strong>Additional Diners Name</strong> : {0}<br /><br />", registrationDetails.registrationDetails.additionalDinnerName);
+            }
+            htmlContent += String.Format("<strong>Special Requirements</strong> : {0}<br /><br />", registrationDetails.registrationDetails.specialRequirements);
+
+            htmlContent += String.Format("<strong>Field Trip Choices</strong><br />");
+            foreach (var item in registrationDetails.fieldTrips)
+            {
+                htmlContent += String.Format("{0}:<br />", item.fieldTripDescription);
+                int loopcount = 0;
+                htmlContent += String.Format("<ul>");
+                foreach (var choice in item.choices)
+                {
+                    loopcount++;
+                    htmlContent += String.Format("<li>{0} choice: {1}</li>", loopcount.ToOrdinalWords(), choice );
+                }
+                htmlContent += String.Format("</ul><br/>");
+            }
+
+            htmlContent += String.Format("<strong>Attend Canon Workshop ?</strong> {0}<br />", registrationDetails.registrationDetails.canonWorkshop ? "Yes" : "No" );
+
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
             return response.StatusCode;

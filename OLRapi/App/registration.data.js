@@ -28,7 +28,7 @@
             return $http.get(dataApi)
                 .then(function (response) {
                     return response.data;
-                }); 
+                });
         };
 
         var getCurrentCost = function (userGuid) {
@@ -39,11 +39,22 @@
                 });
         };
 
+        var sendRegistration = function (userGuid) {
+            var targetApi = "/api/sendRegistration/" + userGuid;
+            console.log("Target : " + targetApi);
+            return $http.get(targetApi)
+                .then(function (response) {
+                    console.log("Status: " + response.status);
+                    return response.status;
+                });
+        };
+
         return {
             getRegistrationData: getRegistrationData,
             saveRegistrationDetails: saveRegistrationDetails,
             getForeignKeyData: getForeignKeyData,
-            getCurrentCost: getCurrentCost
+            getCurrentCost: getCurrentCost,
+            sendRegistration: sendRegistration
         }
 
     };

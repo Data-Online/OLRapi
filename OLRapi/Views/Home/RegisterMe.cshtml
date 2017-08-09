@@ -10,6 +10,7 @@
 </div>
 
 <div data-ng-app="app" data-ng-controller="registrationCtrl">
+    <toaster-container></toaster-container>
 
     <div ng-if="!validRegistration && !loading" ng-cloak>
         <h3>Sorry, there was a problem with your registration</h3>
@@ -110,9 +111,14 @@
     </div>
 </div>
 
+
+
 <script src="~/Scripts/angular.js"></script>
 <script src="~/Scripts/angular-ui/ui-bootstrap-tpls.js"></script>
 <script type="text/javascript" src="~/Scripts/autofields.js"></script>
+
+
+
 <!-- With Bootstrap -->
 <script type="text/javascript" src="~/Scripts/autofields-bootstrap.js"></script>
 
@@ -121,3 +127,6 @@
 <script src="~/App/registration.data.js"></script>
 
 <script src="~/Scripts/multi-select/multiple-select.min.js"></script>
+
+<link href="~/Scripts/toastr/AngularToaster/toaster.min.css" rel="stylesheet" />
+<script src="~/Scripts/toastr/AngularToaster/toaster.min.js"></script>

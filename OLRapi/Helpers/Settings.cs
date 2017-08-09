@@ -17,5 +17,7 @@ namespace OLRapi.Helpers
 
         public static bool AllowDuplicateeMail = ConfigurationManager.AppSettings["AllowDuplicateeMail"] == "true" ? true : false;
         public static bool UseApi = ConfigurationManager.AppSettings["UseApi"] == "true" ? true : false;
+
+        public static string LinkValidDays => ConfigurationManager.AppSettings["LinkValidDays"];
     }
 }

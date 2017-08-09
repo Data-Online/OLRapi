@@ -1,5 +1,5 @@
-﻿angular.module('app', ['autofields', 'multipleSelect'])
-    .controller('registrationCtrl', ['$scope', '$log', '$location', 'registrationDataSource', function ($scope, $log, $location, registrationDataSource) {
+﻿angular.module('app', ['autofields', 'multipleSelect', 'toaster'])
+    .controller('registrationCtrl', ['$scope', '$log', '$location', 'registrationDataSource', 'toaster', '$anchorScroll', function ($scope, $log, $location, registrationDataSource, toaster, $anchorScroll) {
         $scope.loading = false;
         $scope.validRegistration = false;
         $scope.currentCosts = [];
@@ -82,7 +82,7 @@
         ]
 
         $scope.excludeItems = function (itemList, index, fieldTripIndex) {
-            $log.info('Called');
+            //$log.info('Called');
             var result = {};
             var addToList = false;
             angular.forEach(itemList, function (value, key) {
@@ -155,6 +155,17 @@
             //alert('You\'ve joined!\n\nSee console for additional info.');
         }
 
+        var sendRegistrationEmail = function (userGuid) {
+            $log.info("Send details ...");
+            registrationDataSource.sendRegistration(userGuid)
+                .then(notifyEmail, onError);
+        };
+
+        var notifyEmail = function () {
+            toaster.pop('success', "Confirmation", "A confirmation eMail has been sent.");
+           // alert('Email confirmation sent!');
+        };
+
         var readRegistrationDetails = function (userGuid) {
             $scope.loading = true;
             registrationDataSource.getRegistrationData(userGuid)
@@ -173,14 +184,17 @@
             data.registrationDetails.registrationType = $scope.selectedRegistration
             registrationDataSource.saveRegistrationDetails(data, registrationUid)
                 .then(savedOkay, onError);
-        }
+        };
 
-        var savedOkay = function()
-        {
-            alert('Thank you!\n\nYour registration has been saved. An email confirmation will follow.\n\nScroll to the top of this page to review the total cost due.');
+        var savedOkay = function () {
+            //alert('Thank you!\n\nYour registration has been saved. An email confirmation will follow.\n\nScroll to the top of this page to review the total cost due.');
+            toaster.pop('success', "Thank you!", "Your registration has been saved. An email confirmation will follow.");
+            $anchorScroll();
+//            toaster.pop('success', "Total Cost", "Scroll to the top of this page to review the total cost due.");
+
             getCosts();
-
-        }
+            sendRegistrationEmail(registrationUid);
+        };
 
         var getFKData = function () {
             registrationDataSource.getForeignKeyData()
@@ -190,9 +204,9 @@
         var bindData = function (data) {
             $scope.validRegistration = true;
 
-            $log.info("Data;");
-            $log.info(data);
-            $log.info(data.email);
+            //$log.info("Data;");
+            //$log.info(data);
+            //$log.info(data.email);
             $scope.registration = data;
             $scope.displayEmail = data.userDetails.email;
             // $scope.towns = data.towns;
@@ -211,7 +225,7 @@
             $scope.selectedClubs = data.userDetails.photoClubs;
 
             //$scope.items = data.fieldTrip1Options.options;
-            $log.info($scope.fieldTrip1Options);
+            //$log.info($scope.fieldTrip1Options);
             $scope.loading = false;
 
             getFKData();
@@ -251,7 +265,7 @@
                 var total = 0;
                 for (var i = 0; i < $scope.currentCosts.length; i++) {
                     total += $scope.currentCosts[i].Cost;
-                    $log.info(total);
+                    //$log.info(total);
                 }
                 return total;
             }

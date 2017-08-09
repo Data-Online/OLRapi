@@ -42,6 +42,8 @@ namespace OLRapi.Models
 
         public string specialRequirements { get; set; }
         public bool canonWorkshop { get; set; }
+
+        public DateTime linkExpiryDate { get; set; }
     }
 
     public class FieldTripOptionsAndChoices
