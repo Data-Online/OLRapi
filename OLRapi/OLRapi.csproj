@@ -273,6 +273,9 @@
     <Compile Include="sp_rpt_CalculateCosts1_Result.cs">
       <DependentUpon>OLRDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="sp_rpt_CalculateCosts2_Result.cs">
+      <DependentUpon>OLRDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Workshop.cs">
       <DependentUpon>OLRDataModel.tt</DependentUpon>
     </Compile>

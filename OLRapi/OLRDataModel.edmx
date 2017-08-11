@@ -132,6 +132,7 @@
           <Property Name="DatePaid" Type="date" />
           <Property Name="InitialCreationDate" Type="date" />
           <Property Name="RecordDeleted" Type="bit" />
+          <Property Name="PaymentRef" Type="nvarchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="RegistrationTypes">
           <Key>
@@ -554,6 +555,7 @@
           <Property Name="RecordDeleted" Type="Boolean" />
           <NavigationProperty Name="Workshops" Relationship="OLR_dbModel.FK_Workshops_Registrations" FromRole="Registration" ToRole="Workshop" />
           <NavigationProperty Name="RegistrationType" Relationship="OLR_dbModel.FK_Registrations_RegistrationTypes" FromRole="Registration" ToRole="RegistrationType" />
+          <Property Name="PaymentRef" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Registrations_Contacts">
           <End Role="Contacts" Type="Self.Contact" Multiplicity="0..1" />
@@ -678,7 +680,10 @@
           <Parameter Name="guid" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="sp_rpt_CalculateCosts1" ReturnType="Collection(OLR_dbModel.sp_rpt_CalculateCosts1_Result)">
-            <Parameter Name="guid" Mode="In" Type="Guid" />
+          <Parameter Name="guid" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="sp_rpt_CalculateCosts2" ReturnType="Collection(OLR_dbModel.sp_rpt_CalculateCosts2_Result)">
+          <Parameter Name="guid" Mode="In" Type="Guid" />
           </FunctionImport>
         </EntityContainer>
         <EntityType Name="FieldTripChoice">
@@ -1033,6 +1038,11 @@
           <Property Type="String" Name="Description" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="Detail" Nullable="true" MaxLength="50" />
         </ComplexType>
+        <ComplexType Name="sp_rpt_CalculateCosts2_Result">
+          <Property Type="Decimal" Name="Cost" Nullable="true" Precision="5" Scale="2" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Detail" Nullable="true" MaxLength="50" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1073,6 +1083,7 @@
           <EntitySetMapping Name="Registrations">
             <EntityTypeMapping TypeName="OLR_dbModel.Registration">
               <MappingFragment StoreEntitySet="Registrations">
+                <ScalarProperty Name="PaymentRef" ColumnName="PaymentRef" />
                 <ScalarProperty Name="RecordDeleted" ColumnName="RecordDeleted" />
                 <ScalarProperty Name="InitialCreationDate" ColumnName="InitialCreationDate" />
                 <ScalarProperty Name="DatePaid" ColumnName="DatePaid" />
@@ -1202,9 +1213,9 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="sp_rpt_CalculateCosts1" FunctionName="OLR_dbModel.Store.sp_rpt_CalculateCosts">
+          <FunctionImportMapping FunctionImportName="sp_rpt_CalculateCosts2" FunctionName="OLR_dbModel.Store.sp_rpt_CalculateCosts">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="OLR_dbModel.sp_rpt_CalculateCosts1_Result">
+              <ComplexTypeMapping TypeName="OLR_dbModel.sp_rpt_CalculateCosts2_Result">
                 <ScalarProperty Name="Cost" ColumnName="Cost" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Detail" ColumnName="Detail" />

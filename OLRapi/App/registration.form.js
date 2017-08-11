@@ -5,6 +5,10 @@
         $scope.currentCosts = [];
 
         var registrationUid = $location.search().Registration;
+        $scope.linkActive = $location.search().A == "dps";
+        
+
+        //$log.info("RW : " + overrideSaveBlock + " : " + $location.search().A);
 
         $scope.registration = {
             userDetails: {
@@ -156,7 +160,7 @@
         }
 
         var sendRegistrationEmail = function (userGuid) {
-            $log.info("Send details ...");
+            //$log.info("Send details ...");
             registrationDataSource.sendRegistration(userGuid)
                 .then(notifyEmail, onError);
         };
@@ -196,6 +200,10 @@
             sendRegistrationEmail(registrationUid);
         };
 
+        $scope.sendRegistrationAgain = function () {
+            sendRegistrationEmail(registrationUid);
+        };
+
         var getFKData = function () {
             registrationDataSource.getForeignKeyData()
                 .then(bindFKData, onError);
@@ -224,6 +232,10 @@
             $scope.selectedHonours = data.userDetails.photoHonours;
             $scope.selectedClubs = data.userDetails.photoClubs;
 
+            if (!$scope.linkActive) 
+            {
+                $scope.linkActive = (data.registrationDetails.linkExpiryDate < Date());
+            }
             //$scope.items = data.fieldTrip1Options.options;
             //$log.info($scope.fieldTrip1Options);
             $scope.loading = false;
@@ -259,13 +271,14 @@
         }
 
         var bindCostsData = function (data) {
+            $log.info("Get Total : ");
             $scope.currentCosts = data;
-            $scope.currentCostsTitle = "Current Costs";
+            $scope.currentCostsTitle = "Registration Total";
             $scope.getTotal = function () {
-                var total = 0;
+                var total = 0.00;
                 for (var i = 0; i < $scope.currentCosts.length; i++) {
                     total += $scope.currentCosts[i].Cost;
-                    //$log.info(total);
+                    $log.info("Total : " + total);
                 }
                 return total;
             }

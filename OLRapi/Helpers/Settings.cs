@@ -19,5 +19,6 @@ namespace OLRapi.Helpers
         public static bool UseApi = ConfigurationManager.AppSettings["UseApi"] == "true" ? true : false;
 
         public static string LinkValidDays => ConfigurationManager.AppSettings["LinkValidDays"];
+        public static int RegistrationCodeLength => Convert.ToInt32(ConfigurationManager.AppSettings["RegistrationCodeLength"]);
     }
 }

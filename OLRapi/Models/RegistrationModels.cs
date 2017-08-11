@@ -44,6 +44,9 @@ namespace OLRapi.Models
         public bool canonWorkshop { get; set; }
 
         public DateTime linkExpiryDate { get; set; }
+        public decimal totalCost { get; set; }
+        public string paymentRef { get; set; }
+        public bool billPaid { get; set; }
     }
 
     public class FieldTripOptionsAndChoices

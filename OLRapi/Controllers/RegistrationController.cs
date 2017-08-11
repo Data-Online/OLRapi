@@ -30,6 +30,22 @@ namespace OLRapi.Controllers
         public async Task<HttpResponseMessage> Registration(Guid userGuid, HttpRequestMessage request)
         {
             //Guid userGuid = new Guid("96BE1CE0-27F4-4A46-BDCD-EBAB16A1EA27zz");
+            string sourceUriTxt = "";
+
+            if (Request.Properties.ContainsKey("MS_HttpContext"))
+            {
+                var ctx = Request.Properties["MS_HttpContext"] as HttpContextBase;
+                if (ctx != null)
+                {
+                    // var zz = ctx.Request.UserHostAddress;
+                    var sourceUrl = ctx.Request.UrlReferrer;
+                    sourceUriTxt = sourceUrl.AbsoluteUri.ToString();
+                }
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
 
             var result = await GetRegistrationData(userGuid);
             if (result == null)
@@ -47,7 +63,7 @@ namespace OLRapi.Controllers
         public HttpResponseMessage CurrentCosts(Guid userGuid, HttpRequestMessage request)
         {
             // Requires re-coding, results from SP now a table of items
-            var result = db.sp_rpt_CalculateCosts1(userGuid).ToArray();
+            var result = db.sp_rpt_CalculateCosts2(userGuid).ToArray();
             return request.CreateResponse(HttpStatusCode.OK, result); //, result);
         }
 
@@ -94,8 +110,24 @@ namespace OLRapi.Controllers
             return request.CreateResponse<ForeignKeyViewModel>(HttpStatusCode.OK, result);
         }
 
+        private static string IntToLetters(int value)
+        {
+            string result = string.Empty;
+            while (--value >= 0)
+            {
+                result = (char)('A' + value % 26) + result;
+                value /= 26;
+            }
+            return result;
+        }
+
+
+
         public async Task<RegistrationViewModel> GetRegistrationData(Guid userGuid)
         {
+
+            decimal totalCost = db.sp_rpt_CalculateCosts2(userGuid).Select(s => s.Cost ?? 0.00M).ToArray().Sum();
+
             int linkValidDays = Int32.Parse(Settings.LinkValidDays);
 
             RegistrationViewModel result = new RegistrationViewModel();
@@ -108,6 +140,10 @@ namespace OLRapi.Controllers
                 // No valid registration on file
                 return null;
             }
+
+            bool billPaid = query.Select(s => s.DatePaid).FirstOrDefault() != null;
+
+            string paymentRef = query.Select(s => s.PaymentRef).FirstOrDefault(); //CreatePaymentRef(currentUser);
 
             IEnumerable<FieldTripChoice> fieldTripChoicesForContact = await db.FieldTripChoices.Where(s => s.Registration.ValidationUid == userGuid).ToArrayAsync();
 
@@ -170,6 +206,9 @@ namespace OLRapi.Controllers
                         additionalDinnerName = query.Select(s => s.AdditionalDinnerName ?? "").FirstOrDefault(),
                         specialRequirements = query.Select(o => o.SpecialRequirements).FirstOrDefault(),
                         linkExpiryDate = query.Select(o => o.InitialCreationDate ?? DateTime.Today).FirstOrDefault().AddDays(linkValidDays)
+                        ,totalCost = totalCost
+                        ,paymentRef = paymentRef
+                        ,billPaid = billPaid
                     }
                     // "Full convention including awards dinner" }
                 };
@@ -181,23 +220,6 @@ namespace OLRapi.Controllers
         }
 
 
-        private List<string> GetCurrentFieldtripChoices(IEnumerable<FieldTripChoice> fieldTripChoices, int fieldTripId)
-        {
-            List<string> _choices = new List<string>() { null };
-            try
-            {
-                var currentChoiceList = fieldTripChoices.Where(s => s.FieldTripId == fieldTripId)
-                    .Select(x =>
-                new List<string> { (x.FieldTripOption == null ? null : x.FieldTripOption.Description),
-                                        (x.FieldTripOption1 == null ? null : x.FieldTripOption1.Description),
-                                        (x.FieldTripOption2 == null ? null : x.FieldTripOption2.Description) })
-                                    .ToList();
-                _choices = currentChoiceList[0];
-            }
-            catch (Exception ex) { }
-
-            return _choices;
-        }
 
         //[System.Web.Mvc.ValidateAntiForgeryToken]
         [HttpPost]
@@ -207,6 +229,9 @@ namespace OLRapi.Controllers
             // Read existing record from database
             // Map view model to database
             // Save updates
+
+
+
             Registration registration = new Registration();
             try
             {
@@ -227,6 +252,8 @@ namespace OLRapi.Controllers
                 registration.AdditionalDinnerTicket = registrationDetails.registrationDetails.additionalDinnerTicket;
                 registration.AdditionalDinnerName = registrationDetails.registrationDetails.additionalDinnerName;
                 registration.SpecialRequirements = registrationDetails.registrationDetails.specialRequirements;
+
+                registration.PaymentRef = CreatePaymentRef(registration.Contact);
             }
             catch (Exception ex) { return request.CreateResponse(HttpStatusCode.BadRequest); }
 
@@ -568,6 +595,9 @@ namespace OLRapi.Controllers
             htmlContent += String.Format("If you need to make changes, please use your original email link. This link will remain active until {0}.<br /><br />", 
                 registrationDetails.registrationDetails.linkExpiryDate.ToString("dd/MM/yyy"));
 
+            htmlContent += String.Format("<strong>Registration Cost</strong> : {0}<br />", registrationDetails.registrationDetails.totalCost.ToString("C2"));
+            htmlContent += String.Format("<strong>Reference Code for Payment</strong> : {0}<br />", registrationDetails.registrationDetails.paymentRef);
+            htmlContent += String.Format("(please use this code when paying your bill)<br /><br />");
             htmlContent += String.Format("<strong>Registration</strong> : {0}<br /><br />", registrationDetails.registrationDetails.registrationType);
             if (registrationDetails.registrationDetails.additionalDinnerTicket)
             {
@@ -596,7 +626,69 @@ namespace OLRapi.Controllers
             return response.StatusCode;
         }
 
+        // Private function
+
+        private static int[] GetIntArray(int num)
+        {
+            List<int> listOfInts = new List<int>();
+            while (num > 0)
+            {
+                listOfInts.Add(num % 10);
+                num = num / 10;
+            }
+            listOfInts.Reverse();
+            return listOfInts.ToArray();
+        }
+
+        private static string GetUniquePayCode(int id, int length)
+        {
+            double i = 10;
+            int count = 1;
+            while (i < Math.Pow(10, length))
+            {
+                if (id < i)
+                    id += (int)i;
+                i = Math.Pow(i, count);
+                count++;
+            }
+            //if (id < 10)
+            //    id += 10;
+
+            var _array = GetIntArray(id);
+
+            string result = "";
+            foreach (var entry in _array)
+            {
+                result += IntToLetters(entry);
+            }
+            return result;
+        }
+
+        private string CreatePaymentRef(Contact currentUser)
+        {
+            return String.Format("{0}{1}", currentUser.FirstName[0], currentUser.LastName[0] + GetUniquePayCode(currentUser.ContactId, Settings.RegistrationCodeLength));
+        }
+
+        private List<string> GetCurrentFieldtripChoices(IEnumerable<FieldTripChoice> fieldTripChoices, int fieldTripId)
+        {
+            List<string> _choices = new List<string>() { null };
+            try
+            {
+                var currentChoiceList = fieldTripChoices.Where(s => s.FieldTripId == fieldTripId)
+                    .Select(x =>
+                new List<string> { (x.FieldTripOption == null ? null : x.FieldTripOption.Description),
+                                        (x.FieldTripOption1 == null ? null : x.FieldTripOption1.Description),
+                                        (x.FieldTripOption2 == null ? null : x.FieldTripOption2.Description) })
+                                    .ToList();
+                _choices = currentChoiceList[0];
+            }
+            catch (Exception ex) { }
+
+            return _choices;
+        }
+
     }
+
 
 
 }
