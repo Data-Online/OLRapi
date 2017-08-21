@@ -299,7 +299,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Images\loading_animation.gif" />
+    <Content Include="Images\natcon2018.jpg" />
     <Content Include="Images\natcon2018_logo.jpg" />
+    <Content Include="Images\natcon2018_med.jpg" />
     <Content Include="OLRDataModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>OLRDataModel.Context.cs</LastGenOutput>

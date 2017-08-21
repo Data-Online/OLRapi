@@ -20,5 +20,7 @@ namespace OLRapi.Helpers
 
         public static string LinkValidDays => ConfigurationManager.AppSettings["LinkValidDays"];
         public static int RegistrationCodeLength => Convert.ToInt32(ConfigurationManager.AppSettings["RegistrationCodeLength"]);
+
+        public static bool TestMode => Convert.ToBoolean(ConfigurationManager.AppSettings["TestMode"]);
     }
 }

@@ -476,7 +476,8 @@ namespace OLRapi.Controllers
                         // PK value, so record has been saved okay
                         // var id = Guid.NewGuid();
                         // Send email
-                        HttpStatusCode emailStatus = await SendEmail(baseRegistration.Email, @event.ContactEmail, registrationUid.ToString(), sourceUriTxt);
+                        bool testMode = Settings.TestMode;
+                        HttpStatusCode emailStatus = await SendEmail(baseRegistration.Email, @event.ContactEmail, registrationUid.ToString(), sourceUriTxt, testMode);
 
                         var response = new HttpResponseMessage(HttpStatusCode.Created)
                         {
@@ -545,7 +546,7 @@ namespace OLRapi.Controllers
         {
             return db.Events.Count(e => e.EventId == id) > 0;
         }
-        static async Task<HttpStatusCode> SendEmail(string eMail, string registrationEmail, string registrationUid, string sourceUrlTxt)
+        static async Task<HttpStatusCode> SendEmail(string eMail, string registrationEmail, string registrationUid, string sourceUrlTxt, bool testMode)
         {
             // Base class from ISD core application
 
@@ -563,16 +564,25 @@ namespace OLRapi.Controllers
             //    <add key = "RegistrationUrlApi" value="{0}/Home/RegisterMe?Registration={1}" />
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(registrationEmail, "Registrations");
-            var subject = "Registration eMail";
+            var subject = "Register for 66th PSNZ National Convention, Dunedin";
             var to = new EmailAddress(eMail);
 
 
-            var plainTextContent = "Thank you for your interest in this event";
-            var htmlContent = "<strong>Thank you for your interest in this event</strong><br />" +
-                                String.Format("Please click here : <a id='register' href={0}>{1}</a>", registrationUri, "register!");
+            var plainTextContent = "Thank you for your interest in the 66th PSNZ National Convention.";
+            var htmlContent = "<strong>" + plainTextContent + "</strong><br />";
+            htmlContent += String.Format("Please follow this link to complete the registration process: <a id='register' href={0}>{1}</a>", registrationUri, "register now.");
+            htmlContent += String.Format("<br/>This link will expire in 24 hours.");
+            htmlContent += String.Format("<br /><br />{0}<br />{1}", "Kind regards,", "2018 National Convention Organising Committee");
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = await client.SendEmailAsync(msg);
-            return response.StatusCode;
+            if (testMode)
+            {
+                return HttpStatusCode.OK;
+            }
+            else
+            {
+                var response = await client.SendEmailAsync(msg);
+                return response.StatusCode;
+            }
         }
 
         static async Task<HttpStatusCode> SendConfirmationEmail(RegistrationViewModel registrationDetails, Event eventDetails, DateTime expiryDate)

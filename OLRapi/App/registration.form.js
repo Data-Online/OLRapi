@@ -52,21 +52,39 @@
         $scope.registrationSchema = [
             {
                 type: 'multiple', fields: [
-                    { property: 'registrationDetails.additionalDinnerTicket', label: 'Additional Dinner Ticked Neeeded?', type: 'checkbox', attr: { required: false } },
+                    {
+                        property: 'registrationDetails.additionalDinnerTicket',
+                        label: 'Additional Dinner Ticked Neeeded?', type: 'checkbox',
+                        attr: { required: false, ngShow: 'selectedRegistration == "Full convention including awards dinner"' }
+                    },
                     {
                         property: 'registrationDetails.additionalDinnerName', label: 'Additional Name', type: 'text',
-                        attr: { required: false, ngShow: '$data.registrationDetails.additionalDinnerTicket' }
-                    }], columns: 4
+                        attr: { required: false, ngShow: '$data.registrationDetails.additionalDinnerTicket && selectedRegistration == "Full convention including awards dinner"' }
+                    }],
+                columns: 4
             },
-            { property: 'registrationDetails.specialRequirements', label: 'Special Requirements', type: 'textarea', rows: 5, placeholder: 'Enter and special requirements...', attr: { required: false } }
+            {
+                property: 'registrationDetails.specialRequirements', label: 'Special requirements and additional information',
+                type: 'textarea', rows: 5, placeholder: 'Also please enter your honours or hometown if they were not in the list above, or anything else you think we need to know.',
+                attr: { required: false }
+            }
         ];
 
         $scope.fieldTrip0Schema = [
             {
                 type: 'multiple', fields: [
-                    { property: 'fieldTrips[0].choices[0]', label: 'First Choice', type: 'select', list: 'value as value for (key,value) in fieldTrip0Options', attr: { required: true } },
-                    { property: 'fieldTrips[0].choices[1]', label: 'Second Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip0Options,1,0)', attr: { required: false } },
-                    { property: 'fieldTrips[0].choices[2]', label: 'Third Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip0Options,2,0)', attr: { required: false } }
+                    {
+                        property: 'fieldTrips[0].choices[0]', label: 'First Choice', type: 'select', list: 'value as value for (key,value) in fieldTrip0Options',
+                        attr: { required: true }
+                    },
+                    {
+                        property: 'fieldTrips[0].choices[1]', label: 'Second Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip0Options,1,0)',
+                        attr: { required: true }
+                    },
+                    {
+                        property: 'fieldTrips[0].choices[2]', label: 'Third Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip0Options,2,0)',
+                        attr: { required: true }
+                    }
                 ], columns: 4
             }
         ];
@@ -74,9 +92,18 @@
         $scope.fieldTrip1Schema = [
             {
                 type: 'multiple', fields: [
-                    { property: 'fieldTrips[1].choices[0]', label: 'First Choice', type: 'select', list: 'value as value for (key,value) in fieldTrip1Options', attr: { required: true } },
-                    { property: 'fieldTrips[1].choices[1]', label: 'Second Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip1Options,1,1)', attr: { required: false } },
-                    { property: 'fieldTrips[1].choices[2]', label: 'Third Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip1Options,2,1)', attr: { required: false } }
+                    {
+                        property: 'fieldTrips[1].choices[0]', label: 'First Choice', type: 'select', list: 'value as value for (key,value) in fieldTrip1Options',
+                        attr: { required: true }
+                    },
+                    {
+                        property: 'fieldTrips[1].choices[1]', label: 'Second Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip1Options,1,1)',
+                        attr: { required: true }
+                    },
+                    {
+                        property: 'fieldTrips[1].choices[2]', label: 'Third Choice', type: 'select', list: 'value as value for (key,value) in excludeItems(fieldTrip1Options,2,1)',
+                        attr: { required: true }
+                    }
                 ], columns: 4
             }
         ];

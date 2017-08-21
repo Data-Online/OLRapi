@@ -1,23 +1,33 @@
 ﻿<div class="jumbotron">
 
-    <h1>Register Here</h1>
-    <form id="form2">
-        <div>
-            <label for="Email">Email</label>
-        </div>
-        <div>
-            <input id="email1" type="text" size="200" />
-        </div>
-        <div>
-            <input type="submit" value="Submit" /><div id="loading" hidden="hidden"><img src="~/images/loading_animation.gif" /></div>
-        </div>
-    </form>
-    
-    <p id="message"></p>
-</div>
+    <div id="eventlogo" style="width:100%; text-align:center">
+        <img src="~/Images/natcon2018_med.jpg" align="middle" />
+    </div>
+    <h2>Please enter your email address in the box below to start registering for the 66th PSNZ National Convention, 19-22 April 2018, Dunedin</h2>
+    <br />
+    <div id="formentry" style="width:100%; text-align:center">
 
-@section PageScripts {
-    <script type="text/javascript">
+        <form id="form2" align="middle">
+            <div>
+                <label for="Email">Email&nbsp;&nbsp;</label><input id="email1" type="text" size="200" />
+            </div>
+            @*<div>
+                <input id="email1" type="text" size="200" />
+            </div>*@
+            <br />
+            <div>
+                <input type="submit" value="Submit" />
+                <div id="loading" hidden="hidden">
+                    <img src="~/images/loading_animation.gif" />
+                </div>
+            </div>
+        </form>
+
+        <p id="message"></p>
+    </div>
+
+    @section PageScripts {
+        <script type="text/javascript">
         $('#form2').submit(function () {
             $("#loading").show();
             $('#message').html("One moment please ...");
@@ -27,7 +37,9 @@
                     $("#loading").hide();
                     //var loc = jqxhr.getResponseHeader('Location');
                     //var a = $('<a/>', { href: loc, text: loc });
-                    var a = '<p>Thank you! An eMail has been sent to you at <b>' + data + '</b>. <br />Please refer to this for instructions on registering</p>';
+
+                    var a = '<p>Thank you. An eMail has been sent to you at <b>' + data + '</b>. <br />Please refer to this for instructions on on continuing the registration process.</p>';
+                    var a = a + '<p>If you have any issues, please contact <b>natcon2018registrar@gmail.com</b></p>'
                     $('#message').html(a);
                     $('#email1').val('');
 
@@ -38,11 +50,11 @@
                 });
             return false;
         });
-    </script>
-}
+        </script>
+    }
 
-@*            var jqxhr = $.post('http://localhost:60892/RegisterEmail/327c4359-0250-4bc1-9843-e02cd272cf52', { "": $('#email1').val() })*@
+    @*            var jqxhr = $.post('http://localhost:60892/RegisterEmail/327c4359-0250-4bc1-9843-e02cd272cf52', { "": $('#email1').val() })*@
 
 
 
-@*var jqxhr = $.post('http://localhost:60892/api/Values', { "": $('#email1').val() })*@
+    @*var jqxhr = $.post('http://localhost:60892/api/Values', { "": $('#email1').val() })*@
