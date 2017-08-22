@@ -42,8 +42,14 @@
             },
             {
                 type: 'multiple', fields: [
-                    { property: 'userDetails.PSNZMember', label: 'PSNZ Member', type: 'checkbox' },
-                    { property: 'userDetails.PSNZMemberAppliedFor', label: 'PSNZ Membership applied for', type: 'checkbox' },
+                    {
+                        property: 'userDetails.PSNZMember', label: 'PSNZ Member', type: 'checkbox',
+                        attr: { ngChange: 'registration.userDetails.PSNZMemberAppliedFor = false' }
+                    },
+                    {
+                        property: 'userDetails.PSNZMemberAppliedFor', label: 'PSNZ Membership applied for', type: 'checkbox',
+                        attr: { ngChange: 'registration.userDetails.PSNZMember = false' }
+                    },
                     { property: 'userDetails.NZIPPMember', label: 'NZIPP Member', type: 'checkbox' }
                 ], columns: 6
             }

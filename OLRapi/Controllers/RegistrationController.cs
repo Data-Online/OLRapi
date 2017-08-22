@@ -591,6 +591,8 @@ namespace OLRapi.Controllers
 
 
             var apiKey = Settings.GraphApiKey;
+            int payByDays = Settings.PayByDays;
+
             //    <add key = "RegistrationUrlApi" value="{0}/Home/RegisterMe?Registration={1}" />
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(eventDetails.ContactEmail, "Registrations");
@@ -598,14 +600,15 @@ namespace OLRapi.Controllers
             var to = new EmailAddress(HttpUtility.HtmlEncode(registrationDetails.userDetails.email));
 
 
-            var plainTextContent = eventDetails.EventName + "\n\nThank you for your registration!\n\n";
-
-            var htmlContent = String.Format("<strong>{0}</strong><br/><br />Thank you for your registration!<br /><br />", eventDetails.EventName);
+            var plainTextContent = eventDetails.EventName + "\n\nThank you for your registration\n\n";
+            var htmlContent = String.Format("<b>66th PSNZ National Convention, 19-22nd April 2018, Dunedin</b><br /><br />");
+            htmlContent += String.Format("<strong>{0}</strong><br/><br />Thank you for your registration<br /><br />", eventDetails.EventName);
             htmlContent += String.Format("A summary of your registration is given below.<br />");
-            htmlContent += String.Format("If you need to make changes, please use your original email link. This link will remain active until {0}.<br /><br />", 
-                registrationDetails.registrationDetails.linkExpiryDate.ToString("dd/MM/yyy"));
-
-            htmlContent += String.Format("<strong>Registration Cost</strong> : {0}<br />", registrationDetails.registrationDetails.totalCost.ToString("C2"));
+            htmlContent += String.Format("If any of these details are incorrect, please contact <b>natcon2018registrar@gmail</b><br /><br />");
+            //                registrationDetails.registrationDetails.linkExpiryDate.ToString("dd/MM/yyy"));
+            htmlContent += String.Format("Payment is of {0} is required by {1} to confirm your registration.<br />", registrationDetails.registrationDetails.totalCost.ToString("C2"),
+                registrationDetails.registrationDetails.linkExpiryDate.AddDays(payByDays).ToString("dd/MM/yyy"));
+             htmlContent += String.Format("<strong>Registration Cost</strong> : {0}<br />", registrationDetails.registrationDetails.totalCost.ToString("C2"));
             htmlContent += String.Format("<strong>Reference Code for Payment</strong> : {0}<br />", registrationDetails.registrationDetails.paymentRef);
             htmlContent += String.Format("(please use this code when paying your bill)<br /><br />");
             htmlContent += String.Format("<strong>Registration</strong> : {0}<br /><br />", registrationDetails.registrationDetails.registrationType);
@@ -630,6 +633,11 @@ namespace OLRapi.Controllers
             }
 
             htmlContent += String.Format("<strong>Attend Canon Workshop ?</strong> {0}<br />", registrationDetails.registrationDetails.canonWorkshop ? "Yes" : "No" );
+
+            htmlContent += String.Format("If you need to make changes, please contact <b>natcon2018registrar@gmail.com</b><br /><br />");
+
+            htmlContent += String.Format("Kind regards,<br />2018 National Convention Organising Committee");
+
 
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);

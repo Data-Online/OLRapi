@@ -22,5 +22,7 @@ namespace OLRapi.Helpers
         public static int RegistrationCodeLength => Convert.ToInt32(ConfigurationManager.AppSettings["RegistrationCodeLength"]);
 
         public static bool TestMode => Convert.ToBoolean(ConfigurationManager.AppSettings["TestMode"]);
+
+        public static int PayByDays => Convert.ToInt32(ConfigurationManager.AppSettings["PayByDays"]);
     }
 }
