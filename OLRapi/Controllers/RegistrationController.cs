@@ -564,7 +564,7 @@ namespace OLRapi.Controllers
             //    <add key = "RegistrationUrlApi" value="{0}/Home/RegisterMe?Registration={1}" />
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(registrationEmail, "Registrations");
-            var subject = "Register for 66th PSNZ National Convention, Dunedin";
+            var subject = "Automated Acknowledgement of Registration for 66th PSNZ National Convention, Dunedin";
             var to = new EmailAddress(eMail);
 
 
@@ -572,7 +572,7 @@ namespace OLRapi.Controllers
             var htmlContent = "<strong>" + plainTextContent + "</strong><br />";
             htmlContent += String.Format("Please follow this link to complete the registration process: <a id='register' href={0}>{1}</a>", registrationUri, "register now.");
             htmlContent += String.Format("<br/>This link will expire in 24 hours.");
-            htmlContent += String.Format("<br /><br />{0}<br />{1}", "Kind regards,", "2018 National Convention Organising Committee");
+            htmlContent += String.Format("<br /><br />{0}<br />{1}<br />{2}", "Kind regards,", "2018 National Convention Organising Committee", "www.naturallydunedin.co.nz");
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             if (testMode)
             {
@@ -601,16 +601,20 @@ namespace OLRapi.Controllers
 
 
             var plainTextContent = eventDetails.EventName + "\n\nThank you for your registration\n\n";
+
             var htmlContent = String.Format("<b>66th PSNZ National Convention, 19-22nd April 2018, Dunedin</b><br /><br />");
-            htmlContent += String.Format("<strong>{0}</strong><br/><br />Thank you for your registration<br /><br />", eventDetails.EventName);
-            htmlContent += String.Format("A summary of your registration is given below.<br />");
-            htmlContent += String.Format("If any of these details are incorrect, please contact <b>natcon2018registrar@gmail</b><br /><br />");
+           // htmlContent += String.Format("<strong>{0}</strong><br/><br />Thank you for your registration<br /><br />", eventDetails.EventName);
+            htmlContent += String.Format("<br />Thank you for your registration. A summary of your registration is given below. ");
+            htmlContent += String.Format("If any of these details are incorrect, please contact <b>{0}</b><br /><br />", "natcon2018registrar@gmail.com");
             //                registrationDetails.registrationDetails.linkExpiryDate.ToString("dd/MM/yyy"));
-            htmlContent += String.Format("Payment is of {0} is required by {1} to confirm your registration.<br />", registrationDetails.registrationDetails.totalCost.ToString("C2"),
+            htmlContent += String.Format("Payment is of {0} is required by {1} to confirm your registration.<br /><br />", registrationDetails.registrationDetails.totalCost.ToString("C2"),
                 registrationDetails.registrationDetails.linkExpiryDate.AddDays(payByDays).ToString("dd/MM/yyy"));
-             htmlContent += String.Format("<strong>Registration Cost</strong> : {0}<br />", registrationDetails.registrationDetails.totalCost.ToString("C2"));
-            htmlContent += String.Format("<strong>Reference Code for Payment</strong> : {0}<br />", registrationDetails.registrationDetails.paymentRef);
-            htmlContent += String.Format("(please use this code when paying your bill)<br /><br />");
+            htmlContent += String.Format("Any additional field trip costs will be invoiced separately when field trip allocations are confirmed. ");
+            htmlContent += String.Format("Field trip confirmation will start from mid January 2018.<br /><br />");
+
+            htmlContent += String.Format("<strong>Registration Cost</strong> : {0}<br />", registrationDetails.registrationDetails.totalCost.ToString("C2"));
+            htmlContent += String.Format("<strong>Reference Code for Payment</strong> : {0} (please use this code in the reference field when paying)<br />", registrationDetails.registrationDetails.paymentRef);
+            htmlContent += String.Format("<br /><br />");
             htmlContent += String.Format("<strong>Registration</strong> : {0}<br /><br />", registrationDetails.registrationDetails.registrationType);
             if (registrationDetails.registrationDetails.additionalDinnerTicket)
             {
@@ -627,16 +631,17 @@ namespace OLRapi.Controllers
                 foreach (var choice in item.choices)
                 {
                     loopcount++;
-                    htmlContent += String.Format("<li>{0} choice: {1}</li>", loopcount.ToOrdinalWords(), choice );
+                    htmlContent += String.Format("<li>{0} choice: {1}</li>", UppercaseFirst(loopcount.ToOrdinalWords()), choice );
                 }
-                htmlContent += String.Format("</ul><br/>");
+                htmlContent += String.Format("</ul>");
             }
 
-            htmlContent += String.Format("<strong>Attend Canon Workshop ?</strong> {0}<br />", registrationDetails.registrationDetails.canonWorkshop ? "Yes" : "No" );
+            htmlContent += String.Format("<strong>Attend Canon Workshop ?</strong> {0}<br /><br />", registrationDetails.registrationDetails.canonWorkshop ? "Yes" : "No" );
 
             htmlContent += String.Format("If you need to make changes, please contact <b>natcon2018registrar@gmail.com</b><br /><br />");
 
-            htmlContent += String.Format("Kind regards,<br />2018 National Convention Organising Committee");
+            htmlContent += String.Format("Kind regards,<br />2018 National Convention Organising Committee<br />");
+            htmlContent += String.Format("www.naturallydunedin.co.nz");
 
 
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
@@ -644,7 +649,18 @@ namespace OLRapi.Controllers
             return response.StatusCode;
         }
 
-        // Private function
+        // Private functions
+
+        private static string UppercaseFirst(string s)
+        {
+            // Check for empty string.
+            if (string.IsNullOrEmpty(s))
+            {
+                return string.Empty;
+            }
+            // Return char and concat substring.
+            return char.ToUpper(s[0]) + s.Substring(1);
+        }
 
         private static int[] GetIntArray(int num)
         {

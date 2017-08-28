@@ -25,8 +25,10 @@
     <div ng-show="validRegistration && !loading" ng-cloak>
         <h3>Registration details for eMail address <b>{{::displayEmail}}</b></h3>
         <br />
+        <div ng-if="registration.registrationDetails.registrationType">
+            <button class="btn btn-default" ng-click="sendRegistrationAgain()">Click to Re-Send Confirmation email</button>
+        </div>
         <div ng-if="getTotal() > 0" class="col-sm-12">
-            <button class="btn btn-default" ng-click="sendRegistrationAgain()">Click to Re-Send Confirmation email</button> 
             <h3>{{::currentCostsTitle}}: {{ getTotal() | currency}}</h3>
             <span ng-if="!registration.registrationDetails.billPaid">(Please use reference <b>{{registration.registrationDetails.paymentRef}}</b> when sending your payment)</span>
             <span ng-if="registration.registrationDetails.billPaid">(Payment received  - Thank You!)</span>

@@ -6,6 +6,7 @@
 
         var registrationUid = $location.search().Registration;
         $scope.linkActive = $location.search().A == "dps";
+        var showCosts = false;
         
 
         //$log.info("RW : " + overrideSaveBlock + " : " + $location.search().A);
@@ -229,7 +230,10 @@
             $anchorScroll();
 //            toaster.pop('success', "Total Cost", "Scroll to the top of this page to review the total cost due.");
 
-            getCosts();
+            if (showCosts) {
+                getCosts();
+            };
+
             sendRegistrationEmail(registrationUid);
         };
 
@@ -275,7 +279,9 @@
 
             getFKData();
 
-            getCosts();
+            if (showCosts) {
+                getCosts();
+            };
 
         }
 
