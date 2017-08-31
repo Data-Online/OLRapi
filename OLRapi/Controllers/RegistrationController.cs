@@ -564,7 +564,7 @@ namespace OLRapi.Controllers
             //    <add key = "RegistrationUrlApi" value="{0}/Home/RegisterMe?Registration={1}" />
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(registrationEmail, "Registrations");
-            var subject = "Automated Acknowledgement of Registration for 66th PSNZ National Convention, Dunedin";
+            var subject = "Register for the 66th PSNZ National Convention, Dunedin";
             var to = new EmailAddress(eMail);
 
 
@@ -596,7 +596,8 @@ namespace OLRapi.Controllers
             //    <add key = "RegistrationUrlApi" value="{0}/Home/RegisterMe?Registration={1}" />
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(eventDetails.ContactEmail, "Registrations");
-            var subject = String.Format("{0} : Confirmation", eventDetails.EventName);
+           // var subject = String.Format("{0} : Confirmation", eventDetails.EventName);
+            var subject = String.Format("Automated Acknowledgement of Registration for 66th PSNZ National Convention, Dunedin");
             var to = new EmailAddress(HttpUtility.HtmlEncode(registrationDetails.userDetails.email));
 
 
