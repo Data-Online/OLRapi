@@ -253,7 +253,9 @@ namespace OLRapi.Controllers
                 registration.AdditionalDinnerName = registrationDetails.registrationDetails.additionalDinnerName;
                 registration.SpecialRequirements = registrationDetails.registrationDetails.specialRequirements;
 
-                registration.PaymentRef = CreatePaymentRef(registration.Contact);
+                registration.PaymentRef = string.IsNullOrEmpty(registrationDetails.registrationDetails.paymentRef) ? CreatePaymentRef(registration.Contact) : registrationDetails.registrationDetails.paymentRef;
+                //if (registrationDetails.registrationDetails.paymentRef == "")
+                //    registration.PaymentRef = CreatePaymentRef(registration.Contact);
             }
             catch (Exception ex) { return request.CreateResponse(HttpStatusCode.BadRequest); }
 
@@ -639,8 +641,10 @@ namespace OLRapi.Controllers
 
             htmlContent += String.Format("<strong>Attend Canon Workshop ?</strong> {0}<br /><br />", registrationDetails.registrationDetails.canonWorkshop ? "Yes" : "No" );
 
-            htmlContent += String.Format("If you need to make changes, please contact <b>natcon2018registrar@gmail.com</b><br /><br />");
-
+           // htmlContent += String.Format("If you need to make changes, please contact <b>natcon2018registrar@gmail.com</b><br /><br />");
+            htmlContent += String.Format("If you need to make changes, please contact <b><a href='mailto:{0}?Subject={1}%20{2}' target='_top'>{0}</a></b><br /><br />",
+                "natcon2018registrar@gmail.com", "Registration%20change%20request", registrationDetails.registrationDetails.paymentRef);
+            //<a href="mailto:natcon2018registrar@gmail.com?Subject=Registration%20enquiry" target="_top">natcon2018registrar@gmail.com</a>
             htmlContent += String.Format("Kind regards,<br />2018 National Convention Organising Committee<br />");
             htmlContent += String.Format("www.naturallydunedin.co.nz");
 
