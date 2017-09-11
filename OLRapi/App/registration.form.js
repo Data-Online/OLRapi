@@ -1,6 +1,8 @@
 ﻿angular.module('app', ['autofields', 'multipleSelect', 'toaster'])
     .controller('registrationCtrl', ['$scope', '$log', '$location', 'registrationDataSource', 'toaster', '$anchorScroll', function ($scope, $log, $location, registrationDataSource, toaster, $anchorScroll) {
         $scope.loading = false;
+        $scope.sendingEmail = false;
+
         $scope.validRegistration = false;
         $scope.currentCosts = [];
 
@@ -195,11 +197,13 @@
 
         var sendRegistrationEmail = function (userGuid) {
             //$log.info("Send details ...");
+            $scope.sendingEmail = true;
             registrationDataSource.sendRegistration(userGuid)
-                .then(notifyEmail, onError);
+                .then(notifyEmail, onEmailError);
         };
 
         var notifyEmail = function () {
+            $scope.sendingEmail = false;
             toaster.pop('success', "Confirmation", "A confirmation eMail has been sent.");
            // alert('Email confirmation sent!');
         };
@@ -268,10 +272,9 @@
 
             $scope.selectedHonours = data.userDetails.photoHonours;
             $scope.selectedClubs = data.userDetails.photoClubs;
-
             if (!$scope.linkActive) 
             {
-                $scope.linkActive = (data.registrationDetails.linkExpiryDate < Date());
+                $scope.linkActive = !data.registrationDetails.linkExpired;
             }
             //$scope.items = data.fieldTrip1Options.options;
             //$log.info($scope.fieldTrip1Options);
@@ -296,7 +299,13 @@
         var onError = function () {
             $scope.loading = false;
             $scope.validRegistration = false;
+            $scope.sendingEmail = false;
             $log.error("Error");
+        }
+
+        var onEmailError = function () {
+            $scope.sendingEmail = false;
+            toaster.pop('error', "Confirmation eMail", "An error has occured. Please try again later");
         }
 
         readRegistrationDetails(registrationUid);

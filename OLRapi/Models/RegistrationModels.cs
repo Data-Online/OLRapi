@@ -44,6 +44,7 @@ namespace OLRapi.Models
         public bool canonWorkshop { get; set; }
 
         public DateTime linkExpiryDate { get; set; }
+        public bool linkExpired { get; set; }
         public decimal totalCost { get; set; }
         public string paymentRef { get; set; }
         public bool billPaid { get; set; }

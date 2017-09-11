@@ -26,7 +26,9 @@
         <h3>Registration details for eMail address <b>{{::displayEmail}}</b></h3>
         <br />
         <div ng-if="registration.registrationDetails.registrationType">
+            
             <button class="btn btn-default" ng-click="sendRegistrationAgain()">Click to Re-Send Confirmation email</button>
+            <i ng-show="sendingEmail" class="fa fa-refresh fa-fw fa" ng-class="{'fa-spin' : sendingEmail}"></i>
         </div>
         <div ng-if="getTotal() > 0" class="col-sm-12">
             <h3>{{::currentCostsTitle}}: {{ getTotal() | currency}}</h3>

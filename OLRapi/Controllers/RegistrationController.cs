@@ -177,6 +177,8 @@ namespace OLRapi.Controllers
             //}
 
             //  var userDetailsOnFile = db.Registrations.Where()
+
+            var testIfLinkActive = query.Select(o => o.InitialCreationDate ?? DateTime.Today).FirstOrDefault().AddDays(linkValidDays) > DateTime.Now;
             try
             {
                 string DefaultRegType = db.RegistrationTypes.Where(s => s.Default == true).Select(o => o.RegistrationType1).DefaultIfEmpty("").First();
@@ -205,7 +207,8 @@ namespace OLRapi.Controllers
                         additionalDinnerTicket = query.Select(s => s.AdditionalDinnerTicket ?? false).FirstOrDefault(),
                         additionalDinnerName = query.Select(s => s.AdditionalDinnerName ?? "").FirstOrDefault(),
                         specialRequirements = query.Select(o => o.SpecialRequirements).FirstOrDefault(),
-                        linkExpiryDate = query.Select(o => o.InitialCreationDate ?? DateTime.Today).FirstOrDefault().AddDays(linkValidDays)
+                        linkExpiryDate = query.Select(o => o.InitialCreationDate ?? DateTime.Today).FirstOrDefault().AddDays(linkValidDays),
+                        linkExpired = !(query.Select(o => o.InitialCreationDate ?? DateTime.Today).FirstOrDefault().AddDays(linkValidDays) > DateTime.Now)
                         ,totalCost = totalCost
                         ,paymentRef = paymentRef
                         ,billPaid = billPaid
@@ -598,26 +601,73 @@ namespace OLRapi.Controllers
             //    <add key = "RegistrationUrlApi" value="{0}/Home/RegisterMe?Registration={1}" />
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(eventDetails.ContactEmail, "Registrations");
-           // var subject = String.Format("{0} : Confirmation", eventDetails.EventName);
+            // var subject = String.Format("{0} : Confirmation", eventDetails.EventName);
             var subject = String.Format("Automated Acknowledgement of Registration for 66th PSNZ National Convention, Dunedin");
             var to = new EmailAddress(HttpUtility.HtmlEncode(registrationDetails.userDetails.email));
 
 
             var plainTextContent = eventDetails.EventName + "\n\nThank you for your registration\n\n";
 
-            var htmlContent = String.Format("<b>66th PSNZ National Convention, 19-22nd April 2018, Dunedin</b><br /><br />");
-           // htmlContent += String.Format("<strong>{0}</strong><br/><br />Thank you for your registration<br /><br />", eventDetails.EventName);
-            htmlContent += String.Format("<br />Thank you for your registration. A summary of your registration is given below. ");
-            htmlContent += String.Format("If any of these details are incorrect, please contact <b>{0}</b><br /><br />", "natcon2018registrar@gmail.com");
-            //                registrationDetails.registrationDetails.linkExpiryDate.ToString("dd/MM/yyy"));
-            htmlContent += String.Format("Payment is of {0} is required by {1} to confirm your registration.<br /><br />", registrationDetails.registrationDetails.totalCost.ToString("C2"),
-                registrationDetails.registrationDetails.linkExpiryDate.AddDays(payByDays).ToString("dd/MM/yyy"));
-            htmlContent += String.Format("Any additional field trip costs will be invoiced separately when field trip allocations are confirmed. ");
-            htmlContent += String.Format("Field trip confirmation will start from mid January 2018.<br /><br />");
+            string htmlContent = FormatSummaryMessage(registrationDetails, payByDays);
 
-            htmlContent += String.Format("<strong>Registration Cost</strong> : {0}<br />", registrationDetails.registrationDetails.totalCost.ToString("C2"));
-            htmlContent += String.Format("<strong>Reference Code for Payment</strong> : {0} (please use this code in the reference field when paying)<br />", registrationDetails.registrationDetails.paymentRef);
             htmlContent += String.Format("<br /><br />");
+
+            htmlContent = FormatUserDetails(registrationDetails, htmlContent);
+            htmlContent += String.Format("<br />");
+            htmlContent = FormatRegistrationDetails(registrationDetails, htmlContent);
+
+            // htmlContent += String.Format("If you need to make changes, please contact <b>natcon2018registrar@gmail.com</b><br /><br />");
+            htmlContent += String.Format("If you need to make changes, please contact <b><a href='mailto:{0}?Subject={1}%20{2}' target='_top'>{0}</a></b><br /><br />",
+                "natcon2018registrar@gmail.com", "Registration%20change%20request", registrationDetails.registrationDetails.paymentRef);
+            //<a href="mailto:natcon2018registrar@gmail.com?Subject=Registration%20enquiry" target="_top">natcon2018registrar@gmail.com</a>
+            htmlContent += String.Format("Kind regards,<br />2018 National Convention Organising Committee<br />");
+            htmlContent += String.Format("www.naturallydunedin.co.nz");
+
+
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
+            return response.StatusCode;
+        }
+
+        private static string FormatUserDetails(RegistrationViewModel registrationDetails, string htmlContent)
+        {
+            //First Name: Melanie
+            //Last Name: Middlemiss
+            //Home Town: Dunedin
+            //Mobile Number: 123456
+
+            //PSNZ member
+
+            //Photographic Honours: APSNZ, LPSNZ, FPSNZ
+
+            //Clubs / Societies you belong to: Dunedin Photographic Society, Dunedin Camera Clubs / Societies
+
+            htmlContent += String.Format("<b>First Name:</b> {0}<br /><b>Last Name: </b>{1}<br /><b>Home Town: </b>{2}<br /><b>Mobile Number: </b>{3}<br /><br /><b>PSNZ member? </b>{4}<br /><br />",
+                registrationDetails.userDetails.firstName, registrationDetails.userDetails.lastName, registrationDetails.userDetails.homeTown, registrationDetails.userDetails.mobileNumber,
+                registrationDetails.userDetails.PSNZMember);
+            htmlContent += String.Format("<b>Photographic Honours: </b>");
+            htmlContent += String.Format("{0}<br/>", CreateFKItemList(registrationDetails.userDetails.photoHonours));
+            htmlContent += "<br/>";
+            htmlContent += String.Format("<b>Clubs / Societies you belong to: </b>");
+            htmlContent += String.Format("{0}<br/>", CreateFKItemList(registrationDetails.userDetails.photoClubs));
+
+            return htmlContent;
+        }
+
+        private static string CreateFKItemList(List<string> itemList)
+        {
+            string result = "";
+            string comma = "";
+            foreach (var item in itemList)
+            {
+                result += String.Format("{0} {1}", comma, item);
+                comma = ",";
+            }
+            return result;
+        }
+
+        private static string FormatRegistrationDetails(RegistrationViewModel registrationDetails, string htmlContent)
+        {
             htmlContent += String.Format("<strong>Registration</strong> : {0}<br /><br />", registrationDetails.registrationDetails.registrationType);
             if (registrationDetails.registrationDetails.additionalDinnerTicket)
             {
@@ -634,24 +684,30 @@ namespace OLRapi.Controllers
                 foreach (var choice in item.choices)
                 {
                     loopcount++;
-                    htmlContent += String.Format("<li>{0} choice: {1}</li>", UppercaseFirst(loopcount.ToOrdinalWords()), choice );
+                    htmlContent += String.Format("<li>{0} choice: {1}</li>", UppercaseFirst(loopcount.ToOrdinalWords()), choice);
                 }
                 htmlContent += String.Format("</ul>");
             }
 
-            htmlContent += String.Format("<strong>Attend Canon Workshop ?</strong> {0}<br /><br />", registrationDetails.registrationDetails.canonWorkshop ? "Yes" : "No" );
+            htmlContent += String.Format("<strong>Attend Canon Workshop ?</strong> {0}<br /><br />", registrationDetails.registrationDetails.canonWorkshop ? "Yes" : "No");
+            return htmlContent;
+        }
 
-           // htmlContent += String.Format("If you need to make changes, please contact <b>natcon2018registrar@gmail.com</b><br /><br />");
-            htmlContent += String.Format("If you need to make changes, please contact <b><a href='mailto:{0}?Subject={1}%20{2}' target='_top'>{0}</a></b><br /><br />",
-                "natcon2018registrar@gmail.com", "Registration%20change%20request", registrationDetails.registrationDetails.paymentRef);
-            //<a href="mailto:natcon2018registrar@gmail.com?Subject=Registration%20enquiry" target="_top">natcon2018registrar@gmail.com</a>
-            htmlContent += String.Format("Kind regards,<br />2018 National Convention Organising Committee<br />");
-            htmlContent += String.Format("www.naturallydunedin.co.nz");
+        private static string FormatSummaryMessage(RegistrationViewModel registrationDetails, int payByDays)
+        {
+            var htmlContent = String.Format("<b>66th PSNZ National Convention, 19-22nd April 2018, Dunedin</b><br /><br />");
+            // htmlContent += String.Format("<strong>{0}</strong><br/><br />Thank you for your registration<br /><br />", eventDetails.EventName);
+            htmlContent += String.Format("<br />Thank you for your registration. A summary of your registration is given below. ");
+            htmlContent += String.Format("If any of these details are incorrect, please contact <b>{0}</b><br /><br />", "natcon2018registrar@gmail.com");
+            //                registrationDetails.registrationDetails.linkExpiryDate.ToString("dd/MM/yyy"));
+            htmlContent += String.Format("<p style='color: red;'>Payment is of {0} is required by {1} to confirm your registration.</p>", registrationDetails.registrationDetails.totalCost.ToString("C2"),
+                registrationDetails.registrationDetails.linkExpiryDate.AddDays(payByDays).ToString("dd/MM/yyy"));
+            htmlContent += String.Format("Any additional field trip costs will be invoiced separately when field trip allocations are confirmed. ");
+            htmlContent += String.Format("Field trip confirmation will start from mid January 2018.<br /><br />");
 
-
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = await client.SendEmailAsync(msg);
-            return response.StatusCode;
+            htmlContent += String.Format("<strong>Registration Cost</strong> : {0}<br />", registrationDetails.registrationDetails.totalCost.ToString("C2"));
+            htmlContent += String.Format("<strong>Reference Code for Payment</strong> : {0} (please use this code in the reference field when paying)<br />", registrationDetails.registrationDetails.paymentRef);
+            return htmlContent;
         }
 
         // Private functions
