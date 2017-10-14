@@ -17,6 +17,7 @@ namespace OLRapi.Models
         public UserDetails userDetails { get; set; }
         public List<FieldTripOptionsAndChoices> fieldTrips { get; set; }
         public RegistrationDetails registrationDetails { get; set; }
+        public string eventAccountNumber { get; set; }
     }
 
     public class UserDetails

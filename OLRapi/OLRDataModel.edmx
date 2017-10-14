@@ -43,6 +43,7 @@
           <Property Name="GID" Type="uniqueidentifier" />
           <Property Name="Active" Type="bit" />
           <Property Name="ContactEmail" Type="nvarchar" MaxLength="100" />
+          <Property Name="AccountNumber" Type="nvarchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="FieldTripChoices">
           <Key>
@@ -397,6 +398,7 @@
         </Association>
         <Function Name="sp_rpt_CalculateCosts" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="guid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="includeFieldTrips" Type="bit" Mode="In" />
         </Function>
         <EntityContainer Name="OLR_dbModelStoreContainer">
           <EntitySet Name="AvailableWorkshops" EntityType="Self.AvailableWorkshops" Schema="dbo" store:Type="Tables" />
@@ -534,6 +536,7 @@
           <NavigationProperty Name="FieldTrips" Relationship="OLR_dbModel.FK_FieldTrips_Events" FromRole="Event" ToRole="FieldTrip" />
           <NavigationProperty Name="AvailableWorkshops" Relationship="OLR_dbModel.FK_AvailableWorkshops_Events" FromRole="Event" ToRole="AvailableWorkshop" />
           <NavigationProperty Name="RegistrationTypes" Relationship="OLR_dbModel.FK_RegistrationTypes_Events" FromRole="Event" ToRole="RegistrationType" />
+          <Property Name="AccountNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Registration">
           <Key>
@@ -684,6 +687,7 @@
           </FunctionImport>
           <FunctionImport Name="sp_rpt_CalculateCosts2" ReturnType="Collection(OLR_dbModel.sp_rpt_CalculateCosts2_Result)">
           <Parameter Name="guid" Mode="In" Type="Guid" />
+            <Parameter Name="includeFieldTrips" Mode="In" Type="Boolean" />
           </FunctionImport>
         </EntityContainer>
         <EntityType Name="FieldTripChoice">
@@ -1072,6 +1076,7 @@
           <EntitySetMapping Name="Events">
             <EntityTypeMapping TypeName="OLR_dbModel.Event">
               <MappingFragment StoreEntitySet="Events">
+                <ScalarProperty Name="AccountNumber" ColumnName="AccountNumber" />
                 <ScalarProperty Name="ContactEmail" ColumnName="ContactEmail" />
                 <ScalarProperty Name="Active" ColumnName="Active" />
                 <ScalarProperty Name="GID" ColumnName="GID" />

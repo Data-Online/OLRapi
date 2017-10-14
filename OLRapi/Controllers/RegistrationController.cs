@@ -63,7 +63,7 @@ namespace OLRapi.Controllers
         public HttpResponseMessage CurrentCosts(Guid userGuid, HttpRequestMessage request)
         {
             // Requires re-coding, results from SP now a table of items
-            var result = db.sp_rpt_CalculateCosts2(userGuid).ToArray();
+            var result = db.sp_rpt_CalculateCosts2(userGuid,false).ToArray();
             return request.CreateResponse(HttpStatusCode.OK, result); //, result);
         }
 
@@ -126,7 +126,7 @@ namespace OLRapi.Controllers
         public async Task<RegistrationViewModel> GetRegistrationData(Guid userGuid)
         {
 
-            decimal totalCost = db.sp_rpt_CalculateCosts2(userGuid).Select(s => s.Cost ?? 0.00M).ToArray().Sum();
+            decimal totalCost = db.sp_rpt_CalculateCosts2(userGuid,false).Select(s => s.Cost ?? 0.00M).ToArray().Sum();
 
             int linkValidDays = Int32.Parse(Settings.LinkValidDays);
 
@@ -140,6 +140,8 @@ namespace OLRapi.Controllers
                 // No valid registration on file
                 return null;
             }
+
+            result.eventAccountNumber = await query.Select(s => s.Event.AccountNumber).FirstOrDefaultAsync();
 
             bool billPaid = query.Select(s => s.DatePaid).FirstOrDefault() != null;
 
@@ -707,6 +709,7 @@ namespace OLRapi.Controllers
 
             htmlContent += String.Format("<strong>Registration Cost</strong> : {0}<br />", registrationDetails.registrationDetails.totalCost.ToString("C2"));
             htmlContent += String.Format("<strong>Reference Code for Payment</strong> : {0} (please use this code in the reference field when paying)<br />", registrationDetails.registrationDetails.paymentRef);
+            htmlContent += String.Format("<strong>Bank Account for direct credit</strong> : {0}<br />", registrationDetails.eventAccountNumber);
             return htmlContent;
         }
 
