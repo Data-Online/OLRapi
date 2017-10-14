@@ -141,7 +141,6 @@ namespace OLRapi.Controllers
                 return null;
             }
 
-            result.eventAccountNumber = await query.Select(s => s.Event.AccountNumber).FirstOrDefaultAsync();
 
             bool billPaid = query.Select(s => s.DatePaid).FirstOrDefault() != null;
 
@@ -214,9 +213,10 @@ namespace OLRapi.Controllers
                         ,totalCost = totalCost
                         ,paymentRef = paymentRef
                         ,billPaid = billPaid
-                    }
+                    },
                     // "Full convention including awards dinner" }
-                };
+                    eventAccountNumber = await query.Select(s => s.Event.AccountNumber).FirstOrDefaultAsync()
+            };
             }
             catch (Exception ex)
             { return null; }
