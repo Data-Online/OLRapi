@@ -26,6 +26,9 @@ namespace OLRapi
         public Nullable<decimal> CostMember { get; set; }
         public Nullable<decimal> CostNonMember { get; set; }
         public Nullable<bool> Default { get; set; }
+        public Nullable<bool> ActiveOption { get; set; }
+        public Nullable<int> MaximumNumber { get; set; }
+        public Nullable<bool> InactiveOnMax { get; set; }
     
         public virtual Event Event { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -105,7 +105,8 @@ namespace OLRapi.Controllers
             result.towns.Insert(0, "NOT LISTED");
             result.photoClubs = await db.PhotoClubs.Select(o => o.Description).ToListAsync();
             result.photoHonours = await db.Honours.Select(o => o.Description).ToListAsync();
-            result.registrationTypes = await db.RegistrationTypes.Select(o => o.RegistrationType1).ToListAsync();
+
+            result.registrationTypes = await db.RegistrationTypes.Where(w => w.ActiveOption == true).Select(o => o.RegistrationType1).ToListAsync();
 
             return request.CreateResponse<ForeignKeyViewModel>(HttpStatusCode.OK, result);
         }

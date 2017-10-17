@@ -145,6 +145,9 @@
           <Property Name="CostMember" Type="decimal" Precision="5" Scale="2" />
           <Property Name="CostNonMember" Type="decimal" Precision="5" Scale="2" />
           <Property Name="Default" Type="bit" />
+          <Property Name="ActiveOption" Type="bit" />
+          <Property Name="MaximumNumber" Type="int" />
+          <Property Name="InactiveOnMax" Type="bit" />
         </EntityType>
         <EntityType Name="Workshops">
           <Key>
@@ -686,7 +689,7 @@
           <Parameter Name="guid" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="sp_rpt_CalculateCosts2" ReturnType="Collection(OLR_dbModel.sp_rpt_CalculateCosts2_Result)">
-          <Parameter Name="guid" Mode="In" Type="Guid" />
+            <Parameter Name="guid" Mode="In" Type="Guid" />
             <Parameter Name="includeFieldTrips" Mode="In" Type="Boolean" />
           </FunctionImport>
         </EntityContainer>
@@ -870,6 +873,9 @@
           <NavigationProperty Name="Event" Relationship="OLR_dbModel.FK_RegistrationTypes_Events" FromRole="RegistrationType" ToRole="Event" />
           <NavigationProperty Name="Registrations" Relationship="OLR_dbModel.FK_Registrations_RegistrationTypes" FromRole="RegistrationType" ToRole="Registration" />
           <Property Name="Default" Type="Boolean" />
+          <Property Name="ActiveOption" Type="Boolean" />
+          <Property Name="MaximumNumber" Type="Int32" />
+          <Property Name="InactiveOnMax" Type="Boolean" />
         </EntityType>
         <Association Name="FK_Contacts_HomeTowns">
           <End Type="OLR_dbModel.HomeTown" Role="HomeTown" Multiplicity="0..1" />
@@ -1189,6 +1195,9 @@
           <EntitySetMapping Name="RegistrationTypes">
             <EntityTypeMapping TypeName="OLR_dbModel.RegistrationType">
               <MappingFragment StoreEntitySet="RegistrationTypes">
+                <ScalarProperty Name="InactiveOnMax" ColumnName="InactiveOnMax" />
+                <ScalarProperty Name="MaximumNumber" ColumnName="MaximumNumber" />
+                <ScalarProperty Name="ActiveOption" ColumnName="ActiveOption" />
                 <ScalarProperty Name="Default" ColumnName="Default" />
                 <ScalarProperty Name="CostNonMember" ColumnName="CostNonMember" />
                 <ScalarProperty Name="CostMember" ColumnName="CostMember" />
