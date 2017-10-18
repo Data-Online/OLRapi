@@ -156,7 +156,7 @@ namespace OLRapi.Controllers
             foreach (var availableFieldTripId in fieldTripQuery)
             {
                 FieldTripOptionsAndChoices fieldTripOptionsAndChoices = new FieldTripOptionsAndChoices();
-                List<string> currentFieldOptions = await db.FieldTripOptions.Where(s => s.FieldTripId == availableFieldTripId).Select(o => o.Description).ToListAsync();
+                List<string> currentFieldOptions = await db.FieldTripOptions.Where(s => s.FieldTripId == availableFieldTripId).OrderBy(o => o.Description).Select(o => o.Description).ToListAsync();
 
                 fieldTripOptionsAndChoices.options = currentFieldOptions;
                 fieldTripOptionsAndChoices.choices = GetCurrentFieldtripChoices(fieldTripChoicesForContact, availableFieldTripId);
