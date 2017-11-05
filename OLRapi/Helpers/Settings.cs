@@ -24,5 +24,8 @@ namespace OLRapi.Helpers
         public static bool TestMode => Convert.ToBoolean(ConfigurationManager.AppSettings["TestMode"]);
 
         public static int PayByDays => Convert.ToInt32(ConfigurationManager.AppSettings["PayByDays"]);
+
+        public static string ReCaptchaPublicKey => ConfigurationManager.AppSettings["ReCaptcha.PublicKey"];
+        public static string ReCaptchaPrivateKey => ConfigurationManager.AppSettings["ReCaptcha.PrivateKey"];
     }
 }

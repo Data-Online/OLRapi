@@ -1,4 +1,6 @@
-﻿<div class="jumbotron">
+﻿@using OLRapi.ReCaptcha;
+
+<div class="jumbotron">
 
     <div id="eventlogo" style="width:100%; text-align:center">
         <img src="~/Images/natcon2018_med.jpg" align="middle" />
@@ -11,9 +13,12 @@
             <div>
                 <label for="Email">Email&nbsp;&nbsp;</label><input id="email1" type="text" size="200" />
             </div>
+
+            @Html.GenerateCaptcha(Theme.White)
+
             @*<div>
-                <input id="email1" type="text" size="200" />
-            </div>*@
+                    <input id="email1" type="text" size="200" />
+                </div>*@
             <br />
             <div>
                 <input type="submit" value="Submit" />
@@ -26,19 +31,28 @@
         <p id="message"></p>
     </div>
 
-    @section PageScripts {
-        <script type="text/javascript">
+
+
+</div>
+@section PageScripts {
+    <script type="text/javascript">
         $('#form2').submit(function () {
+            var respData = {};
+            respData.recaptcha = grecaptcha.getResponse();
+            respData.email = $('#email1').val();
+            //alert(respData.email);
             $("#loading").show();
             $('#message').html("One moment please ...");
             //var jqxhr = $.post('http://localhost:60892/RegisterEmail/992fdb3b-7715-4c41-a591-1558899fc91a', { "": $('#email1').val() })
-            var jqxhr = $.post('@Request.Url.GetLeftPart(UriPartial.Authority)/RegisterEmail/@ViewBag.EventUID', { "": $('#email1').val() })
+            //var jqxhr = $.post('@Request.Url.GetLeftPart(UriPartial.Authority)/RegisterEmail/@ViewBag.EventUID', { "": $('#email1').val() })
+            var jqxhr = $.post('@Request.Url.GetLeftPart(UriPartial.Authority)/RegisterEmail/@ViewBag.EventUID', { "email": respData.email, "recaptcha": respData.recaptcha })
                 .then(function (data) {
                     $("#loading").hide();
                     //var loc = jqxhr.getResponseHeader('Location');
                     //var a = $('<a/>', { href: loc, text: loc });
 
                     var a = '<p>Thank you. An eMail has been sent to you at <b>' + data + '</b>. <br />Please refer to this for instructions on continuing the registration process.</p>';
+                    var a = a + '<p>If this eMail does not arrive, please check your spam/junk mail folders.</p>';
                     //var a = a + '<p>If you have any issues, please contact <b>natcon2018registrar@gmail.com</b></p>'
                     var a = a + '<p>If you have any issues, please contact <b><a href="mailto:natcon2018registrar@gmail.com?Subject=Registration%20enquiry" target="_top">natcon2018registrar@gmail.com</a></b></p>'
 
@@ -49,15 +63,25 @@
                 })
                 .catch(function () {
                     $("#loading").hide();
-                    $('#message').html("Sorry, something went wrong. <br />You may have already registered using this email / this event is not currently open for registrations.");
+                    $('#message').html("Sorry, something went wrong. <br />You may have not completed the ReCaptcha challenge or this event may no longer be open for registrations.");
                 });
             return false;
         });
-        </script>
-    }
+    </script>
 
-    @*            var jqxhr = $.post('http://localhost:60892/RegisterEmail/327c4359-0250-4bc1-9843-e02cd272cf52', { "": $('#email1').val() })*@
+    @*<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>*@
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
+<script type="text/javascript">
+      var verifyCallback = function(response) {
+        alert(response);
+      };
+
+    </script>
+}
+
+@*            var jqxhr = $.post('http://localhost:60892/RegisterEmail/327c4359-0250-4bc1-9843-e02cd272cf52', { "": $('#email1').val() })*@
 
 
 
-    @*var jqxhr = $.post('http://localhost:60892/api/Values', { "": $('#email1').val() })*@
+@*var jqxhr = $.post('http://localhost:60892/api/Values', { "": $('#email1').val() })*@

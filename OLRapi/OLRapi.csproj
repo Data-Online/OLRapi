@@ -231,6 +231,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Recaptcha.cs" />
     <Compile Include="Helpers\Settings.cs" />
     <Compile Include="HomeTown.cs">
       <DependentUpon>OLRDataModel.tt</DependentUpon>

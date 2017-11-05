@@ -63,7 +63,7 @@ namespace OLRapi.Controllers
         public HttpResponseMessage CurrentCosts(Guid userGuid, HttpRequestMessage request)
         {
             // Requires re-coding, results from SP now a table of items
-            var result = db.sp_rpt_CalculateCosts2(userGuid,false).ToArray();
+            var result = db.sp_rpt_CalculateCosts2(userGuid, false).ToArray();
             return request.CreateResponse(HttpStatusCode.OK, result); //, result);
         }
 
@@ -72,7 +72,7 @@ namespace OLRapi.Controllers
         public async Task<HttpResponseMessage> SendRegistration(Guid userGuid, HttpRequestMessage request)
         {
             // Requires re-coding, results from SP now a table of items
-            if ( await SendRegistrationDetails(userGuid) )
+            if (await SendRegistrationDetails(userGuid))
                 return request.CreateResponse(HttpStatusCode.OK); //, result);
             else
                 return request.CreateResponse(HttpStatusCode.BadRequest); //, result);
@@ -85,7 +85,7 @@ namespace OLRapi.Controllers
             if (result != null)
             {
                 Guid eventID = new Guid(Settings.EventUID);
-                Event  eventDetails = db.Events.Where(w => w.GID == eventID).FirstOrDefault();
+                Event eventDetails = db.Events.Where(w => w.GID == eventID).FirstOrDefault();
                 DateTime expiryDate = new DateTime();
                 var zz = await SendConfirmationEmail(result, eventDetails, expiryDate);
                 return true;
@@ -127,7 +127,7 @@ namespace OLRapi.Controllers
         public async Task<RegistrationViewModel> GetRegistrationData(Guid userGuid)
         {
 
-            decimal totalCost = db.sp_rpt_CalculateCosts2(userGuid,false).Select(s => s.Cost ?? 0.00M).ToArray().Sum();
+            decimal totalCost = db.sp_rpt_CalculateCosts2(userGuid, false).Select(s => s.Cost ?? 0.00M).ToArray().Sum();
 
             int linkValidDays = Int32.Parse(Settings.LinkValidDays);
 
@@ -211,13 +211,13 @@ namespace OLRapi.Controllers
                         specialRequirements = query.Select(o => o.SpecialRequirements).FirstOrDefault(),
                         linkExpiryDate = query.Select(o => o.InitialCreationDate ?? DateTime.Today).FirstOrDefault().AddDays(linkValidDays),
                         linkExpired = !(query.Select(o => o.InitialCreationDate ?? DateTime.Today).FirstOrDefault().AddDays(linkValidDays) > DateTime.Now)
-                        ,totalCost = totalCost
-                        ,paymentRef = paymentRef
-                        ,billPaid = billPaid
+                        , totalCost = totalCost
+                        , paymentRef = paymentRef
+                        , billPaid = billPaid
                     },
                     // "Full convention including awards dinner" }
                     eventAccountNumber = await query.Select(s => s.Event.AccountNumber).FirstOrDefaultAsync()
-            };
+                };
             }
             catch (Exception ex)
             { return null; }
@@ -398,10 +398,11 @@ namespace OLRapi.Controllers
 
         [HttpPost]
         [Route("RegisterEmail/{eventid}")]
-        public async Task<HttpResponseMessage> RegisterEmail(Guid eventid, [FromBody] string returnedEmail)
+        //public async Task<HttpResponseMessage> RegisterEmail(Guid eventid, [FromBody] string returnedEmail)
+        public async Task<HttpResponseMessage> RegisterEmail(Guid eventid, [FromBody] Newtonsoft.Json.Linq.JObject data)
         {
             string sourceUriTxt = "";
-
+            string returnedEmail = "";
             if (Request.Properties.ContainsKey("MS_HttpContext"))
             {
                 var ctx = Request.Properties["MS_HttpContext"] as HttpContextBase;
@@ -416,6 +417,19 @@ namespace OLRapi.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
+
+            Newtonsoft.Json.Linq.JToken j = (Newtonsoft.Json.Linq.JToken)data.SelectToken("recaptcha");
+            Type type = typeof(string);
+            string recapchaResponse = (string)System.Convert.ChangeType(j.ToString(), type);
+
+            ReCaptcha.RecapchaControl challengeTest = new ReCaptcha.RecapchaControl();
+            if (!challengeTest.CheckRecapchaChallenge(recapchaResponse))
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
+            j = (Newtonsoft.Json.Linq.JToken)data.SelectToken("email");
+            returnedEmail = (string)System.Convert.ChangeType(j.ToString(), type);
 
             try
             {
