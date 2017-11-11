@@ -16,6 +16,7 @@ namespace OLRapi.Models
     {
         public UserDetails userDetails { get; set; }
         public List<FieldTripOptionsAndChoices> fieldTrips { get; set; }
+        public List<WorkshopChoices> workshops { get; set; }
         public RegistrationDetails registrationDetails { get; set; }
         public string eventAccountNumber { get; set; }
     }
@@ -42,7 +43,7 @@ namespace OLRapi.Models
         public string additionalDinnerName { get; set; }
 
         public string specialRequirements { get; set; }
-        public bool canonWorkshop { get; set; }
+       // public bool canonWorkshop { get; set; }
 
         public DateTime linkExpiryDate { get; set; }
         public bool linkExpired { get; set; }
@@ -72,5 +73,16 @@ namespace OLRapi.Models
         public List<string> photoHonours { get; set; }
         public List<string> registrationTypes { get; set; }
 
+    }
+
+    public class WorkshopChoices
+    {
+        public WorkshopChoices()
+        {
+        }
+
+        public string workshopName { get; set; }
+        public bool selected { get; set; }
+        public string infoOnWorkshop { get; set; }
     }
 }

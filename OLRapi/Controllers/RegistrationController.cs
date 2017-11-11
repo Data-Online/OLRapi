@@ -164,6 +164,10 @@ namespace OLRapi.Controllers
                 FieldTrips.Add(fieldTripOptionsAndChoices);
             }
 
+
+            IEnumerable<Workshop> workshopChoicesForContact = await db.Workshops.Where(s => s.Registration.ValidationUid == userGuid).ToArrayAsync();
+            List<WorkshopChoices> workshops = GetCurrentWorkshopChoices(workshopChoicesForContact);
+
             //foreach (var availableFieldTripId in db.FieldTripOptions.Select(s => s.FieldTripId).Distinct())
             //{
             //    FieldTripOptionsAndChoices fieldTripOptions = new FieldTripOptionsAndChoices();
@@ -189,6 +193,7 @@ namespace OLRapi.Controllers
                 {
                     // userDetails = new UserDetails() { email = "test@test.com", firstName = "", lastName = "" },
                     fieldTrips = FieldTrips,
+                    workshops = workshops,
                     userDetails = new UserDetails()
                     {
                         firstName = currentUser.FirstName,
@@ -205,7 +210,7 @@ namespace OLRapi.Controllers
                     registrationDetails = new RegistrationDetails()
                     {
                         registrationType = query.Select(o => o.RegistrationType.RegistrationType1).FirstOrDefault() ?? DefaultRegType,
-                        canonWorkshop = query.Select(s => s.Workshops).FirstOrDefault().Select(o => o.Attending ?? false).FirstOrDefault(),
+                        //canonWorkshop = query.Select(s => s.Workshops).FirstOrDefault().Select(o => o.Attending ?? false).FirstOrDefault(),
                         additionalDinnerTicket = query.Select(s => s.AdditionalDinnerTicket ?? false).FirstOrDefault(),
                         additionalDinnerName = query.Select(s => s.AdditionalDinnerName ?? "").FirstOrDefault(),
                         specialRequirements = query.Select(o => o.SpecialRequirements).FirstOrDefault(),
@@ -225,12 +230,26 @@ namespace OLRapi.Controllers
             return result;
         }
 
+        private List<WorkshopChoices> GetCurrentWorkshopChoices(IEnumerable<Workshop> workshopChoicesForContact)
+        {
+            var result = new List<WorkshopChoices>();
+            
+            foreach (var workshop in workshopChoicesForContact)
+            {
+                var choices = new WorkshopChoices();
+                choices.selected = workshop.Attending ?? false;
+                choices.workshopName = workshop.AvailableWorkshop.WorkshopDescription;
+                result.Add(choices);
+            }
+            return result;
+        }
+
 
 
         //[System.Web.Mvc.ValidateAntiForgeryToken]
         [HttpPost]
         [Route("api/saveRegistrationDetails/{userGuid}")]
-        public async Task<HttpResponseMessage> SaveUserSettings(Guid userGuid, HttpRequestMessage request, [FromBody] RegistrationViewModel registrationDetails)
+        public async Task<HttpResponseMessage> SaveUserSettings(Guid userGuid, HttpRequestMessage request, [FromBody] RegistrationViewModel enteredRegisrationData)
         {
             // Read existing record from database
             // Map view model to database
@@ -243,23 +262,23 @@ namespace OLRapi.Controllers
             {
                 registration = await db.Registrations.Where(s => s.ValidationUid == userGuid).FirstOrDefaultAsync();
 
-                registration.Contact.FirstName = registrationDetails.userDetails.firstName;
-                registration.Contact.LastName = registrationDetails.userDetails.lastName;
-                registration.Contact.HomeTown = (db.HomeTowns.Where(s => s.TownName == registrationDetails.userDetails.homeTown).FirstOrDefault());
+                registration.Contact.FirstName = enteredRegisrationData.userDetails.firstName;
+                registration.Contact.LastName = enteredRegisrationData.userDetails.lastName;
+                registration.Contact.HomeTown = (db.HomeTowns.Where(s => s.TownName == enteredRegisrationData.userDetails.homeTown).FirstOrDefault());
 
-                registration.Contact.NZIPPMember = registrationDetails.userDetails.NZIPPMember;
-                registration.Contact.PSNZMember = registrationDetails.userDetails.PSNZMember;
-                registration.Contact.PSNZAppliedFor = registrationDetails.userDetails.PSNZMemberAppliedFor;
+                registration.Contact.NZIPPMember = enteredRegisrationData.userDetails.NZIPPMember;
+                registration.Contact.PSNZMember = enteredRegisrationData.userDetails.PSNZMember;
+                registration.Contact.PSNZAppliedFor = enteredRegisrationData.userDetails.PSNZMemberAppliedFor;
 
                 // Honors
 
-                registration.RegistrationType = db.RegistrationTypes.Where(s => s.RegistrationType1 == registrationDetails.registrationDetails.registrationType).FirstOrDefault();
+                registration.RegistrationType = db.RegistrationTypes.Where(s => s.RegistrationType1 == enteredRegisrationData.registrationDetails.registrationType).FirstOrDefault();
 
-                registration.AdditionalDinnerTicket = registrationDetails.registrationDetails.additionalDinnerTicket;
-                registration.AdditionalDinnerName = registrationDetails.registrationDetails.additionalDinnerName;
-                registration.SpecialRequirements = registrationDetails.registrationDetails.specialRequirements;
+                registration.AdditionalDinnerTicket = enteredRegisrationData.registrationDetails.additionalDinnerTicket;
+                registration.AdditionalDinnerName = enteredRegisrationData.registrationDetails.additionalDinnerName;
+                registration.SpecialRequirements = enteredRegisrationData.registrationDetails.specialRequirements;
 
-                registration.PaymentRef = string.IsNullOrEmpty(registrationDetails.registrationDetails.paymentRef) ? CreatePaymentRef(registration.Contact) : registrationDetails.registrationDetails.paymentRef;
+                registration.PaymentRef = string.IsNullOrEmpty(enteredRegisrationData.registrationDetails.paymentRef) ? CreatePaymentRef(registration.Contact) : enteredRegisrationData.registrationDetails.paymentRef;
                 //if (registrationDetails.registrationDetails.paymentRef == "")
                 //    registration.PaymentRef = CreatePaymentRef(registration.Contact);
             }
@@ -273,7 +292,7 @@ namespace OLRapi.Controllers
                 {
                     var _description = _currentFieldTrips.FieldTrip.Description;
 
-                    var _fieldTripsSelected = registrationDetails.fieldTrips.Where(s => s.fieldTripDescription == _description).Select(o => o.choices).ToList();
+                    var _fieldTripsSelected = enteredRegisrationData.fieldTrips.Where(s => s.fieldTripDescription == _description).Select(o => o.choices).ToList();
 
                     int _count = 0;
                     foreach (var _choice in _fieldTripsSelected[0])
@@ -305,7 +324,7 @@ namespace OLRapi.Controllers
                 string SQL = string.Format("delete from HonourContactLinks where ContactId = {0}", registration.Contact.ContactId.ToString());
                 db.Database.ExecuteSqlCommand(SQL);
 
-                foreach (var description in registrationDetails.userDetails.photoHonours)
+                foreach (var description in enteredRegisrationData.userDetails.photoHonours)
                 {
                     var _id = db.Honours.Where(s => s.Description == description).Select(o => o.HonourId).FirstOrDefault();
                     var _honour = new Honour() { HonourId = _id };
@@ -321,7 +340,7 @@ namespace OLRapi.Controllers
                 string SQL = string.Format("delete from PhotoClubContactLinks where ContactId = {0}", registration.Contact.ContactId.ToString());
                 db.Database.ExecuteSqlCommand(SQL);
 
-                foreach (var description in registrationDetails.userDetails.photoClubs)
+                foreach (var description in enteredRegisrationData.userDetails.photoClubs)
                 {
                     var _id = db.PhotoClubs.Where(s => s.Description == description).Select(o => o.PhotoClubId).FirstOrDefault();
                     var _photoClub = new PhotoClub() { PhotoClubId = _id };
@@ -372,8 +391,19 @@ namespace OLRapi.Controllers
 
             // Special case, we are only supporting a single "Canon Workshop" 
             // *****
-            var zz = registration.Workshops.FirstOrDefault();
-            zz.Attending = registrationDetails.registrationDetails.canonWorkshop;
+
+            //var zz = registration.Workshops.FirstOrDefault();
+            //zz.Attending = enteredRegisrationData.registrationDetails.canonWorkshop;
+            /// Workshops
+            try
+            {
+                foreach (var _workshop in enteredRegisrationData.workshops)
+                {
+                    var wsID = db.AvailableWorkshops.Where(sw => sw.WorkshopDescription == _workshop.workshopName).Select(i => i.AvailableWorkshopId).FirstOrDefault();
+                    registration.Workshops.Where(s => s.AvailableWorkshop.AvailableWorkshopId == wsID).FirstOrDefault().Attending = _workshop.selected;
+                }
+            }
+            catch (Exception ex) { return request.CreateResponse(HttpStatusCode.BadRequest); }
 
             //var _workshop = registration.Workshops.Where(s => s.AvailableWorkshop.WorkshopDescription == )
             //registration.Workshops = db.Workshops.Where(s => s.AvailableWorkshop.WorkshopDescription == registrationDetails.registrationDetails.)
@@ -706,7 +736,16 @@ namespace OLRapi.Controllers
                 htmlContent += String.Format("</ul>");
             }
 
-            htmlContent += String.Format("<strong>Attend Canon Workshop ?</strong> {0}<br /><br />", registrationDetails.registrationDetails.canonWorkshop ? "Yes" : "No");
+            htmlContent += String.Format("<string>Workshops:</string><br /><br />");
+            htmlContent += String.Format("<ul>");
+
+            foreach (var _workshop in registrationDetails.workshops)
+            {
+                htmlContent += String.Format("<li>{0}: {1}<br/></li>", _workshop.workshopName, _workshop.selected ? "Yes" : "No");
+            }
+            htmlContent += String.Format("</ul>");
+            htmlContent += String.Format("<br/><br/>");
+            //           htmlContent += String.Format("<strong>Attend Canon Workshop ?</strong> {0}<br /><br />", registrationDetails.registrationDetails.canonWorkshop ? "Yes" : "No");
             return htmlContent;
         }
 
@@ -802,6 +841,5 @@ namespace OLRapi.Controllers
 
     }
 
-
-
+ 
 }

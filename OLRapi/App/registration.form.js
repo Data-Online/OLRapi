@@ -7,9 +7,10 @@
         $scope.currentCosts = [];
 
         var registrationUid = $location.search().Registration;
-        $scope.linkActive = $location.search().A == "dps";
+        $scope.linkActive = $location.search().A === "dps";
         var showCosts = false;
-        
+
+        $scope.linkActive = true;
 
         //$log.info("RW : " + overrideSaveBlock + " : " + $location.search().A);
 
@@ -26,7 +27,11 @@
             },
             fieldTrips: {
                 choices: {}
+            },
+            workshops: {
+                choices: {}
             }
+
         };
 
         $scope.userSchema = [
@@ -117,9 +122,32 @@
             }
         ];
 
-        $scope.workshopsSchema = [
-            { property: 'registrationDetails.canonWorkshop', label: 'Register for the Canon Workshop', type: 'checkbox' }
-        ]
+        //$scope.workshopsSchema = [
+        //    { property: 'registrationDetails.canonWorkshop', label: 'Register for the Canon Workshop', type: 'checkbox' }
+        //]
+
+
+        var defineWorkshopOptions = function () {
+            $scope.workshopsSchema = [
+                {
+                    type: 'multiple', fields: [
+                    ], columns: 3
+                }
+            ]
+
+            angular.forEach($scope.workshops, function (ws, key) {
+                property = 'workshops[' + key + '].selected';
+                nextWorkshop = { property: property, label: $scope.workshops[key].workshopName, type: 'checkbox' }
+                $scope.workshopsSchema[0].fields.push(nextWorkshop);
+            });
+            //zzz = { property: 'zz', label: $scope.workshops[0].workshopName, type: 'checkbox' };
+            ////zzz = { property: 'zz', label: 'test', type: 'checkbox' };
+            //$log.info('Debug..');
+            //$scope.workshopsSchema_[0].fields.push(zzz);
+            //$log.info($scope.workshopsSchema_[0]);
+            //// $scope.workshopsSchema_.addToList({ property: 'test' });
+            //// $log.info($scope.workshopsSchema_);
+        };
 
         $scope.excludeItems = function (itemList, index, fieldTripIndex) {
             //$log.info('Called');
@@ -221,6 +249,9 @@
         //};
 
         var saveRegistrationData = function (data) {
+            //toaster.pop('info', 'saving data');
+            //toaster.pop('info', data);
+
             data.userDetails.photoHonours = $scope.selectedHonours;
             data.userDetails.photoClubs = $scope.selectedClubs;
             data.registrationDetails.registrationType = $scope.selectedRegistration
@@ -254,7 +285,7 @@
             $scope.validRegistration = true;
 
             //$log.info("Data;");
-            //$log.info(data);
+            //$log.info(data.workshops);
             //$log.info(data.email);
             $scope.registration = data;
             $scope.displayEmail = data.userDetails.email;
@@ -272,6 +303,12 @@
 
             $scope.selectedHonours = data.userDetails.photoHonours;
             $scope.selectedClubs = data.userDetails.photoClubs;
+
+            $scope.workshops = data.workshops;
+            //$log.info("Data;");
+            //$log.info($scope.workshops[0]);
+            defineWorkshopOptions();
+
             if (!$scope.linkActive) 
             {
                 $scope.linkActive = !data.registrationDetails.linkExpired;

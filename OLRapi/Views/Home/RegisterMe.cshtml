@@ -94,8 +94,8 @@
                     <auto:fields fields="fieldTrip1Schema" data="registration" options="options"></auto:fields>
 
                 </div>
-                <div class="col-sm-12">
-                    <h3>Canon Workshop</h3>
+                <div class="col-sm-12" ng-show="workshops">
+                    <h3>Workshops</h3>
                     <auto:fields fields="workshopsSchema" data="registration" options="options"></auto:fields>
                 </div>
                 <button ng-if="linkActive" type="submit" class="btn btn-default btn-lg btn-block" ng-class="{'btn-primary':registerForm.$valid}" tabindex="100">Register</button>
