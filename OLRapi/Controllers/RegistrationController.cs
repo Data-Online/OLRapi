@@ -736,7 +736,7 @@ namespace OLRapi.Controllers
                 htmlContent += String.Format("</ul>");
             }
 
-            htmlContent += String.Format("<string>Workshops:</string><br /><br />");
+            htmlContent += String.Format("<string>Workshops:</string><br />");
             htmlContent += String.Format("<ul>");
 
             foreach (var _workshop in registrationDetails.workshops)

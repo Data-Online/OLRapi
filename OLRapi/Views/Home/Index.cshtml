@@ -38,8 +38,24 @@
     <script type="text/javascript">
         $('#form2').submit(function () {
             var respData = {};
+            var email = $('#email1');
+
             respData.recaptcha = grecaptcha.getResponse();
             respData.email = $('#email1').val();
+
+            // Check all good with inputs
+            if (!validateEmail(respData.email, false))
+            {
+                $('#message').html("You have entered an invalid email address <br />Please check your entry.");
+                email.animate({ color: 'red' }, 2000).animate({color: 'black'}, 1000);
+                email.focus();
+                return false;
+            };
+            if ((respData.recaptcha).length == 0)
+            {
+                $('#message').html("Please complete the ReCaptcha prompt so we know you are a real person!");
+                return false;
+            }
             //alert(respData.email);
             $("#loading").show();
             $('#message').html("One moment please ...");
@@ -72,10 +88,24 @@
     @*<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>*@
     <script src='https://www.google.com/recaptcha/api.js'></script>
 
-<script type="text/javascript">
-      var verifyCallback = function(response) {
-        alert(response);
-      };
+    <script language="javascript">
+
+        function validateEmail(emailField, triggerAlert){
+                var reg = /^([A-Za-z0-9_\-\.])+\@@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+
+                if (reg.test(emailField) == false)
+                {
+                    if (triggerAlert) { alert('Invalid Email Address'); }
+                    return false;
+                }
+                return true;
+        }
+    </script>
+
+    <script type="text/javascript">
+        var verifyCallback = function (response) {
+            alert(response);
+        };
 
     </script>
 }
