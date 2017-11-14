@@ -265,6 +265,7 @@ namespace OLRapi.Controllers
                 registration.Contact.FirstName = enteredRegisrationData.userDetails.firstName;
                 registration.Contact.LastName = enteredRegisrationData.userDetails.lastName;
                 registration.Contact.HomeTown = (db.HomeTowns.Where(s => s.TownName == enteredRegisrationData.userDetails.homeTown).FirstOrDefault());
+                registration.Contact.MobileNumber = enteredRegisrationData.userDetails.mobileNumber;
 
                 registration.Contact.NZIPPMember = enteredRegisrationData.userDetails.NZIPPMember;
                 registration.Contact.PSNZMember = enteredRegisrationData.userDetails.PSNZMember;
