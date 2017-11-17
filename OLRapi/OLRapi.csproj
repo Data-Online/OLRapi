@@ -1152,6 +1152,8 @@
     <Content Include="Scripts\jquery-3.1.1.slim.js" />
     <Content Include="Scripts\jquery-3.1.1.slim.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\multi-select2\isteven-multi-select.css" />
+    <Content Include="Scripts\multi-select2\isteven-multi-select.js" />
     <Content Include="Scripts\multi-select\multiple-select.min.css" />
     <Content Include="Scripts\multi-select\multiple-select.min.js" />
     <Content Include="Scripts\respond.js" />

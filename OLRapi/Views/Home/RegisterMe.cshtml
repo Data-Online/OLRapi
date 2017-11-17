@@ -3,6 +3,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <link href="~/Scripts/multi-select/multiple-select.min.css" rel="stylesheet" />
+<link href="~/Scripts/multi-select2/isteven-multi-select.css" rel="stylesheet" />
 
 @*<h2>@ViewBag.Title</h2>*@
 <div id="wrapper" style="width:100%; text-align:center">
@@ -73,6 +74,15 @@
                                                suggestions-arr="clubsList">
                         </multiple-autocomplete>
                     </div>
+                    <div>
+                        <div isteven-multi-select
+                             input-model="modernBrowsers"
+                             output-model="outputBrowsers"
+                             button-label="icon name"
+                             item-label="icon name maker"
+                             tick-property="ticked">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-sm-12">
                     <h3>Registration Type</h3>
@@ -138,3 +148,5 @@
 
 <link href="~/Scripts/toastr/AngularToaster/toaster.min.css" rel="stylesheet" />
 <script src="~/Scripts/toastr/AngularToaster/toaster.min.js"></script>
+
+<script src="~/Scripts/multi-select2/isteven-multi-select.js"></script>

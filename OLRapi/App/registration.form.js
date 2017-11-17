@@ -1,4 +1,4 @@
-﻿angular.module('app', ['autofields', 'multipleSelect', 'toaster'])
+﻿angular.module('app', ['autofields', 'multipleSelect', 'toaster', 'isteven-multi-select'])
     .controller('registrationCtrl', ['$scope', '$log', '$location', 'registrationDataSource', 'toaster', '$anchorScroll', function ($scope, $log, $location, registrationDataSource, toaster, $anchorScroll) {
         $scope.loading = false;
         $scope.sendingEmail = false;
@@ -13,6 +13,16 @@
         $scope.linkActive = true;
 
         //$log.info("RW : " + overrideSaveBlock + " : " + $location.search().A);
+
+
+        $scope.modernBrowsers = [
+            { icon: "", name: "Aotearoa Philippines Photographic Society", maker: "(Opera Software)", ticked: true },
+            { icon: "", name: "Internet Explorer", maker: "(Microsoft)", ticked: false },
+            { icon: "", name: "Aotearoa Philippines Photographic Society", maker: "(Mozilla Foundation)", ticked: true },
+            { icon: "", name: "Safari", maker: "(Apple)", ticked: false },
+            { icon: "", name: "Chrome", maker: "(Google)", ticked: true }
+        ]; 
+
 
         $scope.registration = {
             userDetails: {
@@ -215,6 +225,7 @@
         ////};
 
         $scope.register = function () {
+            $log.info($scope.outputBrowsers);
             if (!$scope.registerForm.$valid) return;
             //join stuff....
             // $log.info($scope.registration);
@@ -233,7 +244,7 @@
         var notifyEmail = function () {
             $scope.sendingEmail = false;
             toaster.pop('success', "Confirmation", "A confirmation eMail has been sent.");
-           // alert('Email confirmation sent!');
+            // alert('Email confirmation sent!');
         };
 
         var readRegistrationDetails = function (userGuid) {
@@ -263,7 +274,7 @@
             //alert('Thank you!\n\nYour registration has been saved. An email confirmation will follow.\n\nScroll to the top of this page to review the total cost due.');
             toaster.pop('success', "Thank you!", "Your registration has been saved. An email confirmation will follow.");
             $anchorScroll();
-//            toaster.pop('success', "Total Cost", "Scroll to the top of this page to review the total cost due.");
+            //            toaster.pop('success', "Total Cost", "Scroll to the top of this page to review the total cost due.");
 
             if (showCosts) {
                 getCosts();
@@ -309,8 +320,7 @@
             //$log.info($scope.workshops[0]);
             defineWorkshopOptions();
 
-            if (!$scope.linkActive) 
-            {
+            if (!$scope.linkActive) {
                 $scope.linkActive = !data.registrationDetails.linkExpired;
             }
             //$scope.items = data.fieldTrip1Options.options;
