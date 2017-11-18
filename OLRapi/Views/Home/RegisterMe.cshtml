@@ -10,7 +10,7 @@
     <img src="~/Images/natcon2018_logo.jpg" width="300" align="middle" alt="@ViewBag.Title" />
 </div>
 
-<div data-ng-app="app" data-ng-controller="registrationCtrl">
+<div data-ng-app="app" data-ng-controller="registrationCtrl" ng-cloak>
     <toaster-container></toaster-container>
 
     <div ng-if="!validRegistration && !loading" ng-cloak>
@@ -64,25 +64,36 @@
 
                     <div class="col-sm-6">
                         <label class="control-label ng-valid">Photographic Honours</label>
-                        <multiple-autocomplete ng-model="selectedHonours"
+                        <div>
+                            <div isteven-multi-select
+                                 input-model="honoursList"
+                                 output-model="outputHonoursList"
+                                 button-label="icon name"
+                                 item-label="icon name maker"
+                                 tick-property="ticked">
+                            </div>
+                        </div>
+
+                        @*<multiple-autocomplete ng-model="selectedHonours"
                                                suggestions-arr="honoursList">
-                        </multiple-autocomplete>
+                        </multiple-autocomplete>*@
                     </div>
                     <div class="col-sm-6">
                         <label class="control-label">Club/Societies you belong to</label>
-                        <multiple-autocomplete ng-model="selectedClubs"
-                                               suggestions-arr="clubsList">
-                        </multiple-autocomplete>
-                    </div>
-                    @*<div>
-                        <div isteven-multi-select
-                             input-model="modernBrowsers"
-                             output-model="outputBrowsers"
-                             button-label="icon name"
-                             item-label="icon name maker"
-                             tick-property="ticked">
+                        <div>
+                            <div isteven-multi-select
+                                 input-model="clubsList"
+                                 output-model="outputClubsList"
+                                 button-label="icon name"
+                                 item-label="icon name maker"
+                                 tick-property="ticked">
+                            </div>
                         </div>
-                    </div>*@
+
+                        @*<multiple-autocomplete ng-model="selectedClubs"
+                                               suggestions-arr="clubsList">
+                        </multiple-autocomplete>*@
+                    </div>
                 </div>
                 <div class="col-sm-12">
                     <h3>Registration Type</h3>

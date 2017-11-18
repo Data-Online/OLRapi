@@ -204,7 +204,8 @@ namespace OLRapi.Controllers
                         PSNZMember = currentUser.PSNZMember ?? false,
                         PSNZMemberAppliedFor = currentUser.PSNZAppliedFor ?? false,
                         photoHonours = currentUser.HonourContactLinks.Select(s => s.Honour.Description).ToList(),
-                        photoClubs = currentUser.PhotoClubContactLinks.Select(s => s.PhotoClub.Description).ToList()
+                        photoClubs = currentUser.PhotoClubContactLinks.Select(s => s.PhotoClub.Description).ToList(),
+                        mobileNumber = currentUser.MobileNumber
                     },
                     //userDetails = new UserDetails() { firstName = "Graeme", lastName = "Atkinson", homeTown = "Dunedin", email = "atkinsongraeme@hotmail.com" },
                     registrationDetails = new RegistrationDetails()
@@ -737,7 +738,7 @@ namespace OLRapi.Controllers
                 htmlContent += String.Format("</ul>");
             }
 
-            htmlContent += String.Format("<string>Workshops:</string><br />");
+            htmlContent += String.Format("<strong>Workshops:</strong><br />");
             htmlContent += String.Format("<ul>");
 
             foreach (var _workshop in registrationDetails.workshops)

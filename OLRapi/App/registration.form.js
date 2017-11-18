@@ -15,13 +15,6 @@
         //$log.info("RW : " + overrideSaveBlock + " : " + $location.search().A);
 
 
-        $scope.modernBrowsers = [
-            { icon: "", name: "Aotearoa Philippines Photographic Society", maker: "(Opera Software)", ticked: true },
-            { icon: "", name: "Internet Explorer", maker: "(Microsoft)", ticked: false },
-            { icon: "", name: "Aotearoa Philippines Photographic Society", maker: "(Mozilla Foundation)", ticked: true },
-            { icon: "", name: "Safari", maker: "(Apple)", ticked: false },
-            { icon: "", name: "Chrome", maker: "(Google)", ticked: true }
-        ]; 
 
 
         $scope.registration = {
@@ -225,7 +218,8 @@
         ////};
 
         $scope.register = function () {
-            $log.info($scope.outputBrowsers);
+            // Bind honours list to $scope.registration.userDetails.photoHonours
+
             if (!$scope.registerForm.$valid) return;
             //join stuff....
             // $log.info($scope.registration);
@@ -239,6 +233,17 @@
             $scope.sendingEmail = true;
             registrationDataSource.sendRegistration(userGuid)
                 .then(notifyEmail, onEmailError);
+        };
+
+        var createSelectedList = function(input)
+        {
+            var result = [];
+            angular.forEach(input, function (value, index) {
+                result.push(value.name);
+            });
+            $log.info("Result...");
+            $log.info(result);
+            return result;
         };
 
         var notifyEmail = function () {
@@ -263,8 +268,10 @@
             //toaster.pop('info', 'saving data');
             //toaster.pop('info', data);
 
-            data.userDetails.photoHonours = $scope.selectedHonours;
-            data.userDetails.photoClubs = $scope.selectedClubs;
+           // data.userDetails.photoHonours = $scope.selectedHonours;
+            //data.userDetails.photoClubs = $scope.selectedClubs;
+            data.userDetails.photoHonours = createSelectedList($scope.outputHonoursList);
+            data.userDetails.photoClubs = createSelectedList($scope.outputClubsList);
             data.registrationDetails.registrationType = $scope.selectedRegistration
             registrationDataSource.saveRegistrationDetails(data, registrationUid)
                 .then(savedOkay, onError);
@@ -338,16 +345,38 @@
         var bindFKData = function (data) {
             $scope.towns = data.towns;
             // $scope.photoHonours = data.photoHonours;
-            $scope.honoursList = data.photoHonours;
-            $scope.clubsList = data.photoClubs;
+            $scope.honoursList = collateMultiSelect(data.photoHonours, $scope.selectedHonours);
+            $scope.clubsList = collateMultiSelect(data.photoClubs, $scope.selectedClubs);
+           // $scope.honoursList = data.photoHonours;
+            //$scope.clubsList = data.photoClubs;
             $scope.registrationTypes = data.registrationTypes;
+        }
+
+        var collateMultiSelect = function (itemList, selectedList) {
+            //$log.info(selectedList);
+            var result = [];
+            angular.forEach(itemList, function (value, key) {
+               // $log.info($.inArray(value, selectedList) >= 0);
+                result.push({ icon: "", name: value, ticked: ($.inArray(value, selectedList) >= 0) });
+            });
+
+            //$log.info(result);
+
+            //$scope.honoursList_ = [
+            //    { icon: "", name: "Aotearoa Philippines Photographic Society", ticked: true },
+            //    { icon: "", name: "Internet Explorer", ticked: false },
+            //    { icon: "", name: "Aotearoa Philippines Photographic Society", ticked: true },
+            //    { icon: "", name: "Safari", ticked: false },
+            //    { icon: "", name: "Chrome", ticked: true }
+            //]; 
+            return result;
         }
 
         var onError = function () {
             $scope.loading = false;
             $scope.validRegistration = false;
             $scope.sendingEmail = false;
-            $log.error("Error");
+           // $log.error("Error");
         }
 
         var onEmailError = function () {
@@ -366,14 +395,14 @@
         }
 
         var bindCostsData = function (data) {
-            $log.info("Get Total : ");
+           // $log.info("Get Total : ");
             $scope.currentCosts = data;
             $scope.currentCostsTitle = "Registration Total";
             $scope.getTotal = function () {
                 var total = 0.00;
                 for (var i = 0; i < $scope.currentCosts.length; i++) {
                     total += $scope.currentCosts[i].Cost;
-                    $log.info("Total : " + total);
+                   // $log.info("Total : " + total);
                 }
                 return total;
             }
