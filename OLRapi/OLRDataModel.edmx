@@ -15,6 +15,15 @@
           <Property Name="PlacesAvailable" Type="int" />
           <Property Name="Cost" Type="decimal" Precision="5" Scale="2" />
         </EntityType>
+        <EntityType Name="Configuration">
+          <Key>
+            <PropertyRef Name="ConfigurationId" />
+          </Key>
+          <Property Name="ConfigurationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EventId" Type="int" Nullable="false" />
+          <Property Name="SendEmailCopies" Type="bit" />
+          <Property Name="EmailCopiesAddress" Type="nvarchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="Contacts">
           <Key>
             <PropertyRef Name="ContactId" />
@@ -405,6 +414,7 @@
         </Function>
         <EntityContainer Name="OLR_dbModelStoreContainer">
           <EntitySet Name="AvailableWorkshops" EntityType="Self.AvailableWorkshops" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Configuration" EntityType="Self.Configuration" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Contacts" EntityType="Self.Contacts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Events" EntityType="Self.Events" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FieldTripChoices" EntityType="Self.FieldTripChoices" Schema="dbo" store:Type="Tables" />
@@ -692,6 +702,7 @@
             <Parameter Name="guid" Mode="In" Type="Guid" />
             <Parameter Name="includeFieldTrips" Mode="In" Type="Boolean" />
           </FunctionImport>
+          <EntitySet Name="Configurations" EntityType="OLR_dbModel.Configuration" />
         </EntityContainer>
         <EntityType Name="FieldTripChoice">
           <Key>
@@ -1053,6 +1064,15 @@
           <Property Type="String" Name="Description" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="Detail" Nullable="true" MaxLength="50" />
         </ComplexType>
+        <EntityType Name="Configuration">
+          <Key>
+            <PropertyRef Name="ConfigurationId" />
+          </Key>
+          <Property Name="ConfigurationId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EventId" Type="Int32" Nullable="false" />
+          <Property Name="SendEmailCopies" Type="Boolean" />
+          <Property Name="EmailCopiesAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1236,6 +1256,16 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="Configurations">
+            <EntityTypeMapping TypeName="OLR_dbModel.Configuration">
+              <MappingFragment StoreEntitySet="Configuration">
+                <ScalarProperty Name="EmailCopiesAddress" ColumnName="EmailCopiesAddress" />
+                <ScalarProperty Name="SendEmailCopies" ColumnName="SendEmailCopies" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="ConfigurationId" ColumnName="ConfigurationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

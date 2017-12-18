@@ -39,6 +39,7 @@
         <AssociationConnector Association="OLR_dbModel.FK_PhotoClubContactLinks_Contacts" />
         <AssociationConnector Association="OLR_dbModel.FK_HonorContactLinks_Honors" />
         <AssociationConnector Association="OLR_dbModel.FK_PhotoClubContactLinks_PhotoClubs" />
+        <EntityTypeShape EntityType="OLR_dbModel.Configuration" Width="1.5" PointX="7.375" PointY="8.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

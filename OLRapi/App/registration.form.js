@@ -66,6 +66,9 @@
             }
         ];
 
+        var specialRequirementsText = 'Enter any diet or mobility requirements. \n';
+        specialRequirementsText += 'Also please enter your honours or hometown if they were not in the list above, or anything else you think we need to know.';
+
         $scope.registrationSchema = [
             {
                 type: 'multiple', fields: [
@@ -82,7 +85,7 @@
             },
             {
                 property: 'registrationDetails.specialRequirements', label: 'Special requirements and additional information',
-                type: 'textarea', rows: 5, placeholder: 'Also please enter your honours or hometown if they were not in the list above, or anything else you think we need to know.',
+                type: 'textarea', rows: 5, placeholder: specialRequirementsText,
                 attr: { required: false }
             }
         ];

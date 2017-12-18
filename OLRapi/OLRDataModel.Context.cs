@@ -41,6 +41,7 @@ namespace OLRapi
         public virtual DbSet<RegistrationType> RegistrationTypes { get; set; }
         public virtual DbSet<HonourContactLink> HonourContactLinks { get; set; }
         public virtual DbSet<PhotoClubContactLink> PhotoClubContactLinks { get; set; }
+        public virtual DbSet<Configuration> Configurations { get; set; }
     
         public virtual ObjectResult<Nullable<decimal>> sp_rpt_CalculateCosts(Nullable<System.Guid> guid)
         {

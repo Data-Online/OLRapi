@@ -210,6 +210,9 @@
     <Compile Include="AvailableWorkshop.cs">
       <DependentUpon>OLRDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Configuration.cs">
+      <DependentUpon>OLRDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Contact.cs">
       <DependentUpon>OLRDataModel.tt</DependentUpon>
     </Compile>

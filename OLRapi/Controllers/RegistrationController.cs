@@ -84,10 +84,17 @@ namespace OLRapi.Controllers
             RegistrationViewModel result = await GetRegistrationData(userGuid);
             if (result != null)
             {
+                string copyToEmail = "";
                 Guid eventID = new Guid(Settings.EventUID);
                 Event eventDetails = db.Events.Where(w => w.GID == eventID).FirstOrDefault();
                 DateTime expiryDate = new DateTime();
-                var zz = await SendConfirmationEmail(result, eventDetails, expiryDate);
+                // Error checking?
+                var _confirmation = db.Configurations.Where(s => s.EventId == eventDetails.EventId).FirstOrDefault();
+                if (_confirmation.SendEmailCopies ?? false)
+                {
+                    copyToEmail = _confirmation.EmailCopiesAddress;
+                }
+                var zz = await SendConfirmationEmail(result, eventDetails, expiryDate, copyToEmail);
                 return true;
             }
             else
@@ -600,6 +607,9 @@ namespace OLRapi.Controllers
         {
             return db.Events.Count(e => e.EventId == id) > 0;
         }
+
+ 
+
         static async Task<HttpStatusCode> SendEmail(string eMail, string registrationEmail, string registrationUid, string sourceUrlTxt, bool testMode)
         {
             // Base class from ISD core application
@@ -639,7 +649,7 @@ namespace OLRapi.Controllers
             }
         }
 
-        static async Task<HttpStatusCode> SendConfirmationEmail(RegistrationViewModel registrationDetails, Event eventDetails, DateTime expiryDate)
+        static async Task<HttpStatusCode> SendConfirmationEmail(RegistrationViewModel registrationDetails, Event eventDetails, DateTime expiryDate, string copyToEmail)
         {
             // Base class from ISD core application
 
@@ -672,9 +682,18 @@ namespace OLRapi.Controllers
             htmlContent += String.Format("Kind regards,<br />2018 National Convention Organising Committee<br />");
             htmlContent += String.Format("www.naturallydunedin.co.nz");
 
-
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
+
+            if  (copyToEmail != "")
+            {
+                to = new EmailAddress(HttpUtility.HtmlEncode(copyToEmail));
+                subject += "*COPY*";
+                msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                response = await client.SendEmailAsync(msg);
+            }
+
+            // Status code not handled at the moment
             return response.StatusCode;
         }
 
