@@ -24,7 +24,7 @@
         <EntityTypeShape EntityType="OLR_dbModel.HomeTown" Width="1.5" PointX="0.75" PointY="9.25" />
         <EntityTypeShape EntityType="OLR_dbModel.Honour" Width="1.5" PointX="5.375" PointY="0.75" />
         <EntityTypeShape EntityType="OLR_dbModel.PhotoClub" Width="1.5" PointX="7.375" PointY="0.75" />
-        <EntityTypeShape EntityType="OLR_dbModel.RegistrationType" Width="1.5" PointX="3" PointY="14" />
+        <EntityTypeShape EntityType="OLR_dbModel.RegistrationType" Width="2" PointX="3" PointY="14" />
         <AssociationConnector Association="OLR_dbModel.FK_Contacts_HomeTowns" />
         <AssociationConnector Association="OLR_dbModel.FK_RegistrationTypes_Events" />
         <AssociationConnector Association="OLR_dbModel.FK_FieldTripChoices_FieldTripOptions" />
@@ -39,7 +39,8 @@
         <AssociationConnector Association="OLR_dbModel.FK_PhotoClubContactLinks_Contacts" />
         <AssociationConnector Association="OLR_dbModel.FK_HonorContactLinks_Honors" />
         <AssociationConnector Association="OLR_dbModel.FK_PhotoClubContactLinks_PhotoClubs" />
-        <EntityTypeShape EntityType="OLR_dbModel.Configuration" Width="1.5" PointX="7.375" PointY="8.75" />
+        <EntityTypeShape EntityType="OLR_dbModel.Configuration" Width="1.5" PointX="7.375" PointY="8.625" />
+        <AssociationConnector Association="OLR_dbModel.FK_RegistrationTypes_RegistrationTypes" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -157,6 +157,8 @@
           <Property Name="ActiveOption" Type="bit" />
           <Property Name="MaximumNumber" Type="int" />
           <Property Name="InactiveOnMax" Type="bit" />
+          <Property Name="ActivateOnInactiveType" Type="bit" />
+          <Property Name="InactiveType" Type="int" />
         </EntityType>
         <EntityType Name="Workshops">
           <Key>
@@ -384,6 +386,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RegistrationTypes_RegistrationTypes">
+          <End Role="RegistrationTypes" Type="Self.RegistrationTypes" Multiplicity="0..1" />
+          <End Role="RegistrationTypes1" Type="Self.RegistrationTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegistrationTypes">
+              <PropertyRef Name="RegistrationTypeId" />
+            </Principal>
+            <Dependent Role="RegistrationTypes1">
+              <PropertyRef Name="InactiveType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Workshops_AvailableWorkshops">
           <End Role="AvailableWorkshops" Type="Self.AvailableWorkshops" Multiplicity="0..1" />
           <End Role="Workshops" Type="Self.Workshops" Multiplicity="*" />
@@ -499,6 +513,10 @@
           <AssociationSet Name="FK_RegistrationTypes_Events" Association="Self.FK_RegistrationTypes_Events">
             <End Role="Events" EntitySet="Events" />
             <End Role="RegistrationTypes" EntitySet="RegistrationTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RegistrationTypes_RegistrationTypes" Association="Self.FK_RegistrationTypes_RegistrationTypes">
+            <End Role="RegistrationTypes" EntitySet="RegistrationTypes" />
+            <End Role="RegistrationTypes1" EntitySet="RegistrationTypes" />
           </AssociationSet>
           <AssociationSet Name="FK_Workshops_AvailableWorkshops" Association="Self.FK_Workshops_AvailableWorkshops">
             <End Role="AvailableWorkshops" EntitySet="AvailableWorkshops" />
@@ -703,6 +721,10 @@
             <Parameter Name="includeFieldTrips" Mode="In" Type="Boolean" />
           </FunctionImport>
           <EntitySet Name="Configurations" EntityType="OLR_dbModel.Configuration" />
+          <AssociationSet Name="FK_RegistrationTypes_RegistrationTypes" Association="OLR_dbModel.FK_RegistrationTypes_RegistrationTypes">
+            <End Role="RegistrationType" EntitySet="RegistrationTypes" />
+            <End Role="RegistrationType1" EntitySet="RegistrationTypes" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="FieldTripChoice">
           <Key>
@@ -887,6 +909,10 @@
           <Property Name="ActiveOption" Type="Boolean" />
           <Property Name="MaximumNumber" Type="Int32" />
           <Property Name="InactiveOnMax" Type="Boolean" />
+          <Property Name="ActivateOnInactiveType" Type="Boolean" />
+          <Property Name="InactiveType" Type="Int32" />
+          <NavigationProperty Name="RegistrationTypes1" Relationship="OLR_dbModel.FK_RegistrationTypes_RegistrationTypes" FromRole="RegistrationType" ToRole="RegistrationType1" />
+          <NavigationProperty Name="RegistrationType2" Relationship="OLR_dbModel.FK_RegistrationTypes_RegistrationTypes" FromRole="RegistrationType1" ToRole="RegistrationType" />
         </EntityType>
         <Association Name="FK_Contacts_HomeTowns">
           <End Type="OLR_dbModel.HomeTown" Role="HomeTown" Multiplicity="0..1" />
@@ -1073,6 +1099,18 @@
           <Property Name="SendEmailCopies" Type="Boolean" />
           <Property Name="EmailCopiesAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
+        <Association Name="FK_RegistrationTypes_RegistrationTypes">
+          <End Type="OLR_dbModel.RegistrationType" Role="RegistrationType" Multiplicity="0..1" />
+          <End Type="OLR_dbModel.RegistrationType" Role="RegistrationType1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegistrationType">
+              <PropertyRef Name="RegistrationTypeId" />
+            </Principal>
+            <Dependent Role="RegistrationType1">
+              <PropertyRef Name="InactiveType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1215,6 +1253,8 @@
           <EntitySetMapping Name="RegistrationTypes">
             <EntityTypeMapping TypeName="OLR_dbModel.RegistrationType">
               <MappingFragment StoreEntitySet="RegistrationTypes">
+                <ScalarProperty Name="InactiveType" ColumnName="InactiveType" />
+                <ScalarProperty Name="ActivateOnInactiveType" ColumnName="ActivateOnInactiveType" />
                 <ScalarProperty Name="InactiveOnMax" ColumnName="InactiveOnMax" />
                 <ScalarProperty Name="MaximumNumber" ColumnName="MaximumNumber" />
                 <ScalarProperty Name="ActiveOption" ColumnName="ActiveOption" />

@@ -7,10 +7,12 @@
         $scope.currentCosts = [];
 
         var registrationUid = $location.search().Registration;
-        $scope.linkActive = $location.search().A === "dps";
+
+        var adminAccess = $location.search().A === "dps";
+        $scope.linkActive = adminAccess;
         var showCosts = false;
 
-        $scope.linkActive = true;
+        //$scope.linkActive = true;
 
         //$log.info("RW : " + overrideSaveBlock + " : " + $location.search().A);
 
@@ -298,7 +300,7 @@
         };
 
         var getFKData = function () {
-            registrationDataSource.getForeignKeyData()
+            registrationDataSource.getForeignKeyData(adminAccess)
                 .then(bindFKData, onError);
         }
 

@@ -104,8 +104,8 @@ namespace OLRapi.Controllers
         }
 
         [HttpGet]
-        [Route("api/getForeignKeyData")]
-        public async Task<HttpResponseMessage> GetForeignKeyData(HttpRequestMessage request)
+        [Route("api/getForeignKeyData/{adminAccess}")]
+        public async Task<HttpResponseMessage> GetForeignKeyData(HttpRequestMessage request, bool adminAccess)
         {
             ForeignKeyViewModel result = new ForeignKeyViewModel();
             result.towns = await db.HomeTowns.Where(s => s.TownName != "NOT LISTED").OrderBy(e => e.TownName).Select(o => o.TownName).ToListAsync();
@@ -113,7 +113,14 @@ namespace OLRapi.Controllers
             result.photoClubs = await db.PhotoClubs.Select(o => o.Description).ToListAsync();
             result.photoHonours = await db.Honours.Select(o => o.Description).ToListAsync();
 
-            result.registrationTypes = await db.RegistrationTypes.Where(w => w.ActiveOption == true).Select(o => o.RegistrationType1).ToListAsync();
+            if (!adminAccess)
+            {
+                result.registrationTypes = await db.RegistrationTypes.Where(w => w.ActiveOption == true).Select(o => o.RegistrationType1).ToListAsync();
+            }
+            else
+            {
+                result.registrationTypes = await db.RegistrationTypes.Select(o => o.RegistrationType1).ToListAsync();
+            }
 
             return request.CreateResponse<ForeignKeyViewModel>(HttpStatusCode.OK, result);
         }
@@ -133,6 +140,8 @@ namespace OLRapi.Controllers
 
         public async Task<RegistrationViewModel> GetRegistrationData(Guid userGuid)
         {
+            // First apply any availability logic
+            ApplyAvailailityLogic();
 
             decimal totalCost = db.sp_rpt_CalculateCosts2(userGuid, false).Select(s => s.Cost ?? 0.00M).ToArray().Sum();
 
@@ -236,6 +245,44 @@ namespace OLRapi.Controllers
             { return null; }
 
             return result;
+        }
+
+        private void ApplyAvailailityLogic()
+        {
+            // Registration types
+            var _registrationTypes = db.RegistrationTypes.ToArray();
+            //var _entiesToCheck = db.Registrations.Where(w => w.RegistrationType.InactiveOnMax ?? false);
+            var _entiesToCheck = db.RegistrationTypes.Where(w => w.InactiveOnMax ?? false).ToList();
+
+            foreach (var _item in _entiesToCheck)
+            {
+                var _currentTotal = db.Registrations.Where(w => w.RegistrationType.RegistrationType1 == _item.RegistrationType1).Select(s => s.RegistrationId).ToList().Count();
+                if (_item.MaximumNumber <= _currentTotal)
+                {
+                    _item.ActiveOption = false;
+                }
+            }
+            try
+            {
+                db.SaveChanges();
+            }
+            catch { }
+
+            var _entiesToCheck2 = db.RegistrationTypes.Where(w => w.ActivateOnInactiveType ?? false).ToList();
+
+            foreach (var _item in _entiesToCheck2)
+            {
+                bool _inactiveTypeIsTriggered = _entiesToCheck.Where(w => w.ActiveOption == false & _item.InactiveType == w.RegistrationTypeId).Count() > 0;
+                if (_inactiveTypeIsTriggered)
+                {
+                    _item.ActiveOption = true;
+                }
+            }
+            try
+            {
+                db.SaveChanges();
+            }
+            catch { }
         }
 
         private List<WorkshopChoices> GetCurrentWorkshopChoices(IEnumerable<Workshop> workshopChoicesForContact)
@@ -688,7 +735,7 @@ namespace OLRapi.Controllers
             if  (copyToEmail != "")
             {
                 to = new EmailAddress(HttpUtility.HtmlEncode(copyToEmail));
-                subject += "*COPY*";
+                subject += " **COPY**";
                 msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
                 response = await client.SendEmailAsync(msg);
             }

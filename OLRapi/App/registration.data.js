@@ -23,8 +23,8 @@
                 });
         };
 
-        var getForeignKeyData = function () {
-            var dataApi = "/api/getForeignKeyData";
+        var getForeignKeyData = function (adminAccess) {
+            var dataApi = "/api/getForeignKeyData/" + adminAccess;
             return $http.get(dataApi)
                 .then(function (response) {
                     return response.data;

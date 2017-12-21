@@ -18,6 +18,7 @@ namespace OLRapi
         public RegistrationType()
         {
             this.Registrations = new HashSet<Registration>();
+            this.RegistrationTypes1 = new HashSet<RegistrationType>();
         }
     
         public int RegistrationTypeId { get; set; }
@@ -29,9 +30,14 @@ namespace OLRapi
         public Nullable<bool> ActiveOption { get; set; }
         public Nullable<int> MaximumNumber { get; set; }
         public Nullable<bool> InactiveOnMax { get; set; }
+        public Nullable<bool> ActivateOnInactiveType { get; set; }
+        public Nullable<int> InactiveType { get; set; }
     
         public virtual Event Event { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Registration> Registrations { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RegistrationType> RegistrationTypes1 { get; set; }
+        public virtual RegistrationType RegistrationType2 { get; set; }
     }
 }
